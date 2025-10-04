@@ -7,12 +7,12 @@ type Props = {
   navigation: any;
 };
 
-export default function MyCoverLetters({ navigation }: Props) {
+export default function About({ navigation }: Props) {
   return (
     <View className="flex-1">
       <Header handlePress={() => navigation.toggleDrawer()} />
       <Page>
-        <Text>MyCoverLetters</Text>
+        <Text>About</Text>
       </Page>
     </View>
   );

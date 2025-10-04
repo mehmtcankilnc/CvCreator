@@ -1,10 +1,19 @@
 import { View, Text } from 'react-native';
 import React from 'react';
+import Header from '../../components/Header';
+import Page from '../../components/Page';
 
-export default function Settings() {
+type Props = {
+  navigation: any;
+};
+
+export default function Settings({ navigation }: Props) {
   return (
-    <View>
-      <Text>Settings</Text>
+    <View className="flex-1">
+      <Header handlePress={() => navigation.toggleDrawer()} />
+      <Page>
+        <Text>Settings</Text>
+      </Page>
     </View>
   );
 }

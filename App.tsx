@@ -4,31 +4,22 @@ import './global.css';
 import Home from './src/screens/app/Home';
 import {
   createDrawerNavigator,
-  DrawerNavigationProp,
+  DrawerContentScrollView,
+  DrawerItemList,
 } from '@react-navigation/drawer';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Settings from './src/screens/app/Settings';
 import MyResumes from './src/screens/app/MyResumes';
 import MyCoverLetters from './src/screens/app/MyCoverLetters';
-import Info from './src/screens/app/Info';
+import About from './src/screens/app/About';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+import { Text } from 'react-native';
 
 const Drawer = createDrawerNavigator();
-
-type RootDrawerParamList = { Home: undefined };
-
-function HeaderMenuButton() {
-  const navigation = useNavigation<DrawerNavigationProp<RootDrawerParamList>>();
-  return (
-    <Ionicons
-      name="menu"
-      size={24}
-      color="white"
-      style={{ marginLeft: 18, marginBottom: 8 }}
-      onPress={() => navigation.toggleDrawer()}
-    />
-  );
-}
 
 function App() {
   return (
@@ -36,16 +27,7 @@ function App() {
       <Drawer.Navigator
         initialRouteName="Home"
         screenOptions={{
-          headerStyle: { backgroundColor: '#1810C2', height: 100 },
-          headerTitle: 'CV Creator',
-          headerTitleAlign: 'center',
-          headerTitleStyle: {
-            color: 'white',
-            marginBottom: 12,
-            fontSize: 28,
-            fontFamily: 'Kavoon-Regular',
-          },
-          headerLeft: () => <HeaderMenuButton />,
+          headerShown: false,
           drawerActiveBackgroundColor: 'white',
           drawerActiveTintColor: '#1810C2',
           drawerInactiveBackgroundColor: '#1810C2',
@@ -55,17 +37,34 @@ function App() {
             backgroundColor: '#1810C2',
           },
           drawerLabelStyle: {
-            fontSize: 18,
+            fontSize: wp(5),
             fontFamily: 'Kavoon-Regular',
           },
         }}
+        drawerContent={props => (
+          <DrawerContentScrollView {...props}>
+            <Text
+              style={{
+                fontSize: hp(4),
+                color: 'white',
+                fontFamily: 'Kavoon-Regular',
+                lineHeight: hp(3),
+                textAlign: 'center',
+                paddingBottom: hp(2),
+              }}
+            >
+              Cv Creator
+            </Text>
+            <DrawerItemList {...props} />
+          </DrawerContentScrollView>
+        )}
       >
         <Drawer.Screen
           options={{
             drawerIcon: ({ focused }) => (
               <Ionicons
                 name="home-outline"
-                size={24}
+                size={wp(6)}
                 color={focused ? '#1810C2' : 'white'}
               />
             ),
@@ -79,7 +78,7 @@ function App() {
             drawerIcon: ({ focused }) => (
               <Ionicons
                 name="folder-open-outline"
-                size={24}
+                size={wp(6)}
                 color={focused ? '#1810C2' : 'white'}
               />
             ),
@@ -93,7 +92,7 @@ function App() {
             drawerIcon: ({ focused }) => (
               <Ionicons
                 name="newspaper-outline"
-                size={24}
+                size={wp(6)}
                 color={focused ? '#1810C2' : 'white'}
               />
             ),
@@ -107,7 +106,7 @@ function App() {
             drawerIcon: ({ focused }) => (
               <Ionicons
                 name="settings-outline"
-                size={24}
+                size={wp(6)}
                 color={focused ? '#1810C2' : 'white'}
               />
             ),
@@ -121,14 +120,14 @@ function App() {
             drawerIcon: ({ focused }) => (
               <Ionicons
                 name="information-circle-outline"
-                size={24}
+                size={wp(6)}
                 color={focused ? '#1810C2' : 'white'}
               />
             ),
             drawerLabel: 'About',
           }}
           name="About"
-          component={Info}
+          component={About}
         />
       </Drawer.Navigator>
     </NavigationContainer>

@@ -6,12 +6,8 @@ module.exports = {
     extend: {
       colors: {
         main: '#1810C2',
-      },
-      padding: {
-        all: 12,
-      },
-      borderRadius: {
-        all: 8,
+        borderColor: '#D4D4D4',
+        gray: '#585858',
       },
       fontFamily: {
         kavoon: ['Kavoon-Regular'],

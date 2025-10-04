@@ -1,18 +1,176 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import { View, Text } from 'react-native';
-import Button from '../../components/Button';
-import Loading from '../../components/Loading';
+import { View, Text, Image, Pressable } from 'react-native';
+import Header from '../../components/Header';
+import Page from '../../components/Page';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import Feather from 'react-native-vector-icons/Feather';
+import ListItem from '../../components/ListItem';
 
-export default function Home() {
+type Props = {
+  navigation: any;
+};
+
+export default function Home({ navigation }: Props) {
   return (
-    <View className="flex-1 justify-center items-center bg-white z-10 -mt-6 rounded-t-3xl">
-      <Text>Home</Text>
-      <Button
-        handlePress={() => console.log('Clicked!')}
-        text="Continue"
-        width={200}
-      />
-      <Loading />
+    <View className="flex-1">
+      {/** Header Bileşeni */}
+      <Header handlePress={() => navigation.toggleDrawer()} />
+      {/** Sayfanın Geri Kalanı */}
+      <Page>
+        <View className="flex-1 items-center" style={{ gap: wp(3) }}>
+          {/** Özellik Butonları */}
+          <View
+            className="flex-row justify-between"
+            style={{
+              width: wp(100),
+              padding: wp(5),
+              gap: wp(3),
+              height: wp(50),
+            }}
+          >
+            <View className="flex-1" style={{ gap: wp(3) }}>
+              <View
+                className="flex-1 flex-row items-center justify-between bg-[#F6F2DB]"
+                style={{
+                  borderRadius: wp(4),
+                  paddingHorizontal: wp(5),
+                }}
+              >
+                <Image
+                  source={require('../../assets/icons/resumeIcon.png')}
+                  style={{ width: wp(10), height: wp(10) }}
+                />
+                <Text
+                  className="font-kavoon text-center text-gray"
+                  style={{ fontSize: wp(3.5) }}
+                >
+                  Create your{'\n'}resume
+                </Text>
+              </View>
+              <View
+                className="flex-1 flex-row items-center justify-between bg-[#F6DDDB]"
+                style={{
+                  borderRadius: wp(4),
+                  paddingHorizontal: wp(5),
+                }}
+              >
+                <Image
+                  source={require('../../assets/icons/coverLetterIcon.png')}
+                  style={{ width: wp(10), height: wp(10) }}
+                />
+                <Text
+                  className="font-kavoon text-center text-gray"
+                  style={{ fontSize: wp(3.5) }}
+                >
+                  Create your{'\n'}cover letter
+                </Text>
+              </View>
+            </View>
+            <View
+              className="flex-1 items-center justify-between bg-[#DCDBF6]"
+              style={{ borderRadius: wp(4), paddingVertical: wp(5) }}
+            >
+              <Image
+                source={require('../../assets/icons/templatesIcon.png')}
+                style={{ width: wp(15), height: wp(15) }}
+              />
+              <Text
+                className="font-kavoon text-center text-gray"
+                style={{ fontSize: wp(3.5) }}
+              >
+                Explore all{'\n'}templates
+              </Text>
+            </View>
+          </View>
+          {/** Özgeçmişlerim Bölgesi */}
+          <View style={{ width: wp(100), paddingHorizontal: wp(5) }}>
+            {/** Başlık ve Daha Fazla Butonu */}
+            <View className="flex-row items-center justify-between">
+              <Text
+                style={{
+                  fontFamily: 'Kavoon-Regular',
+                  color: '#1810C2',
+                  fontSize: wp(5),
+                }}
+              >
+                My Resumes
+              </Text>
+              <Pressable
+                className="flex-row items-center justify-between bg-[#DCDBF6]"
+                style={{
+                  paddingVertical: wp(1),
+                  paddingLeft: wp(2),
+                  borderRadius: 9999,
+                }}
+                onPress={() => navigation.jumpTo('MyResumes')}
+              >
+                <Text
+                  style={{
+                    fontFamily: 'Kavoon-Regular',
+                    color: '#1810C2',
+                    fontSize: wp(3),
+                  }}
+                >
+                  More
+                </Text>
+                <Feather name="chevron-right" size={wp(5)} color="#1810C2" />
+              </Pressable>
+            </View>
+            {/** Elemanlar */}
+            <View style={{ gap: wp(2), paddingVertical: wp(3) }}>
+              {Array.from({ length: 2 }, (_, i) => (
+                <ListItem key={i} index={i + 1} title="MehmetcanKilinc_CV" />
+              ))}
+            </View>
+          </View>
+          {/** Motivasyon Mektuplarım Bölgesi */}
+          <View style={{ width: wp(100), paddingHorizontal: wp(5) }}>
+            {/** Başlık ve Daha Fazla Butonu */}
+            <View className="flex-row items-center justify-between">
+              <Text
+                style={{
+                  fontFamily: 'Kavoon-Regular',
+                  color: '#1810C2',
+                  fontSize: wp(5),
+                }}
+              >
+                My Cover Letters
+              </Text>
+              <Pressable
+                className="flex-row items-center justify-between bg-[#DCDBF6]"
+                style={{
+                  paddingVertical: wp(1),
+                  paddingLeft: wp(2),
+                  borderRadius: 9999,
+                }}
+                onPress={() => navigation.jumpTo('MyCoverLetters')}
+              >
+                <Text
+                  style={{
+                    fontFamily: 'Kavoon-Regular',
+                    color: '#1810C2',
+                    fontSize: wp(3),
+                  }}
+                >
+                  More
+                </Text>
+                <Feather name="chevron-right" size={wp(5)} color="#1810C2" />
+              </Pressable>
+            </View>
+            {/** Elemanlar */}
+            <View style={{ gap: wp(2), paddingVertical: wp(3) }}>
+              {Array.from({ length: 2 }, (_, i) => (
+                <ListItem
+                  key={i}
+                  index={i + 1}
+                  title="MehmetcanK_CoverLetter"
+                />
+              ))}
+            </View>
+          </View>
+        </View>
+      </Page>
     </View>
   );
 }
