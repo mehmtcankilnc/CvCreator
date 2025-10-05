@@ -9,16 +9,18 @@ import {
 
 type Props = {
   handlePress: () => void;
+  iconName?: string;
+  title?: string;
 };
 
-export default function Header({ handlePress }: Props) {
+export default function Header({ handlePress, iconName, title }: Props) {
   return (
     <View
       className="flex-row bg-main items-center justify-center"
       style={{ height: hp(13), paddingHorizontal: wp(3) }}
     >
       <Ionicons
-        name="menu"
+        name={iconName || 'menu'}
         color="white"
         size={hp(4)}
         style={{ left: wp(3), position: 'absolute' }}
@@ -26,13 +28,13 @@ export default function Header({ handlePress }: Props) {
       />
       <Text
         style={{
-          fontSize: hp(4),
+          fontSize: hp(3),
           color: 'white',
           fontFamily: 'Kavoon-Regular',
           lineHeight: hp(3),
         }}
       >
-        Cv Creator
+        {title || 'Cv Creator'}
       </Text>
     </View>
   );

@@ -8,6 +8,7 @@ module.exports = {
         main: '#1810C2',
         borderColor: '#D4D4D4',
         gray: '#585858',
+        rejectColor: '#C21D10',
       },
       fontFamily: {
         kavoon: ['Kavoon-Regular'],

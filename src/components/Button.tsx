@@ -1,24 +1,36 @@
-import { Pressable, Text } from 'react-native';
+/* eslint-disable react-native/no-inline-styles */
+import { Text, Pressable } from 'react-native';
 import React from 'react';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
 type Props = {
+  handleSubmit: () => void;
   text: string;
-  handlePress: () => void | Promise<void>;
-  disabled?: boolean;
-  width: number;
+  type?: 'forward' | 'back';
 };
 
-export default function Button({ text, handlePress, disabled, width }: Props) {
+export default function Button({
+  handleSubmit,
+  text,
+  type = 'forward',
+}: Props) {
   return (
     <Pressable
-      onPress={handlePress}
-      disabled={disabled}
-      className="justify-center items-center bg-main p-all rounded-all"
-      style={{
-        width: width,
-      }}
+      className={`flex-1 items-center justify-center ${
+        type === 'back' ? 'border border-borderColor bg-white' : 'bg-main'
+      }`}
+      style={{ height: wp(12), borderRadius: wp(2) }}
+      onPress={handleSubmit}
     >
-      <Text className="color-white font-medium text-lg">{text}</Text>
+      <Text
+        style={{
+          fontFamily: 'Kavoon-Regular',
+          fontSize: wp(4),
+          color: type === 'back' ? '#585858' : 'white',
+        }}
+      >
+        {text}
+      </Text>
     </Pressable>
   );
 }

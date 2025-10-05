@@ -1,10 +1,10 @@
 import { View, Text } from 'react-native';
 import React from 'react';
 
-export default function Loading() {
+export default function Login() {
   return (
     <View>
-      <Text>Loading</Text>
+      <Text>Login</Text>
     </View>
   );
 }

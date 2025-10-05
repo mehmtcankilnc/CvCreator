@@ -30,12 +30,14 @@ export default function Home({ navigation }: Props) {
             }}
           >
             <View className="flex-1" style={{ gap: wp(3) }}>
-              <View
+              {/** Özgeçmiş Oluştur Butonu */}
+              <Pressable
                 className="flex-1 flex-row items-center justify-between bg-[#F6F2DB]"
                 style={{
                   borderRadius: wp(4),
                   paddingHorizontal: wp(5),
                 }}
+                onPress={() => navigation.navigate('CreateResume')}
               >
                 <Image
                   source={require('../../assets/icons/resumeIcon.png')}
@@ -47,13 +49,15 @@ export default function Home({ navigation }: Props) {
                 >
                   Create your{'\n'}resume
                 </Text>
-              </View>
-              <View
+              </Pressable>
+              {/** Motivasyon Mektubu Oluştur Butonu */}
+              <Pressable
                 className="flex-1 flex-row items-center justify-between bg-[#F6DDDB]"
                 style={{
                   borderRadius: wp(4),
                   paddingHorizontal: wp(5),
                 }}
+                onPress={() => navigation.navigate('CreateCoverLetter')}
               >
                 <Image
                   source={require('../../assets/icons/coverLetterIcon.png')}
@@ -65,11 +69,13 @@ export default function Home({ navigation }: Props) {
                 >
                   Create your{'\n'}cover letter
                 </Text>
-              </View>
+              </Pressable>
             </View>
-            <View
+            {/** Şablonlar Butonu */}
+            <Pressable
               className="flex-1 items-center justify-between bg-[#DCDBF6]"
               style={{ borderRadius: wp(4), paddingVertical: wp(5) }}
+              onPress={() => navigation.navigate('Templates')}
             >
               <Image
                 source={require('../../assets/icons/templatesIcon.png')}
@@ -81,7 +87,7 @@ export default function Home({ navigation }: Props) {
               >
                 Explore all{'\n'}templates
               </Text>
-            </View>
+            </Pressable>
           </View>
           {/** Özgeçmişlerim Bölgesi */}
           <View style={{ width: wp(100), paddingHorizontal: wp(5) }}>
