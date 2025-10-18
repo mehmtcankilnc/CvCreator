@@ -6,6 +6,8 @@ import {
   StyleSheet,
   Animated,
   Easing,
+  Dimensions,
+  Pressable,
 } from 'react-native';
 import React, { Children, ReactNode, useEffect, useRef } from 'react';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
@@ -13,23 +15,57 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 type Props = {
   children: ReactNode;
   currentStep: number;
+  onStepPress: (step: number) => void;
 };
 
-export default function MultiStepForm({ children, currentStep }: Props) {
+export default function MultiStepForm({
+  children,
+  currentStep,
+  onStepPress,
+}: Props) {
   const steps = Children.toArray(children);
   const active = steps[currentStep - 1] ?? null;
+  const flatListRef = useRef<FlatList>(null);
+
+  const screenWidth = Dimensions.get('window').width;
+  const stepIndicatorWidth = wp(10);
+  const separatorWidth = wp(8) + wp(2) * 2;
+  const itemWidth = stepIndicatorWidth + separatorWidth;
+
+  useEffect(() => {
+    if (flatListRef.current) {
+      const activeIndex = currentStep - 1;
+      const offset = activeIndex * itemWidth - screenWidth / 2 + itemWidth / 2;
+
+      flatListRef.current.scrollToOffset({
+        offset: Math.max(0, offset),
+        animated: true,
+      });
+    }
+  }, [currentStep, itemWidth, screenWidth]);
+
+  const getItemLayout = (_: any, index: number) => ({
+    length: itemWidth,
+    offset: itemWidth * index,
+    index,
+  });
 
   return (
     <View className="w-full gap-10">
       <FlatList
+        ref={flatListRef}
         data={steps}
         horizontal
+        initialScrollIndex={0}
+        getItemLayout={getItemLayout}
         showsHorizontalScrollIndicator={false}
         alwaysBounceHorizontal={false}
         keyExtractor={(_, i) => String(i)}
         renderItem={({ index }) => (
           <View style={styles.stepWrapper}>
-            <StepIndicator index={index} currentStep={currentStep} />
+            <Pressable onPress={() => onStepPress(index + 1)}>
+              <StepIndicator index={index} currentStep={currentStep} />
+            </Pressable>
             {index < steps.length - 1 && (
               <Separator index={index} currentStep={currentStep} />
             )}
@@ -131,12 +167,12 @@ const styles = StyleSheet.create({
     height: wp(10),
     borderRadius: 9999,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
   },
   stepText: {
     color: 'white',
     fontFamily: 'Kavoon-Regular',
-    fontSize: wp(5),
+    fontSize: wp(6),
   },
   separator: {
     width: wp(8),

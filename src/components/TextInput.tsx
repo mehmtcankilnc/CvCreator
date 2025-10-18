@@ -8,26 +8,25 @@ import {
   TouchableWithoutFeedback,
   KeyboardTypeOptions,
   TextInputProps,
-  BlurEvent,
 } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
 type Props = {
   handleChangeText: (text: string) => void;
-  handleBlur: (e: BlurEvent) => void;
-  value: string;
+  value: string | undefined;
   placeholder: string;
   type?: KeyboardTypeOptions;
   autoCapitalize?: TextInputProps['autoCapitalize'];
+  multiline?: boolean;
 };
 
 export default function TextInput({
   handleChangeText,
-  handleBlur,
   value,
   placeholder,
   type = 'default',
   autoCapitalize = 'sentences',
+  multiline = false,
 }: Props) {
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<RNTextInput>(null);
@@ -51,29 +50,28 @@ export default function TextInput({
   }, [focusAnim, isFocused, value]);
 
   const handleFocus = () => setIsFocused(true);
-  const handleBlurEvent = (e: BlurEvent) => {
-    setIsFocused(false);
-    handleBlur?.(e);
-  };
+  const handleBlur = () => setIsFocused(false);
   return (
-    <View style={{ height: inputHeight }}>
+    <View style={{ minHeight: inputHeight }}>
       <RNTextInput
         ref={inputRef}
         className={`border ${isFocused ? 'border-main' : 'border-borderColor'}`}
         style={{
-          height: inputHeight,
+          minHeight: inputHeight,
           color: 'black',
           paddingLeft: mainPadding,
           paddingRight: mainPadding,
           borderRadius: wp(2),
           fontSize: initialFontSize,
+          textAlignVertical: multiline ? 'top' : 'center',
         }}
         onFocus={handleFocus}
-        onBlur={handleBlurEvent}
+        onBlur={handleBlur}
         onChangeText={handleChangeText}
         value={value}
         autoCapitalize={autoCapitalize}
         keyboardType={type}
+        multiline={multiline}
       />
       <TouchableWithoutFeedback onPress={() => inputRef.current?.focus()}>
         <Animated.View

@@ -6,19 +6,30 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 type Props = {
   handleSubmit: () => void;
   text: string;
-  type?: 'forward' | 'back';
+  type?: 'forward' | 'back' | 'delete' | 'success';
+  isDisabled?: boolean;
 };
 
 export default function Button({
   handleSubmit,
   text,
   type = 'forward',
+  isDisabled = false,
 }: Props) {
   return (
     <Pressable
-      className={`flex-1 items-center justify-center ${
-        type === 'back' ? 'border border-borderColor bg-white' : 'bg-main'
-      }`}
+      disabled={isDisabled}
+      className={`${
+        type === 'forward' || type === 'back' ? 'flex-1' : ''
+      } items-center justify-center ${
+        type === 'back'
+          ? 'border border-borderColor bg-white'
+          : type === 'delete'
+          ? 'bg-rejectColor'
+          : type === 'success'
+          ? 'bg-confirmColor'
+          : 'bg-main'
+      } ${isDisabled ? 'opacity-50' : ''}`}
       style={{ height: wp(12), borderRadius: wp(2) }}
       onPress={handleSubmit}
     >

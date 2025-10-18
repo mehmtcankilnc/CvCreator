@@ -10,7 +10,10 @@ type Props = {
 export default function MyCoverLetters({ navigation }: Props) {
   return (
     <View className="flex-1">
-      <Header handlePress={() => navigation.toggleDrawer()} />
+      <Header
+        handlePress={() => navigation.toggleDrawer()}
+        title="My Cover Letters"
+      />
       <Page>
         <Text>MyCoverLetters</Text>
       </Page>

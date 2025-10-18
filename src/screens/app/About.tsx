@@ -10,7 +10,7 @@ type Props = {
 export default function About({ navigation }: Props) {
   return (
     <View className="flex-1">
-      <Header handlePress={() => navigation.toggleDrawer()} />
+      <Header handlePress={() => navigation.toggleDrawer()} title="About" />
       <Page>
         <Text>About</Text>
       </Page>

@@ -9,6 +9,7 @@ module.exports = {
         borderColor: '#D4D4D4',
         gray: '#585858',
         rejectColor: '#C21D10',
+        confirmColor: '#C2A510',
       },
       fontFamily: {
         kavoon: ['Kavoon-Regular'],
