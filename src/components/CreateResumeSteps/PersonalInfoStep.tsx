@@ -71,9 +71,9 @@ export default function PersonalInfoStep({ handleForward, initial }: Props) {
         />
         <TextInput
           handleChangeText={value =>
-            setPersonalInfo(prev => ({ ...prev, link: value }))
+            setPersonalInfo(prev => ({ ...prev, website: value }))
           }
-          value={personalInfo.link}
+          value={personalInfo.website}
           placeholder="Link"
           autoCapitalize="none"
         />

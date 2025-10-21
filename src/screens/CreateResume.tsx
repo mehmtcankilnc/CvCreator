@@ -27,6 +27,7 @@ import LanguagesInfoStep from '../components/CreateResumeSteps/LanguagesInfoStep
 import ReferencesInfoStep from '../components/CreateResumeSteps/ReferencesInfoStep';
 import EducationsInfoStep from '../components/CreateResumeSteps/EducationsInfoStep';
 import Alert from '../components/Alert';
+import { PostResumeValues } from '../services/ResumeServices';
 
 type Props = {
   navigation: any;
@@ -38,7 +39,7 @@ const INITIAL_RESUME_VALUES: ResumeFormValues = {
     jobTitle: '',
     phoneNumber: '',
     email: '',
-    link: '',
+    website: '',
   },
 };
 
@@ -97,7 +98,7 @@ export default function CreateResume({ navigation }: Props) {
     setFormValues(prev => ({ ...prev, referencesInfo: data }));
   }, []);
 
-  const submitResumeValues = () => {
+  const submitResumeValues = async () => {
     const {
       personalInfo,
       educationsInfo,
@@ -107,6 +108,12 @@ export default function CreateResume({ navigation }: Props) {
       languagesInfo,
       referencesInfo,
     } = formValues;
+
+    try {
+      await PostResumeValues(formValues);
+    } catch (error) {
+      console.error(error);
+    }
 
     if (!personalInfo.fullName.trim() || !personalInfo.email.trim()) {
       setAlertVisible(true);

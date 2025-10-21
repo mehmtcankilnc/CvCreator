@@ -3,7 +3,7 @@ export type PersonalInfo = {
   jobTitle?: string;
   phoneNumber?: string;
   email: string;
-  link?: string;
+  website?: string;
 };
 
 export type SummaryInfo = {
