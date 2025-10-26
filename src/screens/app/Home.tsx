@@ -6,6 +6,7 @@ import Page from '../../components/Page';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Feather from 'react-native-vector-icons/Feather';
 import ListItem from '../../components/ListItem';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Props = {
   navigation: any;
@@ -32,7 +33,7 @@ export default function Home({ navigation }: Props) {
             <View className="flex-1" style={{ gap: wp(3) }}>
               {/** Özgeçmiş Oluştur Butonu */}
               <Pressable
-                className="flex-1 flex-row items-center justify-between bg-[#F6F2DB]"
+                className="flex-1 flex-row items-center justify-between bg-[#F6F2DB] elevation-md"
                 style={{
                   borderRadius: wp(4),
                   paddingHorizontal: wp(5),
@@ -52,7 +53,7 @@ export default function Home({ navigation }: Props) {
               </Pressable>
               {/** Motivasyon Mektubu Oluştur Butonu */}
               <Pressable
-                className="flex-1 flex-row items-center justify-between bg-[#F6DDDB]"
+                className="flex-1 flex-row items-center justify-between bg-[#F6DDDB] elevation-md"
                 style={{
                   borderRadius: wp(4),
                   paddingHorizontal: wp(5),
@@ -73,7 +74,7 @@ export default function Home({ navigation }: Props) {
             </View>
             {/** Şablonlar Butonu */}
             <Pressable
-              className="flex-1 items-center justify-between bg-[#DCDBF6]"
+              className="flex-1 items-center justify-between bg-[#DCDBF6] elevation-md"
               style={{ borderRadius: wp(4), paddingVertical: wp(5) }}
               onPress={() => navigation.navigate('Templates')}
             >
@@ -176,6 +177,13 @@ export default function Home({ navigation }: Props) {
             </View>
           </View>
         </View>
+        <Pressable
+          onPress={async () =>
+            await AsyncStorage.removeItem('hasShowedOnboarding')
+          }
+        >
+          <Text>Onboarding refresh</Text>
+        </Pressable>
       </Page>
     </View>
   );

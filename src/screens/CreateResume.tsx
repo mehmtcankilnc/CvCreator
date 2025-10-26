@@ -318,6 +318,7 @@ export default function CreateResume({ navigation }: Props) {
         <Button
           handleSubmit={stepBack}
           text="Back"
+          style={{ flex: 1 }}
           type="back"
           isDisabled={currentStep === 1}
         />
@@ -325,6 +326,7 @@ export default function CreateResume({ navigation }: Props) {
           handleSubmit={() => {
             currentStep !== 8 ? stepForward() : submitResumeValues();
           }}
+          style={{ flex: 1 }}
           text={currentStep !== 8 ? 'Continue' : 'Submit'}
         />
       </View>

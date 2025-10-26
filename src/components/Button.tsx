@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import { Text, Pressable } from 'react-native';
+import { Text, Pressable, StyleProp, ViewStyle } from 'react-native';
 import React from 'react';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
@@ -8,6 +8,7 @@ type Props = {
   text: string;
   type?: 'forward' | 'back' | 'delete' | 'success';
   isDisabled?: boolean;
+  style?: StyleProp<ViewStyle>;
 };
 
 export default function Button({
@@ -15,13 +16,12 @@ export default function Button({
   text,
   type = 'forward',
   isDisabled = false,
+  style,
 }: Props) {
   return (
     <Pressable
       disabled={isDisabled}
-      className={`${
-        type === 'forward' || type === 'back' ? 'flex-1' : ''
-      } items-center justify-center ${
+      className={`w-full items-center justify-center ${
         type === 'back'
           ? 'border border-borderColor bg-white'
           : type === 'delete'
@@ -30,7 +30,7 @@ export default function Button({
           ? 'bg-confirmColor'
           : 'bg-main'
       } ${isDisabled ? 'opacity-50' : ''}`}
-      style={{ height: wp(12), borderRadius: wp(2) }}
+      style={[{ height: wp(12), borderRadius: wp(2) }, style]}
       onPress={handleSubmit}
     >
       <Text

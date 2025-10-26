@@ -31,7 +31,7 @@ export default function Header({ handlePress, iconName, title }: Props) {
           fontSize: hp(3),
           color: 'white',
           fontFamily: 'Kavoon-Regular',
-          lineHeight: hp(3),
+          lineHeight: hp(3.5),
         }}
       >
         {title || 'Cv Creator'}
