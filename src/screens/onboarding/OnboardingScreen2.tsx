@@ -23,6 +23,8 @@ import {
   isErrorWithCode,
 } from '@react-native-google-signin/google-signin';
 import Alert from '../../components/Alert';
+import { useAppDispatch } from '../../store/hooks';
+import { setAnon, setUser } from '../../store/slices/authSlice';
 
 GoogleSignin.configure({
   webClientId:
@@ -37,6 +39,8 @@ export default function OnboardingScreen2() {
         StackNavigationProp<RootStackParamList>
       >
     >();
+
+  const dispatch = useAppDispatch();
 
   const [isLoading, setIsLoading] = useState(false);
   const [alert, setAlert] = useState({
@@ -70,6 +74,7 @@ export default function OnboardingScreen2() {
       onPress: async () => {
         const { error } = await supabase.auth.signInAnonymously();
         if (error == null) {
+          dispatch(setAnon(true));
           navigateToApp();
         } else {
           console.log(error);
@@ -87,7 +92,7 @@ export default function OnboardingScreen2() {
       const response = await GoogleSignin.signIn();
       console.log(response);
       if (isSuccessResponse(response)) {
-        // setUserInfo(response.data);
+        dispatch(setUser(response.data.user.id));
         setAlertVisible(true);
         setAlert({
           type: 'success',

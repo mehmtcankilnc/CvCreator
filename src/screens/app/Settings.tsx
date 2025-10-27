@@ -11,12 +11,16 @@ import {
 import { supabase } from '../../lib/supabase';
 import GoogleSignInBtn from '../../components/GoogleSignInBtn';
 import Alert from '../../components/Alert';
+import { setUser } from '../../store/slices/authSlice';
+import { useAppDispatch } from '../../store/hooks';
 
 type Props = {
   navigation: any;
 };
 
 export default function Settings({ navigation }: Props) {
+  const dispatch = useAppDispatch();
+
   const [isLinking, setIsLinking] = useState(false);
   const [alert, setAlert] = useState({
     type: 'failure',
@@ -41,7 +45,7 @@ export default function Settings({ navigation }: Props) {
           throw new Error('Google girişi sırasında idToken alınamadı.');
         }
 
-        const { error } = await supabase.auth.signInWithIdToken({
+        const { data, error } = await supabase.auth.signInWithIdToken({
           provider: 'google',
           token: idToken,
         });
@@ -55,6 +59,7 @@ export default function Settings({ navigation }: Props) {
             onPress: () => setAlertVisible(false),
           });
         } else {
+          dispatch(setUser(data.user.id));
           setAlertVisible(true);
           setAlert({
             type: 'success',

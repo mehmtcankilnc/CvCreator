@@ -17,10 +17,13 @@ import MyResumes from '../screens/app/MyResumes';
 import MyCoverLetters from '../screens/app/MyCoverLetters';
 import About from '../screens/app/About';
 import Settings from '../screens/app/Settings';
+import { useAppSelector } from '../store/hooks';
 
 const Drawer = createDrawerNavigator();
 
 export default function DrawerNav() {
+  const isUserAnon = useAppSelector(state => state.auth.isAnonymous);
+
   return (
     <Drawer.Navigator
       initialRouteName="Home"
@@ -51,7 +54,7 @@ export default function DrawerNav() {
               paddingBottom: hp(2),
             }}
           >
-            Cv Creator
+            {isUserAnon ? 'Guest' : 'Hello'}
           </Text>
           <DrawerItemList {...props} />
         </DrawerContentScrollView>
