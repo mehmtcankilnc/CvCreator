@@ -1,5 +1,11 @@
 /* eslint-disable react-native/no-inline-styles */
-import { Text, Pressable, StyleProp, ViewStyle } from 'react-native';
+import {
+  Text,
+  Pressable,
+  StyleProp,
+  ViewStyle,
+  ActivityIndicator,
+} from 'react-native';
 import React from 'react';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
@@ -8,6 +14,7 @@ type Props = {
   text: string;
   type?: 'forward' | 'back' | 'delete' | 'success';
   isDisabled?: boolean;
+  isLoading?: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -16,11 +23,12 @@ export default function Button({
   text,
   type = 'forward',
   isDisabled = false,
+  isLoading = false,
   style,
 }: Props) {
   return (
     <Pressable
-      disabled={isDisabled}
+      disabled={isDisabled || isLoading}
       className={`w-full items-center justify-center ${
         type === 'back'
           ? 'border border-borderColor bg-white'
@@ -29,19 +37,23 @@ export default function Button({
           : type === 'success'
           ? 'bg-confirmColor'
           : 'bg-main'
-      } ${isDisabled ? 'opacity-50' : ''}`}
+      } ${isDisabled || isLoading ? 'opacity-50' : ''}`}
       style={[{ height: wp(12), borderRadius: wp(2) }, style]}
       onPress={handleSubmit}
     >
-      <Text
-        style={{
-          fontFamily: 'Kavoon-Regular',
-          fontSize: wp(4),
-          color: type === 'back' ? '#585858' : 'white',
-        }}
-      >
-        {text}
-      </Text>
+      {isLoading ? (
+        <ActivityIndicator color={type === 'back' ? '#585858' : 'white'} />
+      ) : (
+        <Text
+          style={{
+            fontFamily: 'Kavoon-Regular',
+            fontSize: wp(4),
+            color: type === 'back' ? '#585858' : 'white',
+          }}
+        >
+          {text}
+        </Text>
+      )}
     </Pressable>
   );
 }

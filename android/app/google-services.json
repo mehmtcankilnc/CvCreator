@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "237778058771",
+    "project_id": "cvcreator-476214",
+    "storage_bucket": "cvcreator-476214.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:237778058771:android:6a3421aba1060825bb49e6",
+        "android_client_info": {
+          "package_name": "com.cvcreator"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "237778058771-u8hlj147rr6ejda3s68grh86963d2mjm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cvcreator",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "237778058771-jprkiea07qdldedp5pe4p40b5i7374b2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARPTxGgLtDLWgQCI8BMEbMbCkFmgKWOTM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "237778058771-jprkiea07qdldedp5pe4p40b5i7374b2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

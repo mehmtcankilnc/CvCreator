@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import { View, Text, Image } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   CompositeNavigationProp,
   useNavigation,
@@ -14,6 +14,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Button from '../../components/Button';
 import OnboardingWave from '../../components/OnboardingWave';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { supabase } from '../../lib/supabase';
+import GoogleSignInBtn from '../../components/GoogleSignInBtn';
+import {
+  GoogleSignin,
+  statusCodes,
+  isSuccessResponse,
+  isErrorWithCode,
+} from '@react-native-google-signin/google-signin';
+import Alert from '../../components/Alert';
+
+GoogleSignin.configure({
+  webClientId:
+    '237778058771-jprkiea07qdldedp5pe4p40b5i7374b2.apps.googleusercontent.com',
+});
 
 export default function OnboardingScreen2() {
   const navigation =
@@ -24,7 +38,16 @@ export default function OnboardingScreen2() {
       >
     >();
 
-  const handleGuestLogin = async () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [alert, setAlert] = useState({
+    type: 'failure',
+    title: '',
+    desc: '',
+    onPress: () => {},
+  });
+  const [alertVisible, setAlertVisible] = useState(false);
+
+  const navigateToApp = async () => {
     try {
       await AsyncStorage.setItem('hasShowedOnboarding', 'true');
 
@@ -34,6 +57,97 @@ export default function OnboardingScreen2() {
       });
     } catch (e) {
       console.error('Failed to save onboarding status', e);
+    }
+  };
+
+  const handleGuestSignIn = async () => {
+    setIsLoading(true);
+    setAlertVisible(true);
+    setAlert({
+      type: 'inform',
+      title: 'Continue?',
+      desc: 'Are you sure you want to continue as guest, you can link your account later, whenever you want!',
+      onPress: async () => {
+        const { error } = await supabase.auth.signInAnonymously();
+        if (error == null) {
+          navigateToApp();
+        } else {
+          console.log(error);
+        }
+        setAlertVisible(false);
+      },
+    });
+    setIsLoading(false);
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setIsLoading(true);
+      await GoogleSignin.hasPlayServices();
+      const response = await GoogleSignin.signIn();
+      console.log(response);
+      if (isSuccessResponse(response)) {
+        // setUserInfo(response.data);
+        setAlertVisible(true);
+        setAlert({
+          type: 'success',
+          title: 'Success',
+          desc: 'Signed in successfully! Create your CV, right away!',
+          onPress: () => {
+            navigateToApp();
+            setAlertVisible(false);
+          },
+        });
+      } else {
+        setAlertVisible(true);
+        setAlert({
+          type: 'failure',
+          title: 'Fail',
+          desc: 'Operation was cancelled, try again for signing in via Google.',
+          onPress: () => setAlertVisible(false),
+        });
+      }
+    } catch (error) {
+      if (isErrorWithCode(error)) {
+        switch (error.code) {
+          case statusCodes.IN_PROGRESS:
+            setAlertVisible(true);
+            setAlert({
+              type: 'failure',
+              title: 'Fail',
+              desc: error.message,
+              onPress: () => setAlertVisible(false),
+            });
+            break;
+          case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
+            setAlertVisible(true);
+            setAlert({
+              type: 'failure',
+              title: 'Fail',
+              desc: error.message,
+              onPress: () => setAlertVisible(false),
+            });
+            break;
+          default:
+            setAlertVisible(true);
+            setAlert({
+              type: 'failure',
+              title: 'Fail',
+              desc: error.message,
+              onPress: () => setAlertVisible(false),
+            });
+        }
+      } else {
+        setAlertVisible(true);
+        setAlert({
+          type: 'failure',
+          title: 'Fail',
+          desc: 'Something went wrong.',
+          onPress: () => setAlertVisible(false),
+        });
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -68,17 +182,29 @@ export default function OnboardingScreen2() {
             color: '#585858',
           }}
         >
-          Start creating your CVright away,{'\n'}without login!
+          Start creating your CV right away,{'\n'}without login!
         </Text>
         <View className="w-full" style={{ gap: wp(3) }}>
-          <Button handleSubmit={handleGuestLogin} text="Misafir" />
           <Button
-            type="back"
-            handleSubmit={() => console.log('s')}
-            text="Google"
+            handleSubmit={handleGuestSignIn}
+            text="Guest"
+            isLoading={isLoading}
+          />
+          <GoogleSignInBtn
+            handleGoogle={handleGoogleSignIn}
+            isLoading={isLoading}
           />
         </View>
       </View>
+      {alertVisible && (
+        <Alert
+          visible={alertVisible}
+          title={alert.title}
+          desc={alert.desc}
+          type={alert.type}
+          onPress={alert.onPress}
+        />
+      )}
     </View>
   );
 }
