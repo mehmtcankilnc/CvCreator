@@ -54,6 +54,8 @@ export default function CreateResume({ navigation }: Props) {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const totalSteps = 8;
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [alert, setAlert] = useState({
     type: 'failure',
     title: '',
@@ -108,12 +110,6 @@ export default function CreateResume({ navigation }: Props) {
       languagesInfo,
       referencesInfo,
     } = formValues;
-
-    try {
-      await PostResumeValues(formValues);
-    } catch (error) {
-      console.error(error);
-    }
 
     if (!personalInfo.fullName.trim() || !personalInfo.email.trim()) {
       setAlertVisible(true);
@@ -250,14 +246,22 @@ export default function CreateResume({ navigation }: Props) {
       }
     }
 
+    try {
+      setIsSubmitting(true);
+      await PostResumeValues(formValues);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+
     setAlertVisible(true);
     setAlert({
       type: 'success',
       title: 'Başarılı',
-      desc: 'Özgeçmişiniz oluşturuluyor....',
+      desc: 'Özgeçmişiniz oluşturuldu.',
       onPress: () => setAlertVisible(false),
     });
-    console.log('Doğrulama başarılı. Gönderilen veriler:', formValues);
   };
 
   return (
@@ -328,6 +332,7 @@ export default function CreateResume({ navigation }: Props) {
           }}
           style={{ flex: 1 }}
           text={currentStep !== 8 ? 'Continue' : 'Submit'}
+          isLoading={isSubmitting}
         />
       </View>
       {alertVisible && (

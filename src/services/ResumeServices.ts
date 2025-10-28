@@ -2,13 +2,12 @@ import { ResumeFormValues } from '../types/resumeTypes';
 import RNFS from 'react-native-fs';
 import FileViewer from 'react-native-file-viewer';
 import { Platform } from 'react-native';
+import { API_BASE_URL } from '@env';
 
 export const PostResumeValues = async (resumeData: ResumeFormValues) => {
-  const API_URL = 'https://subjectional-mitchel-nonpolarizing.ngrok-free.dev';
-
   try {
     const response = await fetch(
-      `${API_URL}/api/resumes?templateName=classic`,
+      `${API_BASE_URL}/api/resumes?templateName=classic`,
       {
         method: 'POST',
         headers: {

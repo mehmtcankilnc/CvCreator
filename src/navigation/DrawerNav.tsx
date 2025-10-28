@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
-import { Text } from 'react-native';
+import { Pressable, Text } from 'react-native';
 import React from 'react';
 import {
   createDrawerNavigator,
@@ -23,6 +23,9 @@ const Drawer = createDrawerNavigator();
 
 export default function DrawerNav() {
   const isUserAnon = useAppSelector(state => state.auth.isAnonymous);
+  const username = useAppSelector(state =>
+    state.auth.isAnonymous ? '' : state.auth.userName ?? '',
+  );
 
   return (
     <Drawer.Navigator
@@ -44,18 +47,37 @@ export default function DrawerNav() {
       }}
       drawerContent={props => (
         <DrawerContentScrollView {...props}>
-          <Text
-            style={{
-              fontSize: hp(4),
-              color: 'white',
-              fontFamily: 'Kavoon-Regular',
-              lineHeight: hp(3),
-              textAlign: 'center',
-              paddingBottom: hp(2),
-            }}
-          >
-            {isUserAnon ? 'Guest' : 'Hello'}
-          </Text>
+          {isUserAnon ? (
+            <Pressable onPress={() => props.navigation.navigate('Settings')}>
+              <Text
+                style={{
+                  fontSize: hp(2),
+                  color: 'white',
+                  fontFamily: 'Kavoon-Regular',
+                  lineHeight: hp(5),
+                  textAlign: 'center',
+                  paddingBottom: hp(2),
+                }}
+              >
+                Guest{'\n'}
+                <Text className="underline">Link your account</Text>
+              </Text>
+            </Pressable>
+          ) : (
+            <Text
+              style={{
+                fontSize: hp(2),
+                color: 'white',
+                fontFamily: 'Kavoon-Regular',
+                lineHeight: hp(5),
+                textAlign: 'center',
+                paddingBottom: hp(2),
+              }}
+            >
+              Hello, {username}
+            </Text>
+          )}
+
           <DrawerItemList {...props} />
         </DrawerContentScrollView>
       )}

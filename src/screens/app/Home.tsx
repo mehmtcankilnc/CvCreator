@@ -96,7 +96,7 @@ export default function Home({ navigation }: Props) {
             <View className="flex-row items-center justify-between">
               <Text
                 style={{
-                  fontFamily: 'Kavoon-Regular',
+                  fontWeight: '800',
                   color: '#1810C2',
                   fontSize: wp(5),
                 }}
@@ -114,7 +114,7 @@ export default function Home({ navigation }: Props) {
               >
                 <Text
                   style={{
-                    fontFamily: 'Kavoon-Regular',
+                    fontWeight: '500',
                     color: '#1810C2',
                     fontSize: wp(3),
                   }}
@@ -137,7 +137,7 @@ export default function Home({ navigation }: Props) {
             <View className="flex-row items-center justify-between">
               <Text
                 style={{
-                  fontFamily: 'Kavoon-Regular',
+                  fontWeight: '800',
                   color: '#1810C2',
                   fontSize: wp(5),
                 }}
@@ -155,7 +155,7 @@ export default function Home({ navigation }: Props) {
               >
                 <Text
                   style={{
-                    fontFamily: 'Kavoon-Regular',
+                    fontWeight: '500',
                     color: '#1810C2',
                     fontSize: wp(3),
                   }}

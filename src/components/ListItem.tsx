@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import { View, Text } from 'react-native';
 import React from 'react';
-import Feather from 'react-native-vector-icons/Feather';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
 type Props = {
@@ -12,7 +12,7 @@ type Props = {
 export default function ListItem({ index, title }: Props) {
   return (
     <View
-      className="flex-row items-center justify-between border border-borderColor w-full"
+      className="flex-row items-center justify-between w-full bg-[#fefefe] elevation-md"
       style={{ borderRadius: wp(2), padding: wp(2) }}
     >
       {/** Sayı? ve İsim? */}
@@ -36,7 +36,7 @@ export default function ListItem({ index, title }: Props) {
           <Text
             style={{
               textAlign: 'center',
-              fontFamily: 'Kavoon-Regular',
+              fontWeight: '600',
               color: 'white',
               fontSize: wp(4),
             }}
@@ -49,8 +49,8 @@ export default function ListItem({ index, title }: Props) {
           ellipsizeMode="tail"
           style={{
             flexShrink: 1,
-            fontFamily: 'Kavoon-Regular',
             fontSize: wp(4),
+            fontWeight: '600',
             color: '#585858',
           }}
         >
@@ -58,17 +58,7 @@ export default function ListItem({ index, title }: Props) {
         </Text>
       </View>
       {/** Aksiyonlar */}
-      <View
-        style={{
-          gap: wp(2),
-          flexDirection: 'row',
-          alignItems: 'center',
-        }}
-      >
-        <Feather name="search" size={wp(6)} color="#1810C2" />
-        <Feather name="edit" size={wp(6)} color="#C2A510" />
-        <Feather name="trash-2" size={wp(6)} color="#C21D10" />
-      </View>
+      <MaterialCommunityIcons name="dots-vertical" size={24} color="#585858" />
     </View>
   );
 }

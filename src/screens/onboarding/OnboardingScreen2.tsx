@@ -92,7 +92,12 @@ export default function OnboardingScreen2() {
       const response = await GoogleSignin.signIn();
       console.log(response);
       if (isSuccessResponse(response)) {
-        dispatch(setUser(response.data.user.id));
+        dispatch(
+          setUser({
+            id: response.data.user.id,
+            name: response.data.user.givenName,
+          }),
+        );
         setAlertVisible(true);
         setAlert({
           type: 'success',
@@ -192,8 +197,9 @@ export default function OnboardingScreen2() {
         <View className="w-full" style={{ gap: wp(3) }}>
           <Button
             handleSubmit={handleGuestSignIn}
-            text="Guest"
+            text="Continue as Guest"
             isLoading={isLoading}
+            type="back"
           />
           <GoogleSignInBtn
             handleGoogle={handleGoogleSignIn}
