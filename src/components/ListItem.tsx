@@ -3,6 +3,8 @@ import { View, Text } from 'react-native';
 import React from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { useAppDispatch } from '../store/hooks';
+import { openBottomSheet } from '../store/slices/bottomSheetSlice';
 
 type Props = {
   index: number;
@@ -10,6 +12,20 @@ type Props = {
 };
 
 export default function ListItem({ index, title }: Props) {
+  const dispatch = useAppDispatch();
+
+  const handleOpenPress = () => {
+    dispatch(
+      openBottomSheet({
+        type: 'EXAMPLE_CONTENT',
+        props: {
+          title: 'Test Basligi',
+          itemId: 123,
+        },
+      }),
+    );
+  };
+
   return (
     <View
       className="flex-row items-center justify-between w-full bg-[#fefefe] elevation-md"
@@ -58,7 +74,12 @@ export default function ListItem({ index, title }: Props) {
         </Text>
       </View>
       {/** Aksiyonlar */}
-      <MaterialCommunityIcons name="dots-vertical" size={24} color="#585858" />
+      <MaterialCommunityIcons
+        name="dots-vertical"
+        size={24}
+        color="#585858"
+        onPress={handleOpenPress}
+      />
     </View>
   );
 }
