@@ -43,6 +43,7 @@ export default function OnboardingScreen2() {
   const dispatch = useAppDispatch();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isAlertLoading, setIsAlertLoading] = useState(false);
   const [alert, setAlert] = useState({
     type: 'failure',
     title: '',
@@ -65,24 +66,24 @@ export default function OnboardingScreen2() {
   };
 
   const handleGuestSignIn = async () => {
-    setIsLoading(true);
     setAlertVisible(true);
     setAlert({
       type: 'inform',
       title: 'Continue?',
       desc: 'Are you sure you want to continue as guest, you can link your account later, whenever you want!',
       onPress: async () => {
+        setIsAlertLoading(true);
         const { error } = await supabase.auth.signInAnonymously();
         if (error == null) {
           dispatch(setAnon(true));
           navigateToApp();
         } else {
           console.log(error);
+          setIsAlertLoading(false);
         }
         setAlertVisible(false);
       },
     });
-    setIsLoading(false);
   };
 
   const handleGoogleSignIn = async () => {
@@ -95,7 +96,7 @@ export default function OnboardingScreen2() {
         dispatch(
           setUser({
             id: response.data.user.id,
-            name: response.data.user.givenName,
+            name: response.data.user.name,
           }),
         );
         setAlertVisible(true);
@@ -198,7 +199,6 @@ export default function OnboardingScreen2() {
           <Button
             handleSubmit={handleGuestSignIn}
             text="Continue as Guest"
-            isLoading={isLoading}
             type="back"
           />
           <GoogleSignInBtn
@@ -214,6 +214,7 @@ export default function OnboardingScreen2() {
           desc={alert.desc}
           type={alert.type}
           onPress={alert.onPress}
+          isLoading={isAlertLoading}
         />
       )}
     </View>

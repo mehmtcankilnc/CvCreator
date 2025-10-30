@@ -11,9 +11,17 @@ type Props = {
   desc: string;
   type: string;
   onPress: () => void;
+  isLoading?: boolean;
 };
 
-export default function Alert({ visible, title, desc, type, onPress }: Props) {
+export default function Alert({
+  visible,
+  title,
+  desc,
+  type,
+  onPress,
+  isLoading,
+}: Props) {
   const mainColor =
     type === 'failure' ? '#C21D10' : type === 'inform' ? '#1810C2' : '#C2A510';
   const secondaryColor =
@@ -61,7 +69,7 @@ export default function Alert({ visible, title, desc, type, onPress }: Props) {
           <View>
             <Button
               handleSubmit={onPress}
-              text="Tamam"
+              text="Continue"
               type={
                 type === 'failure'
                   ? 'delete'
@@ -69,6 +77,7 @@ export default function Alert({ visible, title, desc, type, onPress }: Props) {
                   ? 'forward'
                   : 'success'
               }
+              isLoading={isLoading}
             />
           </View>
         </Pressable>

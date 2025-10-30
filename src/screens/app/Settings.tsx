@@ -59,7 +59,9 @@ export default function Settings({ navigation }: Props) {
             onPress: () => setAlertVisible(false),
           });
         } else {
-          dispatch(setUser(data.user.id));
+          dispatch(
+            setUser({ id: data.user.id, name: data.user.user_metadata.name }),
+          );
           setAlertVisible(true);
           setAlert({
             type: 'success',

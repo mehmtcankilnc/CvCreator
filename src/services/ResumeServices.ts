@@ -59,3 +59,21 @@ export const PostResumeValues = async (resumeData: ResumeFormValues) => {
     }
   }
 };
+
+export const GetMyResumes = async (id: string) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/resumes/${id}`, {
+      method: 'GET',
+    });
+
+    if (!response.ok) {
+      console.error('Hata: ', response.status);
+      return;
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('CV çekme hatası: ', error);
+  }
+};
