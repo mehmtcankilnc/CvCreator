@@ -1,6 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export type BottomSheetContentType = 'EXAMPLE_CONTENT';
+export type BottomSheetContentType =
+  | 'EXAMPLE_CONTENT'
+  | 'FILE_SETTINGS'
+  | 'LANGUAGE_SETTINGS';
 
 interface BottomSheetState {
   isOpen: boolean;

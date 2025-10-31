@@ -7,6 +7,7 @@ import {
   closeBottomSheet,
 } from '../store/slices/bottomSheetSlice';
 import ExampleContent from './ExampleContent';
+import FileSettingsContent from './FileSettingsContent';
 import Animated, {
   Extrapolation,
   interpolate,
@@ -17,6 +18,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { scheduleOnRN } from 'react-native-worklets';
+import LanguageSettingsContent from './LanguageSettingsContent';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -36,6 +38,10 @@ const renderContent = (content: any) => {
   switch (type) {
     case 'EXAMPLE_CONTENT':
       return <ExampleContent {...props} />;
+    case 'FILE_SETTINGS':
+      return <FileSettingsContent {...props} />;
+    case 'LANGUAGE_SETTINGS':
+      return <LanguageSettingsContent {...props} />;
     default:
       return null;
   }

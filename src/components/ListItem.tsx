@@ -17,13 +17,24 @@ export default function ListItem({ index, title }: Props) {
   const handleOpenPress = () => {
     dispatch(
       openBottomSheet({
-        type: 'EXAMPLE_CONTENT',
+        type: 'FILE_SETTINGS',
         props: {
-          title: 'Test Basligi',
-          itemId: 123,
+          onShow: handleShow,
+          onEdit: handleEdit,
+          onDelete: handleDelete,
         },
       }),
     );
+  };
+
+  const handleShow = async () => {
+    console.log('show');
+  };
+  const handleEdit = async () => {
+    console.log('edit');
+  };
+  const handleDelete = async () => {
+    console.log('delete');
   };
 
   return (

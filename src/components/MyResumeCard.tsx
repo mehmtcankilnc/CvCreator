@@ -4,6 +4,8 @@ import React from 'react';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Button from './Button';
+import { useAppDispatch } from '../store/hooks';
+import { openBottomSheet } from '../store/slices/bottomSheetSlice';
 
 export type ResumeRespModel = {
   id: string;
@@ -18,7 +20,34 @@ type Props = {
 };
 
 export default function MyResumeCard({ resume }: Props) {
-  const handleDownload = async () => {};
+  const dispatch = useAppDispatch();
+
+  const handleOpenPress = () => {
+    dispatch(
+      openBottomSheet({
+        type: 'FILE_SETTINGS',
+        props: {
+          onShow: handleShow,
+          onEdit: handleEdit,
+          onDelete: handleDelete,
+        },
+      }),
+    );
+  };
+
+  const handleShow = async () => {
+    console.log('show');
+  };
+  const handleEdit = async () => {
+    console.log('edit');
+  };
+  const handleDelete = async () => {
+    console.log('delete');
+  };
+
+  const handleDownload = async () => {
+    console.log('download');
+  };
 
   return (
     <View
@@ -52,6 +81,7 @@ export default function MyResumeCard({ resume }: Props) {
           name="dots-vertical"
           size={24}
           color="#585858"
+          onPress={handleOpenPress}
         />
       </View>
       {/** Tarih bilgileri */}
