@@ -38,6 +38,8 @@ export default function Settings({ navigation }: Props) {
   });
   const [alertVisible, setAlertVisible] = useState(false);
 
+  const color = theme === 'LIGHT' ? 'black' : '#D9D9D9';
+
   const handleAccountLink = async () => {
     if (isLinking) return;
     setIsLinking(true);
@@ -131,16 +133,16 @@ export default function Settings({ navigation }: Props) {
         <View className="w-full" style={{ gap: wp(3) }}>
           {/** Hesap Bilgileri */}
           <View
-            className="w-full bg-[#fefefe] elevation-md"
+            className="w-full bg-secondaryBackground dark:bg-dark-secondaryBackground elevation-md"
             style={{ borderRadius: wp(4), padding: wp(5), gap: wp(3) }}
           >
             <View style={{ gap: wp(1) }}>
               <Text
-                style={{ fontSize: wp(4), color: '#1810C2', fontWeight: '600' }}
+                style={{ fontSize: wp(4), color: '#1954E5', fontWeight: '600' }}
               >
                 Account Information
               </Text>
-              <View className="border-b w-full border-b-borderColor" />
+              <View className="border-b w-full border-b-borderColor dark:border-b-dark-borderColor" />
             </View>
             {isAnonymous ? (
               <GoogleSignInBtn
@@ -155,14 +157,14 @@ export default function Settings({ navigation }: Props) {
                 <MaterialCommunityIcons
                   name="account-outline"
                   size={wp(8)}
-                  color="#585858"
+                  color={color}
                 />
                 <Text
                   style={{
                     fontFamily: 'Kavoon-Regular',
                     fontSize: wp(4.5),
                     fontWeight: '600',
-                    color: '#585858',
+                    color: color,
                   }}
                 >
                   {userName}
@@ -172,16 +174,16 @@ export default function Settings({ navigation }: Props) {
           </View>
           {/** Genel Ayarlar */}
           <View
-            className="w-full bg-[#fefefe] elevation-md"
+            className="w-full bg-secondaryBackground dark:bg-dark-secondaryBackground elevation-md"
             style={{ borderRadius: wp(4), padding: wp(5), gap: wp(3) }}
           >
             <View style={{ gap: wp(1) }}>
               <Text
-                style={{ fontSize: wp(4), color: '#1810C2', fontWeight: '600' }}
+                style={{ fontSize: wp(4), color: '#1954E5', fontWeight: '600' }}
               >
                 General Settings
               </Text>
-              <View className="border-b w-full border-b-borderColor" />
+              <View className="border-b w-full border-b-borderColor dark:border-b-dark-borderColor" />
             </View>
             {/** Tema Değişme */}
             <Pressable
@@ -192,14 +194,14 @@ export default function Settings({ navigation }: Props) {
               <MaterialCommunityIcons
                 name={theme === 'DARK' ? 'lightbulb-outline' : 'lightbulb-on'}
                 size={wp(8)}
-                color="#585858"
+                color={color}
               />
               <Text
                 style={{
                   fontFamily: 'Kavoon-Regular',
                   fontSize: wp(4.5),
                   fontWeight: '600',
-                  color: '#585858',
+                  color: color,
                 }}
               >
                 Switch Theme
@@ -211,13 +213,13 @@ export default function Settings({ navigation }: Props) {
               className="flex-row items-center"
               style={{ gap: wp(3) }}
             >
-              <MaterialCommunityIcons name="web" size={wp(8)} color="#585858" />
+              <MaterialCommunityIcons name="web" size={wp(8)} color={color} />
               <Text
                 style={{
                   fontFamily: 'Kavoon-Regular',
                   fontSize: wp(4.5),
                   fontWeight: '600',
-                  color: '#585858',
+                  color: color,
                 }}
               >
                 Language

@@ -12,7 +12,7 @@ type Props = {
 export default function Page({ children }: Props) {
   return (
     <View
-      className="flex-1 items-center bg-white"
+      className="flex-1 items-center bg-white dark:bg-dark-backgroundColor"
       style={{
         marginTop: -hp(3),
         borderTopRightRadius: hp(3),

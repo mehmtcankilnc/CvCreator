@@ -82,7 +82,9 @@ export default function MyResumes({ navigation }: Props) {
         title="My Resumes"
       />
       <Page>
-        <View className="flex-1 w-full">{renderContent()}</View>
+        <View className="flex-1 w-full" style={{ marginBottom: wp(5) }}>
+          {renderContent()}
+        </View>
       </Page>
     </View>
   );

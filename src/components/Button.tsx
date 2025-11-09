@@ -31,7 +31,7 @@ export default function Button({
       disabled={isDisabled || isLoading}
       className={`w-full items-center justify-center ${
         type === 'back'
-          ? 'border border-borderColor bg-white'
+          ? 'border border-borderColor dark:border-transparent bg-white dark:bg-dark-secondaryBackground'
           : type === 'delete'
           ? 'bg-rejectColor'
           : type === 'success'
@@ -45,10 +45,12 @@ export default function Button({
         <ActivityIndicator color={type === 'back' ? '#585858' : 'white'} />
       ) : (
         <Text
+          className={`${
+            type === 'back' ? 'color-[#585858]' : 'color-white'
+          } dark:color-dark-textColor`}
           style={{
             fontFamily: 'Kavoon-Regular',
             fontSize: wp(4),
-            color: type === 'back' ? '#585858' : 'white',
           }}
         >
           {text}

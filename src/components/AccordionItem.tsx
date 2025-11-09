@@ -8,6 +8,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { useAppSelector } from '../store/hooks';
 
 if (
   Platform.OS === 'android' &&
@@ -29,6 +30,9 @@ export default function AccordionItem({
   title,
   children,
 }: AccordionItemProps) {
+  const { theme } = useAppSelector(state => state.theme);
+  const iconColor = theme === 'LIGHT' ? '#585858' : '#D4D4D4';
+
   const contentHeight = useSharedValue(0);
 
   const heightAnimationStyle = useAnimatedStyle(() => ({
@@ -36,17 +40,17 @@ export default function AccordionItem({
   }));
 
   return (
-    <View className="w-full border border-borderColor rounded-xl overflow-hidden">
+    <View className="w-full border border-borderColor dark:border-dark-borderColor rounded-xl overflow-hidden">
       <Pressable
         onPress={onToggle}
         className="flex-row items-center justify-between w-full"
         style={{ paddingHorizontal: wp(5), paddingVertical: wp(3) }}
       >
         <Text
+          className="color-textColor dark:color-dark-textColor"
           style={{
             fontFamily: 'Kavoon-Regular',
             fontSize: wp(4),
-            color: '#585858',
           }}
         >
           {title}
@@ -54,7 +58,7 @@ export default function AccordionItem({
         <Ionicons
           name={isActive ? 'chevron-up' : 'chevron-down'}
           size={20}
-          color="#585858"
+          color={iconColor}
         />
       </Pressable>
       <Animated.View style={heightAnimationStyle}>

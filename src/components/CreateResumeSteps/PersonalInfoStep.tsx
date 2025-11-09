@@ -25,10 +25,10 @@ export default function PersonalInfoStep({ handleForward, initial }: Props) {
   return (
     <View style={{ gap: wp(3) }} className="w-full">
       <Text
+        className="color-textColor dark:color-dark-textColor"
         style={{
           fontFamily: 'Kavoon-Regular',
           textAlign: 'center',
-          color: '#585858',
           fontSize: wp(4),
           marginBottom: wp(3),
         }}

@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import React, { Children, ReactNode, useEffect, useRef } from 'react';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { useAppSelector } from '../store/hooks';
 
 type Props = {
   children: ReactNode;
@@ -23,6 +24,11 @@ export default function MultiStepForm({
   currentStep,
   onStepPress,
 }: Props) {
+  const { theme } = useAppSelector(state => state.theme);
+
+  const inActiveColor = theme === 'LIGHT' ? '#D4D4D4' : '#5D5D5D';
+  const textColor = theme === 'LIGHT' ? 'white' : '#D9D9D9';
+
   const steps = Children.toArray(children);
   const active = steps[currentStep - 1] ?? null;
   const flatListRef = useRef<FlatList>(null);
@@ -64,10 +70,19 @@ export default function MultiStepForm({
         renderItem={({ index }) => (
           <View style={styles.stepWrapper}>
             <Pressable onPress={() => onStepPress(index + 1)}>
-              <StepIndicator index={index} currentStep={currentStep} />
+              <StepIndicator
+                index={index}
+                currentStep={currentStep}
+                inActiveColor={inActiveColor}
+                textColor={textColor}
+              />
             </Pressable>
             {index < steps.length - 1 && (
-              <Separator index={index} currentStep={currentStep} />
+              <Separator
+                index={index}
+                currentStep={currentStep}
+                inActiveColor={inActiveColor}
+              />
             )}
           </View>
         )}
@@ -82,9 +97,13 @@ export default function MultiStepForm({
 const StepIndicator = ({
   index,
   currentStep,
+  inActiveColor,
+  textColor,
 }: {
   index: number;
   currentStep: number;
+  inActiveColor: string;
+  textColor: string;
 }) => {
   const isActive = index < currentStep;
   const isCurrent = index === currentStep - 1;
@@ -103,12 +122,12 @@ const StepIndicator = ({
 
   const backgroundColor = anim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['#D4D4D4', '#1810C2'],
+    outputRange: [inActiveColor, '#1954E5'],
   });
 
   return (
     <Animated.View style={[styles.stepContainer, { backgroundColor }]}>
-      <Text style={styles.stepText}>{index + 1}</Text>
+      <Text style={[styles.stepText, { color: textColor }]}>{index + 1}</Text>
     </Animated.View>
   );
 };
@@ -116,9 +135,11 @@ const StepIndicator = ({
 const Separator = ({
   index,
   currentStep,
+  inActiveColor,
 }: {
   index: number;
   currentStep: number;
+  inActiveColor: string;
 }) => {
   const isPassed = index < currentStep - 1;
   const anim = useRef(new Animated.Value(0)).current;
@@ -134,7 +155,7 @@ const Separator = ({
 
   const backgroundColor = anim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['#D4D4D4', '#1810C2'],
+    outputRange: [inActiveColor, '#1954E5'],
   });
 
   const animatedWidth = anim.interpolate({
@@ -143,7 +164,7 @@ const Separator = ({
   });
 
   return (
-    <View style={[styles.separator, { backgroundColor: '#D4D4D4' }]}>
+    <View style={[styles.separator, { backgroundColor: inActiveColor }]}>
       <Animated.View
         style={{ height: '100%', width: animatedWidth, backgroundColor }}
       />
@@ -170,7 +191,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   stepText: {
-    color: 'white',
     fontFamily: 'Kavoon-Regular',
     fontSize: wp(6),
   },

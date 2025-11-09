@@ -3,7 +3,7 @@ import { View, Text } from 'react-native';
 import React from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { useAppDispatch } from '../store/hooks';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { openBottomSheet } from '../store/slices/bottomSheetSlice';
 
 type Props = {
@@ -13,6 +13,7 @@ type Props = {
 
 export default function ListItem({ index, title }: Props) {
   const dispatch = useAppDispatch();
+  const { theme } = useAppSelector(state => state.theme);
 
   const handleOpenPress = () => {
     dispatch(
@@ -37,9 +38,11 @@ export default function ListItem({ index, title }: Props) {
     console.log('delete');
   };
 
+  const iconColor = theme === 'LIGHT' ? '#585858' : '#D9D9D9';
+
   return (
     <View
-      className="flex-row items-center justify-between w-full bg-[#fefefe] elevation-md"
+      className="flex-row items-center justify-between w-full bg-secondaryBackground dark:bg-dark-secondaryBackground elevation-md"
       style={{ borderRadius: wp(2), padding: wp(2) }}
     >
       {/** Sayı? ve İsim? */}
@@ -52,19 +55,19 @@ export default function ListItem({ index, title }: Props) {
         }}
       >
         <View
+          className="bg-main"
           style={{
             padding: wp(1),
-            backgroundColor: '#1810C2',
             borderRadius: 9999,
             width: wp(8),
             height: wp(8),
           }}
         >
           <Text
+            className="color-dark-textColor"
             style={{
               textAlign: 'center',
               fontWeight: '600',
-              color: 'white',
               fontSize: wp(4),
             }}
           >
@@ -72,13 +75,13 @@ export default function ListItem({ index, title }: Props) {
           </Text>
         </View>
         <Text
+          className="color-textColor dark:color-dark-textColor"
           numberOfLines={1}
           ellipsizeMode="tail"
           style={{
             flexShrink: 1,
             fontSize: wp(4),
             fontWeight: '600',
-            color: '#585858',
           }}
         >
           {title}
@@ -88,7 +91,7 @@ export default function ListItem({ index, title }: Props) {
       <MaterialCommunityIcons
         name="dots-vertical"
         size={24}
-        color="#585858"
+        color={iconColor}
         onPress={handleOpenPress}
       />
     </View>

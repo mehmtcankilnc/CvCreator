@@ -112,10 +112,10 @@ export default function EducationsInfoStep({ initial, handleForward }: Props) {
       className="w-full"
     >
       <Text
+        className="color-textColor dark:color-dark-textColor"
         style={{
           fontFamily: 'Kavoon-Regular',
           textAlign: 'center',
-          color: '#585858',
           fontSize: wp(4),
           marginBottom: wp(3),
         }}
@@ -135,25 +135,24 @@ export default function EducationsInfoStep({ initial, handleForward }: Props) {
           >
             <Pressable
               onPress={() => handleInputChange(i, 'isCurrent', !edu.isCurrent)}
-              className="flex-row items-center justify-center"
+              className={`flex-row items-center justify-center border-borderColor dark:border-dark-borderColor`}
               style={{
                 width: wp(5),
                 height: wp(5),
                 borderRadius: wp(1.5),
-                backgroundColor: edu.isCurrent ? '#4F46E5' : 'transparent',
+                backgroundColor: edu.isCurrent ? '#1954E5' : 'transparent',
                 borderWidth: edu.isCurrent ? 0 : 1,
-                borderColor: '#D1D5DB',
               }}
             >
               {edu.isCurrent && (
-                <Ionicons name="checkmark" size={wp(4)} color="white" />
+                <Ionicons name="checkmark" size={wp(4)} color="#D9D9D9" />
               )}
             </Pressable>
             <Text
+              className="color-textColor dark:color-dark-textColor"
               style={{
                 fontFamily: 'Kavoon-Regular',
                 fontSize: wp(3),
-                color: '#585858',
               }}
             >
               Present
@@ -184,11 +183,10 @@ export default function EducationsInfoStep({ initial, handleForward }: Props) {
             <View className="flex-1">
               {edu.isCurrent ? (
                 <Text
-                  className="text-center"
+                  className="text-center color-textColor dark:color-dark-textColor"
                   style={{
                     fontFamily: 'Kavoon-Regular',
                     fontSize: wp(4),
-                    color: '#585858',
                   }}
                 >
                   - Present

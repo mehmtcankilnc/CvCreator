@@ -28,6 +28,9 @@ import ReferencesInfoStep from '../components/CreateResumeSteps/ReferencesInfoSt
 import EducationsInfoStep from '../components/CreateResumeSteps/EducationsInfoStep';
 import Alert from '../components/Alert';
 import { PostResumeValues } from '../services/ResumeServices';
+import TemplateSelectStep from '../components/CreateResumeSteps/TemplateSelectStep';
+import { resumeTemplatesData } from '../data/resumeTemplatesData';
+import { useAppSelector } from '../store/hooks';
 
 type Props = {
   navigation: any;
@@ -47,12 +50,15 @@ const { width: screenWidth } = Dimensions.get('window');
 const isSmallScreen = screenWidth < 375;
 
 export default function CreateResume({ navigation }: Props) {
+  const { userId } = useAppSelector(state => state.auth);
+
   const [formValues, setFormValues] = useState<ResumeFormValues>(
     INITIAL_RESUME_VALUES,
   );
+  const [selectedTemplateIndex, setSelectedTemplateIndex] = useState(0);
 
   const [currentStep, setCurrentStep] = useState<number>(1);
-  const totalSteps = 8;
+  const totalSteps = 9;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -248,7 +254,11 @@ export default function CreateResume({ navigation }: Props) {
 
     try {
       setIsSubmitting(true);
-      await PostResumeValues(formValues);
+      await PostResumeValues(
+        formValues,
+        resumeTemplatesData[selectedTemplateIndex].name,
+        userId,
+      );
     } catch (error) {
       console.error(error);
     } finally {
@@ -312,12 +322,16 @@ export default function CreateResume({ navigation }: Props) {
               initial={formValues.referencesInfo ?? []}
               handleForward={handleReferencesUpdate}
             />
+            <TemplateSelectStep
+              initial={resumeTemplatesData[selectedTemplateIndex]}
+              handleForward={index => setSelectedTemplateIndex(index)}
+            />
           </MultiStepForm>
         </KeyboardAwareScrollView>
       </Page>
       <View
-        className="w-full flex-row bg-white"
-        style={{ gap: wp(3), paddingHorizontal: wp(5) }}
+        className="w-full flex-row bg-backgroundColor dark:bg-dark-backgroundColor"
+        style={{ gap: wp(3), paddingHorizontal: wp(5), paddingBottom: wp(5) }}
       >
         <Button
           handleSubmit={stepBack}
@@ -328,10 +342,10 @@ export default function CreateResume({ navigation }: Props) {
         />
         <Button
           handleSubmit={() => {
-            currentStep !== 8 ? stepForward() : submitResumeValues();
+            currentStep !== 9 ? stepForward() : submitResumeValues();
           }}
           style={{ flex: 1 }}
-          text={currentStep !== 8 ? 'Continue' : 'Submit'}
+          text={currentStep !== 9 ? 'Continue' : 'Submit'}
           isLoading={isSubmitting}
         />
       </View>

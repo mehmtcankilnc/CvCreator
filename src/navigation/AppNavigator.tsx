@@ -17,7 +17,8 @@ const Stack = createStackNavigator<RootStackParamList>();
 export default function AppNavigator() {
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: 'white' }}
+      className="bg-backgroundColor dark:bg-dark-backgroundColor"
+      style={{ flex: 1 }}
       edges={['bottom', 'left', 'right']}
     >
       <NavigationContainer>

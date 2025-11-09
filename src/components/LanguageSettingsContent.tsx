@@ -28,11 +28,11 @@ export default function LanguageSettingsContent({ onSelect }: Props) {
               disabled={lang === item.flag}
             >
               <Text
+                className="text-textColor dark:text-dark-textColor"
                 style={{
                   fontFamily: 'Kavoon-Regular',
                   fontSize: wp(5),
                   fontWeight: '600',
-                  color: '#585858',
                 }}
               >
                 {item.name}
@@ -41,7 +41,7 @@ export default function LanguageSettingsContent({ onSelect }: Props) {
                 <MaterialCommunityIcons
                   name="check-circle"
                   size={wp(8)}
-                  color="#1810C2"
+                  color="#1954E5"
                 />
               )}
             </Pressable>
@@ -49,7 +49,7 @@ export default function LanguageSettingsContent({ onSelect }: Props) {
         />
       )}
 
-      <View className="border-b w-full border-b-borderColor" />
+      <View className="border-b w-full border-b-borderColor dark:border-b-dark-borderColor" />
     </View>
   );
 }

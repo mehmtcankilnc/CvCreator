@@ -4,10 +4,15 @@ import FileViewer from 'react-native-file-viewer';
 import { Platform } from 'react-native';
 import { API_BASE_URL } from '@env';
 
-export const PostResumeValues = async (resumeData: ResumeFormValues) => {
+export const PostResumeValues = async (
+  resumeData: ResumeFormValues,
+  templateName: string,
+  userId: string | null,
+) => {
   try {
+    console.log(userId);
     const response = await fetch(
-      `${API_BASE_URL}/api/resumes?templateName=classic`,
+      `${API_BASE_URL}/api/resumes?templateName=${templateName}&userId=${userId}`,
       {
         method: 'POST',
         headers: {
@@ -18,9 +23,11 @@ export const PostResumeValues = async (resumeData: ResumeFormValues) => {
       },
     );
 
+    console.log(response);
+
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'PDF oluşturulamadı');
+      throw new Error(errorData || 'PDF oluşturulamadı');
     }
 
     const pdfBlob = await response.blob();
@@ -67,7 +74,7 @@ export const GetMyResumes = async (id: string) => {
     });
 
     if (!response.ok) {
-      console.error('Hata: ', response.status);
+      console.error('Hata: ', response);
       return;
     }
 

@@ -6,6 +6,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import { useAppSelector } from '../store/hooks';
 
 type Props = {
   handlePress: () => void;
@@ -14,6 +15,10 @@ type Props = {
 };
 
 export default function Header({ handlePress, iconName, title }: Props) {
+  const { theme } = useAppSelector(state => state.theme);
+
+  const iconColor = theme === 'LIGHT' ? 'white' : '#D9D9D9';
+
   return (
     <View
       className="flex-row bg-main items-center justify-center"
@@ -21,15 +26,15 @@ export default function Header({ handlePress, iconName, title }: Props) {
     >
       <Ionicons
         name={iconName || 'menu'}
-        color="white"
         size={hp(4)}
+        color={iconColor}
         style={{ left: wp(3), position: 'absolute' }}
         onPress={handlePress}
       />
       <Text
+        className="text-white dark:text-dark-textColor"
         style={{
           fontSize: hp(3),
-          color: 'white',
           fontFamily: 'Kavoon-Regular',
           lineHeight: hp(3.5),
         }}

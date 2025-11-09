@@ -10,6 +10,7 @@ import {
   TextInputProps,
 } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { useAppSelector } from '../store/hooks';
 
 type Props = {
   handleChangeText: (text: string) => void;
@@ -28,6 +29,10 @@ export default function TextInput({
   autoCapitalize = 'sentences',
   multiline = false,
 }: Props) {
+  const { theme } = useAppSelector(state => state.theme);
+
+  const inputColor = theme === 'LIGHT' ? 'black' : '#D9D9D9';
+
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<RNTextInput>(null);
   const focusAnim = useRef(new Animated.Value(0)).current;
@@ -55,10 +60,14 @@ export default function TextInput({
     <View style={{ minHeight: inputHeight }}>
       <RNTextInput
         ref={inputRef}
-        className={`border ${isFocused ? 'border-main' : 'border-borderColor'}`}
+        className={`border ${
+          isFocused
+            ? 'border-main'
+            : 'border-borderColor dark:border-dark-borderColor'
+        }`}
         style={{
           minHeight: inputHeight,
-          color: 'black',
+          color: inputColor,
           paddingLeft: mainPadding,
           paddingRight: mainPadding,
           borderRadius: wp(2),
@@ -75,7 +84,7 @@ export default function TextInput({
       />
       <TouchableWithoutFeedback onPress={() => inputRef.current?.focus()}>
         <Animated.View
-          className="absolute bg-white px-1"
+          className="absolute bg-backgroundColor dark:bg-dark-backgroundColor px-1"
           style={{
             top: focusAnim.interpolate({
               inputRange: [0, 1],
@@ -92,6 +101,7 @@ export default function TextInput({
         >
           <Animated.Text
             className={`${isFocused ? 'color-main' : 'color-borderColor'}`}
+            numberOfLines={1}
             style={{
               fontSize: focusAnim.interpolate({
                 inputRange: [0, 1],

@@ -26,19 +26,23 @@ export default function DrawerNav() {
   const username = useAppSelector(state =>
     state.auth.isAnonymous ? '' : state.auth.userName ?? '',
   );
+  const theme = useAppSelector(state => state.theme.theme);
+
+  const mainBackgroundColor = theme === 'LIGHT' ? 'white' : '#0F181F';
+  const activeColor = theme === 'LIGHT' ? '#1954E5' : '#D9D9D9';
 
   return (
     <Drawer.Navigator
       initialRouteName="Home"
       screenOptions={{
         headerShown: false,
-        drawerActiveBackgroundColor: 'white',
-        drawerActiveTintColor: '#1810C2',
-        drawerInactiveBackgroundColor: '#1810C2',
-        drawerInactiveTintColor: 'white',
+        drawerActiveBackgroundColor: mainBackgroundColor,
+        drawerActiveTintColor: activeColor,
+        drawerInactiveBackgroundColor: '#1954E5',
+        drawerInactiveTintColor: mainBackgroundColor,
         drawerType: 'slide',
         drawerStyle: {
-          backgroundColor: '#1810C2',
+          backgroundColor: '#1954E5',
         },
         drawerLabelStyle: {
           fontSize: wp(5),
@@ -52,7 +56,7 @@ export default function DrawerNav() {
               <Text
                 style={{
                   fontSize: hp(2),
-                  color: 'white',
+                  color: mainBackgroundColor,
                   fontFamily: 'Kavoon-Regular',
                   lineHeight: hp(5),
                   textAlign: 'center',
@@ -67,7 +71,7 @@ export default function DrawerNav() {
             <Text
               style={{
                 fontSize: hp(2),
-                color: 'white',
+                color: mainBackgroundColor,
                 fontFamily: 'Kavoon-Regular',
                 lineHeight: hp(5),
                 textAlign: 'center',
@@ -88,7 +92,7 @@ export default function DrawerNav() {
             <Ionicons
               name="home-outline"
               size={wp(6)}
-              color={focused ? '#1810C2' : 'white'}
+              color={focused ? activeColor : mainBackgroundColor}
             />
           ),
           drawerLabel: 'Home',
@@ -102,7 +106,7 @@ export default function DrawerNav() {
             <Ionicons
               name="folder-open-outline"
               size={wp(6)}
-              color={focused ? '#1810C2' : 'white'}
+              color={focused ? activeColor : mainBackgroundColor}
             />
           ),
           drawerLabel: 'My Resumes',
@@ -116,7 +120,7 @@ export default function DrawerNav() {
             <Ionicons
               name="newspaper-outline"
               size={wp(6)}
-              color={focused ? '#1810C2' : 'white'}
+              color={focused ? activeColor : mainBackgroundColor}
             />
           ),
           drawerLabel: 'My Cover Letters',
@@ -130,7 +134,7 @@ export default function DrawerNav() {
             <Ionicons
               name="settings-outline"
               size={wp(6)}
-              color={focused ? '#1810C2' : 'white'}
+              color={focused ? activeColor : mainBackgroundColor}
             />
           ),
           drawerLabel: 'Settings',
@@ -144,7 +148,7 @@ export default function DrawerNav() {
             <Ionicons
               name="information-circle-outline"
               size={wp(6)}
-              color={focused ? '#1810C2' : 'white'}
+              color={focused ? activeColor : mainBackgroundColor}
             />
           ),
           drawerLabel: 'About',

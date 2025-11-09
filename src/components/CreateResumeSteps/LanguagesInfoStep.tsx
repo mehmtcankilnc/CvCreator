@@ -89,10 +89,10 @@ export default function LanguagesInfoStep({ initial, handleForward }: Props) {
       className="w-full"
     >
       <Text
+        className="color-textColor dark:color-dark-textColor"
         style={{
           fontFamily: 'Kavoon-Regular',
           textAlign: 'center',
-          color: '#585858',
           fontSize: wp(4),
           marginBottom: wp(3),
         }}

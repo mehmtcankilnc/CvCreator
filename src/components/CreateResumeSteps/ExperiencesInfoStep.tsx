@@ -1,11 +1,18 @@
 /* eslint-disable react-native/no-inline-styles */
-import { View, Text, ScrollView, LayoutAnimation } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  LayoutAnimation,
+  Pressable,
+} from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import { ExperienceInfo } from '../../types/resumeTypes';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Button from '../Button';
 import AccordionItem from '../AccordionItem';
 import TextInput from '../TextInput';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 type Props = {
   initial: Array<ExperienceInfo>;
@@ -94,10 +101,10 @@ export default function ExperiencesInfoStep({ initial, handleForward }: Props) {
       className="w-full"
     >
       <Text
+        className="color-textColor dark:color-dark-textColor"
         style={{
           fontFamily: 'Kavoon-Regular',
           textAlign: 'center',
-          color: '#585858',
           fontSize: wp(4),
           marginBottom: wp(3),
         }}
@@ -111,6 +118,35 @@ export default function ExperiencesInfoStep({ initial, handleForward }: Props) {
           onToggle={() => handleToggle(i)}
           title={exp.title || `Experience #${i + 1}`}
         >
+          <View
+            className="flex-row justify-end items-center"
+            style={{ gap: wp(2) }}
+          >
+            <Pressable
+              onPress={() => handleInputChange(i, 'isCurrent', !exp.isCurrent)}
+              className={`flex-row items-center justify-center border-borderColor dark:border-dark-borderColor`}
+              style={{
+                width: wp(5),
+                height: wp(5),
+                borderRadius: wp(1.5),
+                backgroundColor: exp.isCurrent ? '#1954E5' : 'transparent',
+                borderWidth: exp.isCurrent ? 0 : 1,
+              }}
+            >
+              {exp.isCurrent && (
+                <Ionicons name="checkmark" size={wp(4)} color="#D9D9D9" />
+              )}
+            </Pressable>
+            <Text
+              className="color-textColor dark:color-dark-textColor"
+              style={{
+                fontFamily: 'Kavoon-Regular',
+                fontSize: wp(3),
+              }}
+            >
+              Present
+            </Text>
+          </View>
           <TextInput
             handleChangeText={value => handleInputChange(i, 'title', value)}
             value={exp.title}
@@ -123,7 +159,7 @@ export default function ExperiencesInfoStep({ initial, handleForward }: Props) {
             placeholder="Company"
             autoCapitalize="words"
           />
-          <View className="flex-row" style={{ gap: wp(3) }}>
+          <View className="flex-row items-center" style={{ gap: wp(3) }}>
             <View className="flex-1">
               <TextInput
                 handleChangeText={value =>
@@ -134,13 +170,25 @@ export default function ExperiencesInfoStep({ initial, handleForward }: Props) {
               />
             </View>
             <View className="flex-1">
-              <TextInput
-                handleChangeText={value =>
-                  handleInputChange(i, 'endDate', value)
-                }
-                value={exp.endDate}
-                placeholder="End Date"
-              />
+              {exp.isCurrent ? (
+                <Text
+                  className="text-center color-textColor dark:color-dark-textColor"
+                  style={{
+                    fontFamily: 'Kavoon-Regular',
+                    fontSize: wp(4),
+                  }}
+                >
+                  - Present
+                </Text>
+              ) : (
+                <TextInput
+                  handleChangeText={value =>
+                    handleInputChange(i, 'endDate', value)
+                  }
+                  value={exp.endDate}
+                  placeholder="End Date"
+                />
+              )}
             </View>
           </View>
           <TextInput
