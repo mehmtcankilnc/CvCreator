@@ -1,13 +1,73 @@
 /* eslint-disable react-native/no-inline-styles */
-import { ScrollView, Text, View, Pressable } from 'react-native';
-import React from 'react';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {
+  ScrollView,
+  Text,
+  View,
+  Pressable,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
+import React, { useState } from 'react';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 import { ResumeTemplate } from '../../types/resumeTemplates';
+import Icon from 'react-native-vector-icons/Feather';
 import { resumeTemplatesData } from '../../data/resumeTemplatesData';
 
 type Props = {
   initial: ResumeTemplate;
   handleForward: (index: number) => void;
+};
+
+const TemplateCard = ({
+  template,
+  isSelected,
+  onPress,
+}: {
+  template: ResumeTemplate;
+  isSelected: boolean;
+  onPress: () => void;
+}) => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  return (
+    <Pressable
+      onPress={onPress}
+      className={`border items-center justify-center ${
+        isSelected
+          ? 'border-main'
+          : 'border-borderColor dark:border-dark-borderColor'
+      }`}
+      style={{
+        width: wp(43),
+        height: hp(25),
+        borderRadius: wp(3),
+        overflow: 'hidden',
+      }}
+    >
+      {isLoading && <ActivityIndicator size="large" color="#4285F4" />}
+      <Image
+        source={template.img}
+        className="absolute w-full h-full"
+        resizeMode="contain"
+        onLoadEnd={() => setIsLoading(false)}
+        style={{ marginBottom: wp(4) }}
+      />
+      <Text className="absolute font-medium w-full text-center bottom-0 capitalize text-textColor dark:text-dark-textColor">
+        {template.name}
+      </Text>
+      {isSelected && (
+        <View
+          className="absolute bg-main rounded-full items-center justify-center"
+          style={{ width: wp(7), height: wp(7), top: wp(2), right: wp(2) }}
+        >
+          <Icon name="check" size={wp(5)} color="white" />
+        </View>
+      )}
+    </Pressable>
+  );
 };
 
 export default function TemplateSelectStep({ initial, handleForward }: Props) {
@@ -28,20 +88,17 @@ export default function TemplateSelectStep({ initial, handleForward }: Props) {
       >
         Choose a Resume Template
       </Text>
-      <View className="flex-row" style={{ gap: wp(5) }}>
+      <View
+        className="flex-row flex-wrap"
+        style={{ columnGap: wp(4), rowGap: wp(5) }}
+      >
         {resumeTemplatesData.map(template => (
-          <Pressable
-            onPress={() => handleForward(template.id)}
+          <TemplateCard
             key={template.id}
-            className={`flex-1 border ${
-              initial.id === template.id
-                ? 'border-main'
-                : 'border-borderColor dark:border-dark-borderColor'
-            }`}
-            style={{ height: wp(50), borderRadius: wp(3) }}
-          >
-            <Text>{template.name}</Text>
-          </Pressable>
+            template={template}
+            isSelected={initial.id === template.id}
+            onPress={() => handleForward(template.id)}
+          />
         ))}
       </View>
     </ScrollView>
