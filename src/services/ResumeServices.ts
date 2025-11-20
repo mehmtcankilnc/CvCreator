@@ -1,61 +1,41 @@
 import { ResumeFormValues } from '../types/resumeTypes';
-import RNFS from 'react-native-fs';
-import FileViewer from 'react-native-file-viewer';
-import { Platform } from 'react-native';
 import { API_BASE_URL } from '@env';
+import { supabase } from '../lib/supabase';
 
 export const PostResumeValues = async (
   resumeData: ResumeFormValues,
   templateName: string,
-  userId: string | null,
 ) => {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  const headers: HeadersInit_ = {
+    'Content-Type': 'application/json',
+    Accept: 'application/pdf',
+  };
+
+  if (session?.access_token) {
+    // eslint-disable-next-line dot-notation
+    headers['Authorization'] = `Bearer ${session.access_token}`;
+  }
+
   try {
-    console.log(userId);
     const response = await fetch(
-      `${API_BASE_URL}/api/resumes?templateName=${templateName}&userId=${userId}`,
+      `http://192.168.1.103:5128/api/resumes?templateName=${templateName}`,
       {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/pdf',
-        },
+        headers: headers,
         body: JSON.stringify(resumeData),
       },
     );
 
-    console.log(response);
-
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData || 'PDF oluşturulamadı');
+    } else {
+      return response;
     }
-
-    const pdfBlob = await response.blob();
-
-    const reader = new FileReader();
-    reader.readAsDataURL(pdfBlob);
-
-    const base64Data = await new Promise<string>((resolve, reject) => {
-      reader.onloadend = () => {
-        const base64 = (reader.result as string).split(',')[1];
-        resolve(base64);
-      };
-      reader.onerror = error => {
-        reject(error);
-      };
-    });
-
-    const fileName = 'ozgecmis.pdf';
-    const path = Platform.select({
-      android: `${RNFS.DownloadDirectoryPath}/${fileName}`,
-      ios: `${RNFS.TemporaryDirectoryPath}/${fileName}`,
-    }) as string;
-
-    await RNFS.writeFile(path, base64Data, 'base64');
-
-    console.log(`Dosya başarıyla şuraya kaydedildi: ${path}`);
-
-    await FileViewer.open(path);
   } catch (error) {
     console.error('CV post etme hatası: ', error);
 

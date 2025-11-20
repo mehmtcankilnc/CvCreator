@@ -30,7 +30,7 @@ import Alert from '../components/Alert';
 import { PostResumeValues } from '../services/ResumeServices';
 import TemplateSelectStep from '../components/CreateResumeSteps/TemplateSelectStep';
 import { resumeTemplatesData } from '../data/resumeTemplatesData';
-import { useAppSelector } from '../store/hooks';
+import CreatedInfoModal from '../components/CreatedInfoModal';
 
 type Props = {
   navigation: any;
@@ -50,8 +50,6 @@ const { width: screenWidth } = Dimensions.get('window');
 const isSmallScreen = screenWidth < 375;
 
 export default function CreateResume({ navigation }: Props) {
-  const { userId } = useAppSelector(state => state.auth);
-
   const [formValues, setFormValues] = useState<ResumeFormValues>(
     INITIAL_RESUME_VALUES,
   );
@@ -69,6 +67,9 @@ export default function CreateResume({ navigation }: Props) {
     onPress: () => {},
   });
   const [alertVisible, setAlertVisible] = useState(false);
+
+  const [isCreated, setIsCreated] = useState(false);
+  const [createdInfo, setCreatedInfo] = useState<Response | null>(null);
 
   const stepForward = () =>
     setCurrentStep(prev => (prev < totalSteps ? prev + 1 : prev));
@@ -254,24 +255,27 @@ export default function CreateResume({ navigation }: Props) {
 
     try {
       setIsSubmitting(true);
-      await PostResumeValues(
+      const response = await PostResumeValues(
         formValues,
         resumeTemplatesData[selectedTemplateIndex].name,
-        userId,
       );
+
+      if (response && response.ok) {
+        setIsCreated(true);
+        setCreatedInfo(response);
+      }
     } catch (error) {
       console.error(error);
+      setAlertVisible(true);
+      setAlert({
+        type: 'failure',
+        title: 'Bir Hata Oluştu',
+        desc: 'Özgeçmişiniz oluşturulamadı. Lütfen tekrar deneyiniz.',
+        onPress: () => setAlertVisible(false),
+      });
     } finally {
       setIsSubmitting(false);
     }
-
-    setAlertVisible(true);
-    setAlert({
-      type: 'success',
-      title: 'Başarılı',
-      desc: 'Özgeçmişiniz oluşturuldu.',
-      onPress: () => setAlertVisible(false),
-    });
   };
 
   return (
@@ -356,6 +360,19 @@ export default function CreateResume({ navigation }: Props) {
           desc={alert.desc}
           type={alert.type}
           onPress={alert.onPress}
+        />
+      )}
+      {isCreated && createdInfo && (
+        <CreatedInfoModal
+          isCreated={isCreated}
+          createdInfo={createdInfo}
+          handleDismiss={() => {
+            setIsCreated(false);
+            setCreatedInfo(null);
+            setFormValues(INITIAL_RESUME_VALUES);
+            setCurrentStep(1);
+            navigation.goBack();
+          }}
         />
       )}
     </View>

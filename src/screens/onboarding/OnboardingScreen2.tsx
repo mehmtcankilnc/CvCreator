@@ -1,4 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
+import 'react-native-url-polyfill/auto';
 import { View, Text, Image } from 'react-native';
 import React, { useState } from 'react';
 import {
@@ -16,20 +17,19 @@ import OnboardingWave from '../../components/OnboardingWave';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { supabase } from '../../lib/supabase';
 import GoogleSignInBtn from '../../components/GoogleSignInBtn';
-import {
-  GoogleSignin,
-  statusCodes,
-  isSuccessResponse,
-  isErrorWithCode,
-} from '@react-native-google-signin/google-signin';
+import InAppBrowser from 'react-native-inappbrowser-reborn';
 import Alert from '../../components/Alert';
 import { useAppDispatch } from '../../store/hooks';
 import { setAnon, setUser } from '../../store/slices/authSlice';
 
-GoogleSignin.configure({
-  webClientId:
-    '237778058771-jprkiea07qdldedp5pe4p40b5i7374b2.apps.googleusercontent.com',
-});
+type AlertType = 'failure' | 'success' | 'inform';
+
+interface AlertState {
+  type: AlertType;
+  title: string;
+  desc: string;
+  onPress: () => void;
+}
 
 export default function OnboardingScreen2() {
   const navigation =
@@ -44,7 +44,7 @@ export default function OnboardingScreen2() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isAlertLoading, setIsAlertLoading] = useState(false);
-  const [alert, setAlert] = useState({
+  const [alert, setAlert] = useState<AlertState>({
     type: 'failure',
     title: '',
     desc: '',
@@ -89,66 +89,14 @@ export default function OnboardingScreen2() {
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true);
-      await GoogleSignin.hasPlayServices();
-      const response = await GoogleSignin.signIn();
-      console.log(response);
-      if (isSuccessResponse(response)) {
-        dispatch(
-          setUser({
-            id: response.data.user.id,
-            name: response.data.user.name,
-          }),
-        );
-        setAlertVisible(true);
-        setAlert({
-          type: 'success',
-          title: 'Success',
-          desc: 'Signed in successfully! Create your CV, right away!',
-          onPress: () => {
-            navigateToApp();
-            setAlertVisible(false);
-          },
-        });
-      } else {
-        setAlertVisible(true);
-        setAlert({
-          type: 'failure',
-          title: 'Fail',
-          desc: 'Operation was cancelled, try again for signing in via Google.',
-          onPress: () => setAlertVisible(false),
-        });
-      }
-    } catch (error) {
-      if (isErrorWithCode(error)) {
-        switch (error.code) {
-          case statusCodes.IN_PROGRESS:
-            setAlertVisible(true);
-            setAlert({
-              type: 'failure',
-              title: 'Fail',
-              desc: error.message,
-              onPress: () => setAlertVisible(false),
-            });
-            break;
-          case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
-            setAlertVisible(true);
-            setAlert({
-              type: 'failure',
-              title: 'Fail',
-              desc: error.message,
-              onPress: () => setAlertVisible(false),
-            });
-            break;
-          default:
-            setAlertVisible(true);
-            setAlert({
-              type: 'failure',
-              title: 'Fail',
-              desc: error.message,
-              onPress: () => setAlertVisible(false),
-            });
-        }
-      } else {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: 'cvcreator://google-auth',
+        },
+      });
+
+      if (error || !data.url) {
         setAlertVisible(true);
         setAlert({
           type: 'failure',
@@ -156,7 +104,81 @@ export default function OnboardingScreen2() {
           desc: 'Something went wrong.',
           onPress: () => setAlertVisible(false),
         });
+        return;
       }
+
+      const { url } = data;
+
+      if (url) {
+        const deepLink = 'cvcreator://google-auth';
+        console.log('URL:', url);
+        const result = await InAppBrowser.openAuth(url, deepLink, {
+          dismissButtonStyle: 'cancel',
+          preferredBarTintColor: '#453AA4',
+          preferredControlTintColor: 'white',
+          readerMode: false,
+          animated: true,
+          modalPresentationStyle: 'fullScreen',
+          modalTransitionStyle: 'coverVertical',
+          modalEnabled: true,
+          enableBarCollapsing: false,
+          showTitle: false,
+          toolbarColor: '#6200EE',
+          secondaryToolbarColor: 'black',
+          enableUrlBarHiding: true,
+          enableDefaultShare: true,
+          forceCloseOnRedirection: true,
+        });
+
+        if (result.type === 'success' && result.url) {
+          const resultUrl = result.url;
+          const params: { [key: string]: string } = {};
+          const regex = /[?&#]([^=]+)=([^&]*)/g;
+          let match;
+          while ((match = regex.exec(resultUrl))) {
+            params[match[1]] = match[2];
+          }
+          const { access_token, refresh_token } = params;
+
+          if (access_token && refresh_token) {
+            const { error: sessionError } = await supabase.auth.setSession({
+              access_token,
+              refresh_token,
+            });
+
+            if (sessionError) {
+              setAlertVisible(true);
+              setAlert({
+                type: 'failure',
+                title: 'Fail',
+                desc: 'Something went wrong.',
+                onPress: () => setAlertVisible(false),
+              });
+            } else {
+              const {
+                data: { user },
+              } = await supabase.auth.getUser();
+              if (user) {
+                dispatch(
+                  setUser({
+                    id: user.id,
+                    name: user.email ?? null,
+                  }),
+                );
+              }
+              navigateToApp();
+            }
+          }
+        }
+      }
+    } catch (error) {
+      setAlertVisible(true);
+      setAlert({
+        type: 'failure',
+        title: 'Fail',
+        desc: 'Something went wrong.',
+        onPress: () => setAlertVisible(false),
+      });
     } finally {
       setIsLoading(false);
     }

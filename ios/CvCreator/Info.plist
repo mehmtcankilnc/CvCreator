@@ -51,5 +51,18 @@
 	<array>
 		<string>Kavoon-Regular.ttf</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>google-auth</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>cvcreator</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>
