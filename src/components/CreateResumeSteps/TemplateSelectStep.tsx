@@ -89,8 +89,8 @@ export default function TemplateSelectStep({ initial, handleForward }: Props) {
         Choose a Resume Template
       </Text>
       <View
-        className="flex-row flex-wrap"
-        style={{ columnGap: wp(4), rowGap: wp(5) }}
+        className="flex-row flex-wrap justify-between"
+        style={{ rowGap: wp(5) }}
       >
         {resumeTemplatesData.map(template => (
           <TemplateCard

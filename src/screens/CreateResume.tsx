@@ -9,6 +9,7 @@ import {
   ExperienceInfo,
   LanguageInfo,
   PersonalInfo,
+  PhotoInfo,
   ReferenceInfo,
   ResumeFormValues,
   SkillInfo,
@@ -31,6 +32,7 @@ import { PostResumeValues } from '../services/ResumeServices';
 import TemplateSelectStep from '../components/CreateResumeSteps/TemplateSelectStep';
 import { resumeTemplatesData } from '../data/resumeTemplatesData';
 import CreatedInfoModal from '../components/CreatedInfoModal';
+import UploadPhotoStep from '../components/CreateResumeSteps/UploadPhotoStep';
 
 type Props = {
   navigation: any;
@@ -56,7 +58,7 @@ export default function CreateResume({ navigation }: Props) {
   const [selectedTemplateIndex, setSelectedTemplateIndex] = useState(0);
 
   const [currentStep, setCurrentStep] = useState<number>(1);
-  const totalSteps = 9;
+  const totalSteps = 10;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -105,6 +107,10 @@ export default function CreateResume({ navigation }: Props) {
 
   const handleReferencesUpdate = useCallback((data: ReferenceInfo[]) => {
     setFormValues(prev => ({ ...prev, referencesInfo: data }));
+  }, []);
+
+  const handlePhotoUpdate = useCallback((data: PhotoInfo) => {
+    setFormValues(prev => ({ ...prev, photoInfo: data }));
   }, []);
 
   const submitResumeValues = async () => {
@@ -255,6 +261,7 @@ export default function CreateResume({ navigation }: Props) {
 
     try {
       setIsSubmitting(true);
+      console.log(formValues);
       const response = await PostResumeValues(
         formValues,
         resumeTemplatesData[selectedTemplateIndex].name,
@@ -326,6 +333,10 @@ export default function CreateResume({ navigation }: Props) {
               initial={formValues.referencesInfo ?? []}
               handleForward={handleReferencesUpdate}
             />
+            <UploadPhotoStep
+              initial={formValues.photoInfo ?? { base64Image: '' }}
+              handleForward={handlePhotoUpdate}
+            />
             <TemplateSelectStep
               initial={resumeTemplatesData[selectedTemplateIndex]}
               handleForward={index => setSelectedTemplateIndex(index)}
@@ -346,10 +357,10 @@ export default function CreateResume({ navigation }: Props) {
         />
         <Button
           handleSubmit={() => {
-            currentStep !== 9 ? stepForward() : submitResumeValues();
+            currentStep !== 10 ? stepForward() : submitResumeValues();
           }}
           style={{ flex: 1 }}
-          text={currentStep !== 9 ? 'Continue' : 'Submit'}
+          text={currentStep !== 10 ? 'Continue' : 'Submit'}
           isLoading={isSubmitting}
         />
       </View>

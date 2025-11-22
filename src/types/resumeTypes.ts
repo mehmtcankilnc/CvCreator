@@ -50,6 +50,10 @@ export type ReferenceInfo = {
   contact: string;
 };
 
+export type PhotoInfo = {
+  base64Image: string;
+};
+
 export type ResumeFormValues = {
   personalInfo: PersonalInfo;
   summaryInfo?: SummaryInfo;
@@ -59,4 +63,5 @@ export type ResumeFormValues = {
   skillsInfo?: Array<SkillInfo>;
   languagesInfo?: Array<LanguageInfo>;
   referencesInfo?: Array<ReferenceInfo>;
+  photoInfo?: PhotoInfo;
 };
