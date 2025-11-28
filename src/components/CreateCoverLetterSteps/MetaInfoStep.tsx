@@ -1,0 +1,58 @@
+/* eslint-disable react-native/no-inline-styles */
+import { View, Text } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { CoverLetterMetaInfo } from '../../types/coverLetterTypes';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import TextInput from '../TextInput';
+
+type Props = {
+  initial: CoverLetterMetaInfo;
+  handleForward: (data: CoverLetterMetaInfo) => void;
+};
+
+export default function MetaInfoStep({ initial, handleForward }: Props) {
+  const [metaInfo, setMetaInfo] = useState<CoverLetterMetaInfo>(initial);
+
+  const handleForwardRef = useRef(handleForward);
+  handleForwardRef.current = handleForward;
+
+  useEffect(() => {
+    return () => {
+      handleForwardRef.current(metaInfo);
+    };
+  }, [metaInfo]);
+
+  return (
+    <View style={{ gap: wp(3) }} className="w-full">
+      <Text
+        className="color-textColor dark:color-dark-textColor"
+        style={{
+          fontFamily: 'Kavoon-Regular',
+          textAlign: 'center',
+          fontSize: wp(4),
+          marginBottom: wp(3),
+        }}
+      >
+        Header Information
+      </Text>
+      <View style={{ gap: wp(3) }}>
+        <TextInput
+          handleChangeText={value =>
+            setMetaInfo(prev => ({ ...prev, subject: value }))
+          }
+          value={metaInfo.subject}
+          placeholder="Subject*"
+          autoCapitalize="words"
+        />
+        <TextInput
+          handleChangeText={value =>
+            setMetaInfo(prev => ({ ...prev, sentDate: value }))
+          }
+          value={metaInfo.sentDate}
+          placeholder="Date*"
+          autoCapitalize="none"
+        />
+      </View>
+    </View>
+  );
+}

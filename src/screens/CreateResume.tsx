@@ -261,7 +261,6 @@ export default function CreateResume({ navigation }: Props) {
 
     try {
       setIsSubmitting(true);
-      console.log(formValues);
       const response = await PostResumeValues(
         formValues,
         resumeTemplatesData[selectedTemplateIndex].name,
@@ -379,10 +378,10 @@ export default function CreateResume({ navigation }: Props) {
           createdInfo={createdInfo}
           handleDismiss={() => {
             setIsCreated(false);
-            setCreatedInfo(null);
-            setFormValues(INITIAL_RESUME_VALUES);
-            setCurrentStep(1);
-            navigation.goBack();
+            // setCreatedInfo(null);
+            // setFormValues(INITIAL_RESUME_VALUES);
+            // setCurrentStep(1);
+            // navigation.goBack();
           }}
         />
       )}

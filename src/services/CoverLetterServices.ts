@@ -1,10 +1,9 @@
-import { ResumeFormValues } from '../types/resumeTypes';
-import { API_BASE_URL } from '@env';
+import { CoverLetterFormValues } from '../types/coverLetterTypes';
+// import { API_BASE_URL } from '@env';
 import { supabase } from '../lib/supabase';
 
-export const PostResumeValues = async (
-  resumeData: ResumeFormValues,
-  templateName: string,
+export const PostCoverLetterValues = async (
+  coverLetterData: CoverLetterFormValues,
 ) => {
   const {
     data: { session },
@@ -21,14 +20,11 @@ export const PostResumeValues = async (
   }
 
   try {
-    const response = await fetch(
-      `http://192.168.1.101:5128/api/resumes?templateName=${templateName}`,
-      {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(resumeData),
-      },
-    );
+    const response = await fetch(`http://192.168.1.103:5128/api/coverletters`, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(coverLetterData),
+    });
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -44,23 +40,5 @@ export const PostResumeValues = async (
     } else {
       throw error;
     }
-  }
-};
-
-export const GetMyResumes = async (id: string) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/resumes/${id}`, {
-      method: 'GET',
-    });
-
-    if (!response.ok) {
-      console.error('Hata: ', response);
-      return;
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('CV çekme hatası: ', error);
   }
 };

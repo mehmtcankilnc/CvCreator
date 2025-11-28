@@ -21,7 +21,7 @@ type Props = {
   handleForward: (index: number) => void;
 };
 
-const TemplateCard = ({
+export const TemplateCard = ({
   template,
   isSelected,
   onPress,
@@ -50,10 +50,10 @@ const TemplateCard = ({
       {isLoading && <ActivityIndicator size="large" color="#4285F4" />}
       <Image
         source={template.img}
-        className="absolute w-full h-full"
+        className="absolute"
         resizeMode="contain"
         onLoadEnd={() => setIsLoading(false)}
-        style={{ marginBottom: wp(4) }}
+        style={{ top: wp(2), width: wp(40), height: hp(21) }}
       />
       <Text className="absolute font-medium w-full text-center bottom-0 capitalize text-textColor dark:text-dark-textColor">
         {template.name}
