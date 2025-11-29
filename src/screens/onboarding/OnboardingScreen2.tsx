@@ -76,6 +76,7 @@ export default function OnboardingScreen2() {
         const { error } = await supabase.auth.signInAnonymously();
         if (error == null) {
           dispatch(setAnon(true));
+          await AsyncStorage.setItem('isGuest', 'true');
           navigateToApp();
         } else {
           console.log(error);
@@ -165,6 +166,7 @@ export default function OnboardingScreen2() {
                     name: user.email ?? null,
                   }),
                 );
+                await AsyncStorage.setItem('isGuest', 'false');
               }
               navigateToApp();
             }

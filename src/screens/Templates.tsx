@@ -56,7 +56,11 @@ export default function Templates({ navigation }: Props) {
         style={{ gap: wp(3), paddingHorizontal: wp(5), paddingBottom: wp(5) }}
       >
         <Button
-          handleSubmit={() => console.log('alo')}
+          handleSubmit={() =>
+            navigation.navigate('CreateResume', {
+              templateIndex: selectedTemplateIndex,
+            })
+          }
           style={{ flex: 1 }}
           text="Create Now"
         />

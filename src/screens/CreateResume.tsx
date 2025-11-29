@@ -36,6 +36,7 @@ import UploadPhotoStep from '../components/CreateResumeSteps/UploadPhotoStep';
 
 type Props = {
   navigation: any;
+  route: any;
 };
 
 const INITIAL_RESUME_VALUES: ResumeFormValues = {
@@ -51,11 +52,13 @@ const INITIAL_RESUME_VALUES: ResumeFormValues = {
 const { width: screenWidth } = Dimensions.get('window');
 const isSmallScreen = screenWidth < 375;
 
-export default function CreateResume({ navigation }: Props) {
+export default function CreateResume({ navigation, route }: Props) {
   const [formValues, setFormValues] = useState<ResumeFormValues>(
     INITIAL_RESUME_VALUES,
   );
-  const [selectedTemplateIndex, setSelectedTemplateIndex] = useState(0);
+  const [selectedTemplateIndex, setSelectedTemplateIndex] = useState(
+    route.params?.templateIndex ?? 0,
+  );
 
   const [currentStep, setCurrentStep] = useState<number>(1);
   const totalSteps = 10;

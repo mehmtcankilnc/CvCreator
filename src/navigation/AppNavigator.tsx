@@ -23,7 +23,7 @@ export default function AppNavigator() {
       style={{ flex: 1 }}
       edges={['bottom', 'left', 'right']}
     >
-      <NavigationContainer linking={linking}>
+      <NavigationContainer<RootStackParamList> linking={linking}>
         <StatusBar backgroundColor="#1810C2" barStyle="light-content" />
         <Stack.Navigator
           initialRouteName="Splash"

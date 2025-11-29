@@ -31,6 +31,7 @@ export default function MyResumes({ navigation }: Props) {
               updatedAt: item.updatedAt,
               storagePath: item.storagePath,
             }));
+            console.log(mappedResumes);
             setMyResumes(mappedResumes);
           }
         } catch (error) {
@@ -68,7 +69,7 @@ export default function MyResumes({ navigation }: Props) {
     return (
       <FlatList
         data={myResumes}
-        contentContainerStyle={{ margin: wp(3), gap: wp(3) }}
+        contentContainerStyle={{ padding: wp(3), gap: wp(3) }}
         keyExtractor={item => item.id}
         renderItem={({ item }) => <MyResumeCard resume={item} />}
       />
@@ -81,11 +82,7 @@ export default function MyResumes({ navigation }: Props) {
         handlePress={() => navigation.toggleDrawer()}
         title="My Resumes"
       />
-      <Page>
-        <View className="flex-1 w-full" style={{ marginBottom: wp(5) }}>
-          {renderContent()}
-        </View>
-      </Page>
+      <Page>{renderContent()}</Page>
     </View>
   );
 }

@@ -1,5 +1,5 @@
 import { ResumeFormValues } from '../types/resumeTypes';
-import { API_BASE_URL } from '@env';
+// import { API_BASE_URL } from '@env';
 import { supabase } from '../lib/supabase';
 
 export const PostResumeValues = async (
@@ -49,9 +49,12 @@ export const PostResumeValues = async (
 
 export const GetMyResumes = async (id: string) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/resumes/${id}`, {
-      method: 'GET',
-    });
+    const response = await fetch(
+      `http://192.168.1.101:5128/api/resumes/${id}`,
+      {
+        method: 'GET',
+      },
+    );
 
     if (!response.ok) {
       console.error('Hata: ', response);
