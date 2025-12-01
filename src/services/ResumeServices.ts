@@ -15,7 +15,7 @@ export const PostResumeValues = async (
     Accept: 'application/pdf',
   };
 
-  if (session?.access_token) {
+  if (session?.access_token && !session?.user.is_anonymous) {
     // eslint-disable-next-line dot-notation
     headers['Authorization'] = `Bearer ${session.access_token}`;
   }
@@ -47,10 +47,10 @@ export const PostResumeValues = async (
   }
 };
 
-export const GetMyResumes = async (id: string) => {
+export const GetMyResumes = async (id: string, searchText?: string) => {
   try {
     const response = await fetch(
-      `http://192.168.1.101:5128/api/resumes/${id}`,
+      `http://192.168.1.101:5128/api/resumes/${id}?searchText=${searchText}`,
       {
         method: 'GET',
       },

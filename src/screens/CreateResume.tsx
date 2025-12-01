@@ -377,6 +377,7 @@ export default function CreateResume({ navigation, route }: Props) {
       )}
       {isCreated && createdInfo && (
         <CreatedInfoModal
+          type="resume"
           isCreated={isCreated}
           createdInfo={createdInfo}
           handleDismiss={() => {

@@ -4,10 +4,11 @@ import React from 'react';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Button from './Button';
-import { useAppDispatch } from '../store/hooks';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { openBottomSheet } from '../store/slices/bottomSheetSlice';
+import { downloadPDF } from '../utilities/downloadPDF';
 
-export type ResumeRespModel = {
+export type FileRespModel = {
   id: string;
   name: string;
   createdAt: string;
@@ -16,11 +17,14 @@ export type ResumeRespModel = {
 };
 
 type Props = {
-  resume: ResumeRespModel;
+  file: FileRespModel;
+  type: 'resumes' | 'coverletters';
 };
 
-export default function MyResumeCard({ resume }: Props) {
+export default function MyFileCard({ file, type }: Props) {
   const dispatch = useAppDispatch();
+  const { theme } = useAppSelector(state => state.theme);
+  const iconColor = theme === 'LIGHT' ? '#585858' : '#D4D4D4';
 
   const handleOpenPress = () => {
     dispatch(
@@ -46,12 +50,12 @@ export default function MyResumeCard({ resume }: Props) {
   };
 
   const handleDownload = async () => {
-    console.log('download');
+    await downloadPDF(file.storagePath, file.name, type);
   };
 
   return (
     <View
-      className="bg-[#fefefe] elevation-md"
+      className="bg-secondaryBackground dark:bg-dark-secondaryBackground elevation-md"
       style={{
         height: wp(60),
         borderRadius: wp(3),
@@ -59,7 +63,7 @@ export default function MyResumeCard({ resume }: Props) {
     >
       {/** İkon - Dosya ismi - Seçenekler */}
       <View
-        className="flex-row items-center justify-between border-b border-b-borderColor"
+        className="flex-row items-center justify-between border-b border-b-borderColor dark:border-b-dark-borderColor"
         style={{ padding: wp(5) }}
       >
         <View className="flex-row items-center" style={{ gap: wp(3) }}>
@@ -68,49 +72,56 @@ export default function MyResumeCard({ resume }: Props) {
             size={24}
             color="#1810C2"
             style={{
-              backgroundColor: '#DCDBF6',
+              backgroundColor: theme === 'LIGHT' ? '#DCDBF6' : '#D4D4D4',
               padding: wp(1),
               borderRadius: wp(2),
             }}
           />
-          <Text style={{ fontWeight: '600', color: 'black', fontSize: wp(5) }}>
-            {resume.name}
+          <Text
+            className="color-black dark:color-dark-textColor"
+            style={{ fontWeight: '600', fontSize: wp(5) }}
+          >
+            {file.name}
           </Text>
         </View>
         <MaterialCommunityIcons
           name="dots-vertical"
           size={24}
-          color="#585858"
+          color={iconColor}
           onPress={handleOpenPress}
         />
       </View>
       {/** Tarih bilgileri */}
       <View
-        className="border-b border-b-borderColor"
+        className="border-b border-b-borderColor dark:border-b-dark-borderColor"
         style={{ padding: wp(5), gap: wp(3) }}
       >
         <View className="flex-row items-center justify-between">
           <Text
-            style={{ fontWeight: '500', color: '#585858', fontSize: wp(4) }}
+            className="color-textColor dark:color-dark-textColor"
+            style={{ fontWeight: '500', fontSize: wp(4) }}
           >
             Created:{' '}
           </Text>
           <Text
-            style={{ fontWeight: '500', color: '#585858', fontSize: wp(4) }}
+            className="color-textColor dark:color-dark-textColor"
+            style={{ fontWeight: '500', fontSize: wp(4) }}
           >
-            {new Date(resume.createdAt).toLocaleDateString()}
+            {new Date(file.createdAt).toLocaleDateString()}
           </Text>
         </View>
         <View className="flex-row items-center justify-between">
           <Text
-            style={{ fontWeight: '500', color: '#585858', fontSize: wp(4) }}
+            className="color-textColor dark:color-dark-textColor"
+            style={{ fontWeight: '500', fontSize: wp(4) }}
           >
             Last Updated:{' '}
           </Text>
           <Text
-            style={{ fontWeight: '500', color: '#585858', fontSize: wp(4) }}
+            className="color-textColor dark:color-dark-textColor"
+            style={{ fontWeight: '500', fontSize: wp(4) }}
           >
-            {new Date(resume.updatedAt).toLocaleDateString()}
+            {new Date(file.updatedAt).toLocaleDateString()}
           </Text>
         </View>
       </View>

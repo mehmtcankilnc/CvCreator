@@ -1,53 +1,63 @@
 import { View, Text, FlatList, ActivityIndicator } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import Header from '../../components/Header';
 import Page from '../../components/Page';
 import { GetMyResumes } from '../../services/ResumeServices';
 import { useAppSelector } from '../../store/hooks';
-import MyResumeCard, { ResumeRespModel } from '../../components/MyResumeCard';
+import MyFileCard, { FileRespModel } from '../../components/MyFileCard';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import SearchBar from '../../components/SearchBar';
 
 type Props = {
   navigation: any;
 };
 
 export default function MyResumes({ navigation }: Props) {
-  const [myResumes, setMyResumes] = useState<Array<ResumeRespModel>>([]);
+  const [myResumes, setMyResumes] = useState<Array<FileRespModel>>([]);
+  const [searchText, setSearchText] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const isUserAnon = useAppSelector(state => state.auth.isAnonymous);
   const userId = useAppSelector(state => state.auth.userId);
 
-  useEffect(() => {
-    const fetchResumes = async () => {
-      setIsLoading(true);
-      if (!isUserAnon && userId) {
-        try {
-          const data = await GetMyResumes(userId);
-          if (data) {
-            const mappedResumes = data.map((item: any) => ({
-              id: item.id,
-              name: item.fileName,
-              createdAt: item.createdAt,
-              updatedAt: item.updatedAt,
-              storagePath: item.storagePath,
-            }));
-            console.log(mappedResumes);
-            setMyResumes(mappedResumes);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchResumes = async () => {
+        setIsLoading(true);
+        if (!isUserAnon && userId) {
+          try {
+            const data = await GetMyResumes(userId, searchText);
+            if (data) {
+              const mappedResumes = data.map((item: any) => ({
+                id: item.id,
+                name: item.fileName,
+                createdAt: item.createdAt,
+                updatedAt: item.updatedAt,
+                storagePath: item.storagePath,
+              }));
+              setMyResumes(mappedResumes);
+            }
+          } catch (error) {
+            console.error('Error fetching resumes:', error);
+            setMyResumes([]);
+          } finally {
+            setIsLoading(false);
           }
-        } catch (error) {
-          console.error('Error fetching resumes:', error);
-          setMyResumes([]);
-        } finally {
+        } else {
           setIsLoading(false);
+          setMyResumes([]);
         }
-      } else {
-        setIsLoading(false);
-        setMyResumes([]);
-      }
-    };
+      };
 
-    fetchResumes();
-  }, [isUserAnon, userId]);
+      fetchResumes();
+    }, [isUserAnon, searchText, userId]),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      setSearchText('');
+    }, []),
+  );
 
   const renderContent = () => {
     if (isLoading) {
@@ -67,12 +77,14 @@ export default function MyResumes({ navigation }: Props) {
     }
 
     return (
-      <FlatList
-        data={myResumes}
-        contentContainerStyle={{ padding: wp(3), gap: wp(3) }}
-        keyExtractor={item => item.id}
-        renderItem={({ item }) => <MyResumeCard resume={item} />}
-      />
+      <View className="w-full flex-1">
+        <FlatList
+          data={myResumes}
+          contentContainerStyle={{ padding: wp(3), gap: wp(3) }}
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => <MyFileCard file={item} type="resumes" />}
+        />
+      </View>
     );
   };
 
@@ -82,7 +94,10 @@ export default function MyResumes({ navigation }: Props) {
         handlePress={() => navigation.toggleDrawer()}
         title="My Resumes"
       />
-      <Page>{renderContent()}</Page>
+      <Page>
+        <SearchBar searchText={searchText} setSearchText={setSearchText} />
+        {renderContent()}
+      </Page>
     </View>
   );
 }

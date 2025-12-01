@@ -20,7 +20,7 @@ export const PostCoverLetterValues = async (
   }
 
   try {
-    const response = await fetch(`http://192.168.1.103:5128/api/coverletters`, {
+    const response = await fetch(`http://192.168.1.101:5128/api/coverletters`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(coverLetterData),
@@ -33,12 +33,33 @@ export const PostCoverLetterValues = async (
       return response;
     }
   } catch (error) {
-    console.error('CV post etme hatası: ', error);
+    console.error('Mektup post etme hatası: ', error);
 
     if (error && (error as any).message.includes('User cancelled')) {
       console.log("Kullanıcı PDF'i açmaktan vazgeçti.");
     } else {
       throw error;
     }
+  }
+};
+
+export const GetMyCoverLetters = async (id: string, searchText?: string) => {
+  try {
+    const response = await fetch(
+      `http://192.168.1.101:5128/api/coverletters/${id}?searchText=${searchText}`,
+      {
+        method: 'GET',
+      },
+    );
+
+    if (!response.ok) {
+      console.error('Hata: ', response);
+      return;
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Mektup çekme hatası: ', error);
   }
 };

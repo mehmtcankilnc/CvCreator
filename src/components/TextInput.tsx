@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import {
   TextInput as RNTextInput,
   View,
@@ -19,6 +19,8 @@ type Props = {
   type?: KeyboardTypeOptions;
   autoCapitalize?: TextInputProps['autoCapitalize'];
   multiline?: boolean;
+  rightIcon?: ReactNode;
+  onRightIconPress?: () => void;
 };
 
 export default function TextInput({
@@ -28,6 +30,8 @@ export default function TextInput({
   type = 'default',
   autoCapitalize = 'sentences',
   multiline = false,
+  rightIcon,
+  onRightIconPress,
 }: Props) {
   const { theme } = useAppSelector(state => state.theme);
 
@@ -56,6 +60,13 @@ export default function TextInput({
 
   const handleFocus = () => setIsFocused(true);
   const handleBlur = () => setIsFocused(false);
+
+  const handleRightIconPress = () => {
+    if (onRightIconPress) {
+      inputRef.current?.blur();
+      onRightIconPress();
+    }
+  };
   return (
     <View style={{ minHeight: inputHeight }}>
       <RNTextInput
@@ -82,6 +93,10 @@ export default function TextInput({
         keyboardType={type}
         multiline={multiline}
       />
+      {rightIcon &&
+        React.cloneElement(rightIcon as React.ReactElement<any>, {
+          onPress: handleRightIconPress,
+        })}
       <TouchableWithoutFeedback onPress={() => inputRef.current?.focus()}>
         <Animated.View
           className="absolute bg-backgroundColor dark:bg-dark-backgroundColor px-1"

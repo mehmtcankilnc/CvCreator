@@ -12,12 +12,14 @@ type Props = {
   isCreated: boolean;
   createdInfo: Response | null;
   handleDismiss: () => void;
+  type: 'resume' | 'coverletter';
 };
 
 export default function CreatedInfoModal({
   isCreated,
   createdInfo,
   handleDismiss,
+  type,
 }: Props) {
   const { theme } = useAppSelector(state => state.theme);
 
@@ -29,6 +31,29 @@ export default function CreatedInfoModal({
   const processResult = async () => {
     if (createdInfo) {
       setIsLoading(true);
+
+      const contentDisposition = createdInfo.headers.get('Content-Disposition');
+      let fileName = null;
+
+      if (contentDisposition) {
+        let match = contentDisposition.match(
+          /filename\*?=['"]?(?:utf-8''|UTF-8''|)([^;"]+)?/i,
+        );
+
+        if (!match) {
+          match = contentDisposition.match(/filename=['"]?([^;"]+)/i);
+        }
+
+        if (match && match[1]) {
+          fileName = match[1];
+
+          if (contentDisposition.includes('filename*=UTF-8')) {
+            fileName = decodeURIComponent(fileName);
+          }
+        }
+      } else {
+        fileName = 'file.pdf';
+      }
 
       const pdfBlob = await createdInfo.blob();
 
@@ -46,20 +71,21 @@ export default function CreatedInfoModal({
         };
       });
 
-      const fileName = 'ozgecmis.pdf';
       const path = `${RNFS.CachesDirectoryPath}/${fileName}`;
 
       await RNFS.writeFile(path, base64Data, 'base64');
 
       const exists = await RNFS.exists(path);
-      console.log(`Dosya yolu: ${path}, Oluştu mu: ${exists}`);
 
       if (exists) {
         try {
           const fileUri = `file://${path}`;
 
           await Share.open({
-            title: 'Özgeçmişini Görüntüle',
+            title:
+              type === 'coverletter'
+                ? 'Mektubunu Görüntüle'
+                : 'Özgeçmişini Görüntüle',
             url: fileUri,
             type: 'application/pdf',
             failOnCancel: false,
@@ -109,8 +135,9 @@ export default function CreatedInfoModal({
               Başarılı
             </Text>
             <Text className="text-center text-base text-gray-600 dark:text-gray-400">
-              Özgeçmişiniz başarıyla oluşturulmuştur. Aşağıdaki paylaş butonuna
-              basarak indirebilir veya cihazınıza kaydedbilirsiniz.
+              {type === 'coverletter' ? 'Mektubunuz' : 'Özgeçmişiniz'} başarıyla
+              oluşturulmuştur. Aşağıdaki paylaş butonuna basarak indirebilir
+              veya cihazınıza kaydedbilirsiniz.
             </Text>
           </View>
           <View>

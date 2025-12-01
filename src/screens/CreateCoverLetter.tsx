@@ -255,14 +255,15 @@ export default function CreateCoverLetter({ navigation }: Props) {
       )}
       {isCreated && createdInfo && (
         <CreatedInfoModal
+          type="coverletter"
           isCreated={isCreated}
           createdInfo={createdInfo}
           handleDismiss={() => {
             setIsCreated(false);
-            setCreatedInfo(null);
-            setFormValues(INITIAL_COVER_LETTER_VALUES);
-            setCurrentStep(1);
-            navigation.goBack();
+            // setCreatedInfo(null);
+            // setFormValues(INITIAL_COVER_LETTER_VALUES);
+            // setCurrentStep(1);
+            // navigation.goBack();
           }}
         />
       )}
