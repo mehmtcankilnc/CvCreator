@@ -22,7 +22,7 @@ export const PostResumeValues = async (
 
   try {
     const response = await fetch(
-      `http://192.168.1.101:5128/api/resumes?templateName=${templateName}`,
+      `http://localhost:5128/api/resumes?templateName=${templateName}`,
       {
         method: 'POST',
         headers: headers,
@@ -50,7 +50,7 @@ export const PostResumeValues = async (
 export const GetMyResumes = async (id: string, searchText?: string) => {
   try {
     const response = await fetch(
-      `http://192.168.1.101:5128/api/resumes/${id}?searchText=${searchText}`,
+      `http://localhost:5128/api/resumes/${id}?searchText=${searchText}`,
       {
         method: 'GET',
       },

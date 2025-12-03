@@ -1,4 +1,10 @@
-import { View, Text, FlatList, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  ActivityIndicator,
+  Pressable,
+} from 'react-native';
 import React, { useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import Header from '../../components/Header';
@@ -64,6 +70,24 @@ export default function MyResumes({ navigation }: Props) {
       return (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#1810C2" />
+        </View>
+      );
+    }
+
+    if (isUserAnon) {
+      return (
+        <View
+          className="flex-1 items-center justify-center"
+          style={{ gap: wp(5) }}
+        >
+          <Text className="text-gray-500 text-lg text-center">
+            You need to login via Google to save and access your resumes.
+          </Text>
+          <Pressable onPress={() => navigation.navigate('Settings')}>
+            <Text className="text-gray-500 text-xl italic underline">
+              Login Now
+            </Text>
+          </Pressable>
         </View>
       );
     }

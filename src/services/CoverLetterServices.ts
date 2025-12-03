@@ -14,13 +14,13 @@ export const PostCoverLetterValues = async (
     Accept: 'application/pdf',
   };
 
-  if (session?.access_token) {
+  if (session?.access_token && !session?.user.is_anonymous) {
     // eslint-disable-next-line dot-notation
     headers['Authorization'] = `Bearer ${session.access_token}`;
   }
 
   try {
-    const response = await fetch(`http://192.168.1.101:5128/api/coverletters`, {
+    const response = await fetch(`http://localhost:5128/api/coverletters`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(coverLetterData),
@@ -46,7 +46,7 @@ export const PostCoverLetterValues = async (
 export const GetMyCoverLetters = async (id: string, searchText?: string) => {
   try {
     const response = await fetch(
-      `http://192.168.1.101:5128/api/coverletters/${id}?searchText=${searchText}`,
+      `http://localhost:5128/api/coverletters/${id}?searchText=${searchText}`,
       {
         method: 'GET',
       },

@@ -6,7 +6,6 @@ import Page from '../../components/Page';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Feather from 'react-native-vector-icons/Feather';
 import ListItem from '../../components/ListItem';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppSelector } from '../../store/hooks';
 
 type Props = {
@@ -182,13 +181,6 @@ export default function Home({ navigation }: Props) {
             </View>
           </View>
         </View>
-        <Pressable
-          onPress={async () =>
-            await AsyncStorage.removeItem('hasShowedOnboarding')
-          }
-        >
-          <Text>Onboarding refresh</Text>
-        </Pressable>
       </Page>
     </View>
   );

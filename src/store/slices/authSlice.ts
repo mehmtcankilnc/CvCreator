@@ -32,13 +32,8 @@ export const authSlice = createSlice({
       state.userId = action.payload.id;
       state.userName = action.payload.name;
     },
-    logout: state => {
-      state.isAnonymous = true;
-      state.userId = '';
-      state.userName = '';
-    },
   },
 });
 
-export const { setAnon, setUser, logout } = authSlice.actions;
+export const { setAnon, setUser } = authSlice.actions;
 export default authSlice.reducer;
