@@ -12,6 +12,7 @@ type Props = {
   desc: string;
   type: string;
   onPress: () => void;
+  onDismiss: () => void;
   isLoading?: boolean;
 };
 
@@ -21,6 +22,7 @@ export default function Alert({
   desc,
   type,
   onPress,
+  onDismiss,
   isLoading,
 }: Props) {
   const { theme } = useAppSelector(state => state.theme);
@@ -41,12 +43,12 @@ export default function Alert({
   return (
     <Modal
       visible={visible}
-      onRequestClose={onPress}
+      onRequestClose={onDismiss}
       transparent
       animationType="fade"
     >
       <Pressable
-        onPress={onPress}
+        onPress={onDismiss}
         className="flex-1 items-center justify-center"
         style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
       >

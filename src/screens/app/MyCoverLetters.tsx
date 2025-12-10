@@ -1,10 +1,4 @@
-import {
-  View,
-  Text,
-  FlatList,
-  ActivityIndicator,
-  Pressable,
-} from 'react-native';
+import { View, Text, FlatList, Pressable } from 'react-native';
 import React, { useCallback, useState } from 'react';
 import Header from '../../components/Header';
 import Page from '../../components/Page';
@@ -14,6 +8,7 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { useAppSelector } from '../../store/hooks';
 import { GetMyCoverLetters } from '../../services/CoverLetterServices';
 import { useFocusEffect } from '@react-navigation/native';
+import ShimmerFileCard from '../../components/ShimmerFileCard';
 
 type Props = {
   navigation: any;
@@ -70,8 +65,8 @@ export default function MyCoverLetters({ navigation }: Props) {
   const renderContent = () => {
     if (isLoading) {
       return (
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#1810C2" />
+        <View className="w-full flex-1">
+          <ShimmerFileCard />
         </View>
       );
     }
@@ -111,6 +106,8 @@ export default function MyCoverLetters({ navigation }: Props) {
           renderItem={({ item }) => (
             <MyFileCard file={item} type="coverletters" />
           )}
+          showsVerticalScrollIndicator={false}
+          bounces={false}
         />
       </View>
     );

@@ -239,6 +239,7 @@ export default function OnboardingScreen2() {
           type={alert.type}
           onPress={alert.onPress}
           isLoading={isAlertLoading}
+          onDismiss={() => setAlertVisible(false)}
         />
       )}
     </View>

@@ -9,7 +9,6 @@ import DrawerNav from './DrawerNav';
 import CreateResume from '../screens/CreateResume';
 import CreateCoverLetter from '../screens/CreateCoverLetter';
 import Templates from '../screens/Templates';
-import SplashScreen from '../screens/SplashScreen';
 import OnboardingStack from './OnboardingStack';
 
 import linking from '../Linking';
@@ -26,13 +25,12 @@ export default function AppNavigator() {
       <NavigationContainer<RootStackParamList> linking={linking}>
         <StatusBar backgroundColor="#1810C2" barStyle="light-content" />
         <Stack.Navigator
-          initialRouteName="Splash"
+          initialRouteName="App"
           screenOptions={{
             headerShown: false,
             animation: 'slide_from_right',
           }}
         >
-          <Stack.Screen name="Splash" component={SplashScreen} />
           <Stack.Screen name="Onboarding" component={OnboardingStack} />
           <Stack.Screen name="App" component={DrawerNav} />
           <Stack.Screen name="CreateResume" component={CreateResume} />

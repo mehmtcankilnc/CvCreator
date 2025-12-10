@@ -368,6 +368,7 @@ export default function Settings({ navigation }: Props) {
           desc={alert.desc}
           type={alert.type}
           onPress={alert.onPress}
+          onDismiss={() => setAlertVisible(false)}
         />
       )}
     </View>

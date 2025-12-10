@@ -20,7 +20,7 @@ export const PostCoverLetterValues = async (
   }
 
   try {
-    const response = await fetch(`http://localhost:5128/api/coverletters`, {
+    const response = await fetch(`http://localhost:5001/api/coverletters`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(coverLetterData),
@@ -43,14 +43,25 @@ export const PostCoverLetterValues = async (
   }
 };
 
-export const GetMyCoverLetters = async (id: string, searchText?: string) => {
+export const GetMyCoverLetters = async (
+  id: string,
+  searchText?: string,
+  number?: number,
+) => {
   try {
-    const response = await fetch(
-      `http://localhost:5128/api/coverletters/${id}?searchText=${searchText}`,
-      {
-        method: 'GET',
-      },
-    );
+    const url = new URL(`http://localhost:5001/api/coverletters/${id}`);
+
+    if (searchText) {
+      url.searchParams.append('searchText', searchText);
+    }
+
+    if (number !== undefined && number !== null) {
+      url.searchParams.append('number', number.toString());
+    }
+
+    const response = await fetch(url.toString(), {
+      method: 'GET',
+    });
 
     if (!response.ok) {
       console.error('Hata: ', response);

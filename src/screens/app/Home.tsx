@@ -1,21 +1,106 @@
 /* eslint-disable react-native/no-inline-styles */
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, Image, Pressable } from 'react-native';
 import Header from '../../components/Header';
 import Page from '../../components/Page';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Feather from 'react-native-vector-icons/Feather';
 import ListItem from '../../components/ListItem';
-import { useAppSelector } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { useFocusEffect } from '@react-navigation/native';
+import { GetMyResumes } from '../../services/ResumeServices';
+import { supabase } from '../../lib/supabase';
+import { setUser } from '../../store/slices/authSlice';
+import { GetMyCoverLetters } from '../../services/CoverLetterServices';
+import ShimmerListItem from '../../components/ShimmerListItem';
 
 type Props = {
   navigation: any;
 };
 
 export default function Home({ navigation }: Props) {
+  const dispatch = useAppDispatch();
   const { theme } = useAppSelector(state => state.theme);
-
   const iconColor = theme === 'LIGHT' ? '#1954E5' : '#D9D9D9';
+
+  const FILE_NUMBER = 2;
+
+  const { isAnonymous, userId } = useAppSelector(state => state.auth);
+  const [myResumes, setMyResumes] = useState([]);
+  const [isResumesLoading, setIsResumesLoading] = useState(true);
+  const [myCoverLetters, setMyCoverLetters] = useState([]);
+  const [isCoverLettersLoading, setIsCoverLettersLoading] = useState(true);
+
+  useEffect(() => {
+    const ensureUserData = async () => {
+      if (!isAnonymous && !userId) {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (user) {
+          dispatch(
+            setUser({
+              id: user.id,
+              name: user.email ?? null,
+            }),
+          );
+        }
+      }
+    };
+
+    ensureUserData();
+  }, [isAnonymous, userId, dispatch]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchResumes = async () => {
+        if (!isAnonymous && userId) {
+          setIsResumesLoading(true);
+          const resumeData = await GetMyResumes(userId, '', FILE_NUMBER);
+
+          if (resumeData) {
+            const mappedResumes = resumeData.map((r: any) => ({
+              id: r.id,
+              name: r.fileName,
+              createdAt: r.createdAt,
+              updatedAt: r.updatedAt,
+              storagePath: r.storagePath,
+            }));
+
+            setMyResumes(mappedResumes);
+            setIsResumesLoading(false);
+          }
+        }
+      };
+      const fetchCoverLetters = async () => {
+        if (!isAnonymous && userId) {
+          setIsCoverLettersLoading(true);
+          const coverLetterData = await GetMyCoverLetters(
+            userId,
+            '',
+            FILE_NUMBER,
+          );
+
+          if (coverLetterData) {
+            const mappedCoverLetters = coverLetterData.map((r: any) => ({
+              id: r.id,
+              name: r.fileName,
+              createdAt: r.createdAt,
+              updatedAt: r.updatedAt,
+              storagePath: r.storagePath,
+            }));
+
+            setMyCoverLetters(mappedCoverLetters);
+            setIsCoverLettersLoading(false);
+          }
+        }
+      };
+
+      fetchResumes();
+      fetchCoverLetters();
+    }, [isAnonymous, userId]),
+  );
 
   return (
     <View className="flex-1">
@@ -130,9 +215,33 @@ export default function Home({ navigation }: Props) {
             </View>
             {/** Elemanlar */}
             <View style={{ gap: wp(2), paddingVertical: wp(3) }}>
-              {Array.from({ length: 2 }, (_, i) => (
-                <ListItem key={i} index={i + 1} title="MehmetcanKilinc_CV" />
-              ))}
+              {isResumesLoading ? (
+                <ShimmerListItem />
+              ) : isAnonymous ? (
+                <Text className="text-gray-500 text-lg">
+                  You need to login via Google to save and access your resumes.{' '}
+                  <Text
+                    onPress={() => navigation.navigate('Settings')}
+                    className="text-gray-500 italic underline"
+                  >
+                    Login Now
+                  </Text>
+                </Text>
+              ) : myResumes && myResumes.length > 0 ? (
+                myResumes.map((item: any, index: number) => (
+                  <ListItem key={item.id} index={index + 1} title={item.name} />
+                ))
+              ) : (
+                <Text className="text-gray-500 text-lg">
+                  You don't have any saved resumes.{' '}
+                  <Text
+                    onPress={() => navigation.navigate('CreateResume')}
+                    className="text-gray-500 italic underline"
+                  >
+                    Create Now
+                  </Text>
+                </Text>
+              )}
             </View>
           </View>
           {/** Motivasyon Mektuplarım Bölgesi */}
@@ -171,13 +280,34 @@ export default function Home({ navigation }: Props) {
             </View>
             {/** Elemanlar */}
             <View style={{ gap: wp(2), paddingVertical: wp(3) }}>
-              {Array.from({ length: 2 }, (_, i) => (
-                <ListItem
-                  key={i}
-                  index={i + 1}
-                  title="MehmetcanK_CoverLetter"
-                />
-              ))}
+              {isCoverLettersLoading ? (
+                <ShimmerListItem />
+              ) : isAnonymous ? (
+                <Text className="text-gray-500 text-lg">
+                  You need to login via Google to save and access your cover
+                  letters.{' '}
+                  <Text
+                    onPress={() => navigation.navigate('Settings')}
+                    className="text-gray-500 italic underline"
+                  >
+                    Login Now
+                  </Text>
+                </Text>
+              ) : myCoverLetters && myCoverLetters.length > 0 ? (
+                myCoverLetters.map((item: any, index: number) => (
+                  <ListItem key={item.id} index={index + 1} title={item.name} />
+                ))
+              ) : (
+                <Text className="text-gray-500 text-lg">
+                  You don't have any saved cover letters.{' '}
+                  <Text
+                    onPress={() => navigation.navigate('CreateCoverLetter')}
+                    className="text-gray-500 italic underline"
+                  >
+                    Login Now
+                  </Text>
+                </Text>
+              )}
             </View>
           </View>
         </View>

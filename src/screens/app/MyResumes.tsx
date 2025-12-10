@@ -1,10 +1,4 @@
-import {
-  View,
-  Text,
-  FlatList,
-  ActivityIndicator,
-  Pressable,
-} from 'react-native';
+import { View, Text, FlatList, Pressable } from 'react-native';
 import React, { useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import Header from '../../components/Header';
@@ -14,6 +8,7 @@ import { useAppSelector } from '../../store/hooks';
 import MyFileCard, { FileRespModel } from '../../components/MyFileCard';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import SearchBar from '../../components/SearchBar';
+import ShimmerFileCard from '../../components/ShimmerFileCard';
 
 type Props = {
   navigation: any;
@@ -68,8 +63,8 @@ export default function MyResumes({ navigation }: Props) {
   const renderContent = () => {
     if (isLoading) {
       return (
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#1810C2" />
+        <View className="w-full flex-1">
+          <ShimmerFileCard />
         </View>
       );
     }
@@ -107,6 +102,8 @@ export default function MyResumes({ navigation }: Props) {
           contentContainerStyle={{ padding: wp(3), gap: wp(3) }}
           keyExtractor={item => item.id}
           renderItem={({ item }) => <MyFileCard file={item} type="resumes" />}
+          showsVerticalScrollIndicator={false}
+          bounces={false}
         />
       </View>
     );
