@@ -27,7 +27,7 @@ export default function MyResumes({ navigation }: Props) {
         setIsLoading(true);
         if (!isUserAnon && userId) {
           try {
-            const data = await GetMyResumes(userId, searchText);
+            const data = await GetMyResumes(searchText);
             if (data) {
               const mappedResumes = data.map((item: any) => ({
                 id: item.id,
@@ -101,7 +101,9 @@ export default function MyResumes({ navigation }: Props) {
           data={myResumes}
           contentContainerStyle={{ padding: wp(3), gap: wp(3) }}
           keyExtractor={item => item.id}
-          renderItem={({ item }) => <MyFileCard file={item} type="resumes" />}
+          renderItem={({ item }) => (
+            <MyFileCard file={item} type="resumes" navigation={navigation} />
+          )}
           showsVerticalScrollIndicator={false}
           bounces={false}
         />

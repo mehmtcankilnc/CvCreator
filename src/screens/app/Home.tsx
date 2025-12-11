@@ -57,7 +57,7 @@ export default function Home({ navigation }: Props) {
       const fetchResumes = async () => {
         if (!isAnonymous && userId) {
           setIsResumesLoading(true);
-          const resumeData = await GetMyResumes(userId, '', FILE_NUMBER);
+          const resumeData = await GetMyResumes('', FILE_NUMBER);
 
           if (resumeData) {
             const mappedResumes = resumeData.map((r: any) => ({
@@ -76,11 +76,7 @@ export default function Home({ navigation }: Props) {
       const fetchCoverLetters = async () => {
         if (!isAnonymous && userId) {
           setIsCoverLettersLoading(true);
-          const coverLetterData = await GetMyCoverLetters(
-            userId,
-            '',
-            FILE_NUMBER,
-          );
+          const coverLetterData = await GetMyCoverLetters('', FILE_NUMBER);
 
           if (coverLetterData) {
             const mappedCoverLetters = coverLetterData.map((r: any) => ({

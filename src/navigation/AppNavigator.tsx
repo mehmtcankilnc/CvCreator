@@ -12,6 +12,7 @@ import Templates from '../screens/Templates';
 import OnboardingStack from './OnboardingStack';
 
 import linking from '../Linking';
+import FileViewer from '../screens/FileViewer';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -39,6 +40,7 @@ export default function AppNavigator() {
             component={CreateCoverLetter}
           />
           <Stack.Screen name="Templates" component={Templates} />
+          <Stack.Screen name="FileViewer" component={FileViewer} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>

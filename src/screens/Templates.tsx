@@ -53,7 +53,7 @@ export default function Templates({ navigation }: Props) {
       </Page>
       <View
         className="w-full flex-row bg-backgroundColor dark:bg-dark-backgroundColor"
-        style={{ gap: wp(3), paddingHorizontal: wp(5), paddingBottom: wp(5) }}
+        style={{ paddingHorizontal: wp(5), paddingBottom: wp(5) }}
       >
         <Button
           handleSubmit={() =>

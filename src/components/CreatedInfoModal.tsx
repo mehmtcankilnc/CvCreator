@@ -1,12 +1,12 @@
 /* eslint-disable react-native/no-inline-styles */
 import { View, Modal, Pressable, Text } from 'react-native';
 import React, { useState } from 'react';
-import Share from 'react-native-share';
-import RNFS from 'react-native-fs';
+
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { useAppSelector } from '../store/hooks';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Button from './Button';
+import { shareFile } from '../utilities/shareFile';
 
 type Props = {
   isCreated: boolean;
@@ -27,78 +27,6 @@ export default function CreatedInfoModal({
 
   const secondaryColor = '#F2EDD0';
   const darkSecColor = '#58512B';
-
-  const processResult = async () => {
-    if (createdInfo) {
-      setIsLoading(true);
-
-      const contentDisposition = createdInfo.headers.get('Content-Disposition');
-      let fileName = null;
-
-      if (contentDisposition) {
-        let match = contentDisposition.match(
-          /filename\*?=['"]?(?:utf-8''|UTF-8''|)([^;"]+)?/i,
-        );
-
-        if (!match) {
-          match = contentDisposition.match(/filename=['"]?([^;"]+)/i);
-        }
-
-        if (match && match[1]) {
-          fileName = match[1];
-
-          if (contentDisposition.includes('filename*=UTF-8')) {
-            fileName = decodeURIComponent(fileName);
-          }
-        }
-      } else {
-        fileName = 'file.pdf';
-      }
-
-      const pdfBlob = await createdInfo.blob();
-
-      const reader = new FileReader();
-      reader.readAsDataURL(pdfBlob);
-
-      const base64Data = await new Promise<string>((resolve, reject) => {
-        reader.onloadend = () => {
-          const base64 = (reader.result as string).split(',')[1];
-          resolve(base64);
-        };
-        reader.onerror = error => {
-          console.error('Blob read error:', error);
-          reject(error);
-        };
-      });
-
-      const path = `${RNFS.CachesDirectoryPath}/${fileName}`;
-
-      await RNFS.writeFile(path, base64Data, 'base64');
-
-      const exists = await RNFS.exists(path);
-
-      if (exists) {
-        try {
-          const fileUri = `file://${path}`;
-
-          await Share.open({
-            title:
-              type === 'coverletter'
-                ? 'Mektubunu Görüntüle'
-                : 'Özgeçmişini Görüntüle',
-            url: fileUri,
-            type: 'application/pdf',
-            failOnCancel: false,
-          });
-        } catch (e) {
-          console.log('Paylaşma/Açma hatası:', e);
-        } finally {
-          setIsLoading(false);
-          handleDismiss();
-        }
-      }
-    }
-  };
 
   return (
     <Modal
@@ -137,12 +65,17 @@ export default function CreatedInfoModal({
             <Text className="text-center text-base text-gray-600 dark:text-gray-400">
               {type === 'coverletter' ? 'Mektubunuz' : 'Özgeçmişiniz'} başarıyla
               oluşturulmuştur. Aşağıdaki paylaş butonuna basarak indirebilir
-              veya cihazınıza kaydedbilirsiniz.
+              veya cihazınıza kaydedebilirsiniz.
             </Text>
           </View>
           <View>
             <Button
-              handleSubmit={processResult}
+              handleSubmit={() => {
+                setIsLoading(true);
+                shareFile(createdInfo, type);
+                setIsLoading(false);
+                handleDismiss();
+              }}
               text="Paylaş"
               type="success"
               isLoading={isLoading}

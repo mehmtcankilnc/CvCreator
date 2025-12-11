@@ -29,7 +29,7 @@ export default function MyCoverLetters({ navigation }: Props) {
         setIsLoading(true);
         if (!isUserAnon && userId) {
           try {
-            const data = await GetMyCoverLetters(userId, searchText);
+            const data = await GetMyCoverLetters(searchText);
             if (data) {
               const mappedCoverLetters = data.map((item: any) => ({
                 id: item.id,
@@ -104,7 +104,11 @@ export default function MyCoverLetters({ navigation }: Props) {
           contentContainerStyle={{ padding: wp(3), gap: wp(3) }}
           keyExtractor={item => item.id}
           renderItem={({ item }) => (
-            <MyFileCard file={item} type="coverletters" />
+            <MyFileCard
+              file={item}
+              type="coverletters"
+              navigation={navigation}
+            />
           )}
           showsVerticalScrollIndicator={false}
           bounces={false}

@@ -13,6 +13,7 @@ export type RootStackParamList = {
   CreateResume: undefined;
   CreateCoverLetter: undefined;
   Templates: undefined;
+  FileViewer: undefined;
 };
 
 export type OnboardingScreenProps<T extends keyof OnboardingStackParamList> =

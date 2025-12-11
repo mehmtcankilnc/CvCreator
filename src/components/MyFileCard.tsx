@@ -5,8 +5,13 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Button from './Button';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { openBottomSheet } from '../store/slices/bottomSheetSlice';
+import {
+  closeBottomSheet,
+  openBottomSheet,
+} from '../store/slices/bottomSheetSlice';
 import { downloadPDF } from '../utilities/downloadPDF';
+import { GetMyResumeById } from '../services/ResumeServices';
+import { GetMyCoverLetterById } from '../services/CoverLetterServices';
 
 export type FileRespModel = {
   id: string;
@@ -17,11 +22,12 @@ export type FileRespModel = {
 };
 
 type Props = {
+  navigation: any;
   file: FileRespModel;
   type: 'resumes' | 'coverletters';
 };
 
-export default function MyFileCard({ file, type }: Props) {
+export default function MyFileCard({ navigation, file, type }: Props) {
   const dispatch = useAppDispatch();
   const { theme } = useAppSelector(state => state.theme);
   const iconColor = theme === 'LIGHT' ? '#585858' : '#D4D4D4';
@@ -40,8 +46,27 @@ export default function MyFileCard({ file, type }: Props) {
   };
 
   const handleShow = async () => {
-    console.log('show');
+    if (type === 'resumes') {
+      const resumeUrl = await GetMyResumeById(file.id);
+
+      if (resumeUrl) {
+        dispatch(closeBottomSheet());
+        navigation.navigate('FileViewer', {
+          url: resumeUrl,
+          file: file,
+          type: type,
+        });
+      }
+    } else {
+      const coverLetterUrl = await GetMyCoverLetterById(file.id);
+
+      if (coverLetterUrl) {
+        dispatch(closeBottomSheet());
+        navigation.navigate('FileViewer', { url: coverLetterUrl });
+      }
+    }
   };
+
   const handleEdit = async () => {
     console.log('edit');
   };

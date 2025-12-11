@@ -44,12 +44,25 @@ export const PostCoverLetterValues = async (
 };
 
 export const GetMyCoverLetters = async (
-  id: string,
   searchText?: string,
   number?: number,
 ) => {
   try {
-    const url = new URL(`http://localhost:5001/api/coverletters/${id}`);
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    const headers: HeadersInit_ = {
+      'Content-Type': 'application/json',
+      Accept: 'application/pdf',
+    };
+
+    if (session?.access_token && !session?.user.is_anonymous) {
+      // eslint-disable-next-line dot-notation
+      headers['Authorization'] = `Bearer ${session.access_token}`;
+    }
+
+    const url = new URL(`http://localhost:5001/api/coverletters`);
 
     if (searchText) {
       url.searchParams.append('searchText', searchText);
@@ -61,6 +74,7 @@ export const GetMyCoverLetters = async (
 
     const response = await fetch(url.toString(), {
       method: 'GET',
+      headers: headers,
     });
 
     if (!response.ok) {
@@ -70,6 +84,43 @@ export const GetMyCoverLetters = async (
 
     const data = await response.json();
     return data;
+  } catch (error) {
+    console.error('Mektupları çekme hatası: ', error);
+  }
+};
+
+export const GetMyCoverLetterById = async (coverLetterId: string) => {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  const headers: HeadersInit_ = {
+    'Content-Type': 'application/json',
+    Accept: 'application/pdf',
+  };
+
+  if (session?.access_token && !session?.user.is_anonymous) {
+    // eslint-disable-next-line dot-notation
+    headers['Authorization'] = `Bearer ${session.access_token}`;
+  }
+
+  try {
+    const url = new URL(
+      `http://localhost:5001/api/coverletters/${coverLetterId}`,
+    );
+
+    const response = await fetch(url.toString(), {
+      method: 'GET',
+      headers: headers,
+    });
+
+    if (!response.ok) {
+      console.error('Hata: ', response);
+      return;
+    }
+
+    const data = await response.json();
+    return data.url;
   } catch (error) {
     console.error('Mektup çekme hatası: ', error);
   }
