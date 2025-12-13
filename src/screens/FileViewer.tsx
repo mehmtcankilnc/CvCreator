@@ -10,8 +10,9 @@ import {
 } from 'react-native-responsive-screen';
 import Button from '../components/Button';
 import { useAppSelector } from '../store/hooks';
-import { downloadPDF } from '../utilities/downloadPDF';
 import { shareRemotePdf } from '../utilities/shareFile';
+import { DownloadCoverLetterById } from '../services/CoverLetterServices';
+import { DownloadResumeById } from '../services/ResumeServices';
 
 type Props = {
   navigation: any;
@@ -23,7 +24,11 @@ export default function FileViewer({ navigation, route }: Props) {
   const theme = useAppSelector(state => state.theme.theme);
 
   const handleDownload = async () => {
-    await downloadPDF(file.storagePath, file.name, type);
+    if (type === 'coverletters') {
+      await DownloadCoverLetterById(file.id, file.name);
+    } else {
+      await DownloadResumeById(file.id, file.name);
+    }
   };
 
   const handleShare = async () => {
@@ -35,7 +40,7 @@ export default function FileViewer({ navigation, route }: Props) {
       <Header
         handlePress={() => navigation.goBack()}
         iconName="chevron-back"
-        title="FileViewer"
+        title="File Viewer"
       />
       <Page>
         <Pdf
@@ -47,7 +52,9 @@ export default function FileViewer({ navigation, route }: Props) {
           }}
           source={{ uri: url, cache: true }}
           trustAllCerts={false}
-          renderActivityIndicator={() => <ActivityIndicator />} //shimmer koyarız
+          renderActivityIndicator={() => (
+            <ActivityIndicator color="#1954E5" size="large" />
+          )}
         />
       </Page>
       <View

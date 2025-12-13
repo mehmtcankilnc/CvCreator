@@ -20,40 +20,39 @@ export default function MyCoverLetters({ navigation }: Props) {
   );
   const [searchText, setSearchText] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const isUserAnon = useAppSelector(state => state.auth.isAnonymous);
-  const userId = useAppSelector(state => state.auth.userId);
+  const { isAnonymous, userId } = useAppSelector(state => state.auth);
+
+  const fetchCoverLetters = useCallback(async () => {
+    setIsLoading(true);
+    if (!isAnonymous && userId) {
+      try {
+        const data = await GetMyCoverLetters(searchText);
+        if (data) {
+          const mappedCoverLetters = data.map((item: any) => ({
+            id: item.id,
+            name: item.fileName,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
+            storagePath: item.storagePath,
+          }));
+          setMyCoverLetters(mappedCoverLetters);
+        }
+      } catch (error) {
+        console.error('Error fetching coverletters:', error);
+        setMyCoverLetters([]);
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      setIsLoading(false);
+      setMyCoverLetters([]);
+    }
+  }, [isAnonymous, userId, searchText]);
 
   useFocusEffect(
     useCallback(() => {
-      const fetchCoverLetters = async () => {
-        setIsLoading(true);
-        if (!isUserAnon && userId) {
-          try {
-            const data = await GetMyCoverLetters(searchText);
-            if (data) {
-              const mappedCoverLetters = data.map((item: any) => ({
-                id: item.id,
-                name: item.fileName,
-                createdAt: item.createdAt,
-                updatedAt: item.updatedAt,
-                storagePath: item.storagePath,
-              }));
-              setMyCoverLetters(mappedCoverLetters);
-            }
-          } catch (error) {
-            console.error('Error fetching coverletters:', error);
-            setMyCoverLetters([]);
-          } finally {
-            setIsLoading(false);
-          }
-        } else {
-          setIsLoading(false);
-          setMyCoverLetters([]);
-        }
-      };
-
       fetchCoverLetters();
-    }, [isUserAnon, searchText, userId]),
+    }, [fetchCoverLetters]),
   );
 
   useFocusEffect(
@@ -71,7 +70,7 @@ export default function MyCoverLetters({ navigation }: Props) {
       );
     }
 
-    if (isUserAnon) {
+    if (isAnonymous) {
       return (
         <View
           className="flex-1 items-center justify-center"
@@ -108,6 +107,7 @@ export default function MyCoverLetters({ navigation }: Props) {
               file={item}
               type="coverletters"
               navigation={navigation}
+              fetchFunc={async () => await fetchCoverLetters()}
             />
           )}
           showsVerticalScrollIndicator={false}

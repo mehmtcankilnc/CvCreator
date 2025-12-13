@@ -20,10 +20,14 @@ import ContentStep from '../components/CreateCoverLetterSteps/ContentStep';
 import Button from '../components/Button';
 import Alert from '../components/Alert';
 import CreatedInfoModal from '../components/CreatedInfoModal';
-import { PostCoverLetterValues } from '../services/CoverLetterServices';
+import {
+  PostCoverLetterValues,
+  UpdateCoverLetterValues,
+} from '../services/CoverLetterServices';
 
 type Props = {
   navigation: any;
+  route: any;
 };
 
 const INITIAL_COVER_LETTER_VALUES: CoverLetterFormValues = {
@@ -55,9 +59,9 @@ const INITIAL_COVER_LETTER_VALUES: CoverLetterFormValues = {
 const { width: screenWidth } = Dimensions.get('window');
 const isSmallScreen = screenWidth < 375;
 
-export default function CreateCoverLetter({ navigation }: Props) {
+export default function CreateCoverLetter({ navigation, route }: Props) {
   const [formValues, setFormValues] = useState<CoverLetterFormValues>(
-    INITIAL_COVER_LETTER_VALUES,
+    route.params?.formValues ?? INITIAL_COVER_LETTER_VALUES,
   );
 
   const [currentStep, setCurrentStep] = useState<number>(1);
@@ -169,7 +173,16 @@ export default function CreateCoverLetter({ navigation }: Props) {
 
     try {
       setIsSubmitting(true);
-      const response = await PostCoverLetterValues(formValues);
+
+      let response;
+      if (route.params?.formValues) {
+        response = await UpdateCoverLetterValues(
+          formValues,
+          route.params.coverLetterId,
+        );
+      } else {
+        response = await PostCoverLetterValues(formValues);
+      }
 
       if (response && response.ok) {
         setIsCreated(true);
@@ -194,7 +207,9 @@ export default function CreateCoverLetter({ navigation }: Props) {
       <Header
         handlePress={() => navigation.goBack()}
         iconName="chevron-back"
-        title="Create Cover Letter"
+        title={`${
+          route.params?.formValues ? 'Edit Cover Letter' : 'Create Cover Letter'
+        }`}
       />
       <Page>
         <KeyboardAwareScrollView

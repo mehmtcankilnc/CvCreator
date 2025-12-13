@@ -52,50 +52,42 @@ export default function Home({ navigation }: Props) {
     ensureUserData();
   }, [isAnonymous, userId, dispatch]);
 
+  const fetchData = useCallback(async () => {
+    if (!isAnonymous && userId) {
+      setIsResumesLoading(true);
+      const resumeData = await GetMyResumes('', FILE_NUMBER);
+      if (resumeData) {
+        const mappedResumes = resumeData.map((r: any) => ({
+          id: r.id,
+          name: r.fileName,
+          createdAt: r.createdAt,
+          updatedAt: r.updatedAt,
+          storagePath: r.storagePath,
+        }));
+        setMyResumes(mappedResumes);
+        setIsResumesLoading(false);
+      }
+
+      setIsCoverLettersLoading(true);
+      const coverLetterData = await GetMyCoverLetters('', FILE_NUMBER);
+      if (coverLetterData) {
+        const mappedCoverLetters = coverLetterData.map((r: any) => ({
+          id: r.id,
+          name: r.fileName,
+          createdAt: r.createdAt,
+          updatedAt: r.updatedAt,
+          storagePath: r.storagePath,
+        }));
+        setMyCoverLetters(mappedCoverLetters);
+        setIsCoverLettersLoading(false);
+      }
+    }
+  }, [isAnonymous, userId]);
+
   useFocusEffect(
     useCallback(() => {
-      const fetchResumes = async () => {
-        if (!isAnonymous && userId) {
-          setIsResumesLoading(true);
-          const resumeData = await GetMyResumes('', FILE_NUMBER);
-
-          if (resumeData) {
-            const mappedResumes = resumeData.map((r: any) => ({
-              id: r.id,
-              name: r.fileName,
-              createdAt: r.createdAt,
-              updatedAt: r.updatedAt,
-              storagePath: r.storagePath,
-            }));
-
-            setMyResumes(mappedResumes);
-            setIsResumesLoading(false);
-          }
-        }
-      };
-      const fetchCoverLetters = async () => {
-        if (!isAnonymous && userId) {
-          setIsCoverLettersLoading(true);
-          const coverLetterData = await GetMyCoverLetters('', FILE_NUMBER);
-
-          if (coverLetterData) {
-            const mappedCoverLetters = coverLetterData.map((r: any) => ({
-              id: r.id,
-              name: r.fileName,
-              createdAt: r.createdAt,
-              updatedAt: r.updatedAt,
-              storagePath: r.storagePath,
-            }));
-
-            setMyCoverLetters(mappedCoverLetters);
-            setIsCoverLettersLoading(false);
-          }
-        }
-      };
-
-      fetchResumes();
-      fetchCoverLetters();
-    }, [isAnonymous, userId]),
+      fetchData();
+    }, [fetchData]),
   );
 
   return (
@@ -225,7 +217,15 @@ export default function Home({ navigation }: Props) {
                 </Text>
               ) : myResumes && myResumes.length > 0 ? (
                 myResumes.map((item: any, index: number) => (
-                  <ListItem key={item.id} index={index + 1} title={item.name} />
+                  <ListItem
+                    key={item.id}
+                    index={index + 1}
+                    title={item.name}
+                    navigation={navigation}
+                    file={item}
+                    type={'resumes'}
+                    fetchFunc={async () => await fetchData()}
+                  />
                 ))
               ) : (
                 <Text className="text-gray-500 text-lg">
@@ -291,7 +291,15 @@ export default function Home({ navigation }: Props) {
                 </Text>
               ) : myCoverLetters && myCoverLetters.length > 0 ? (
                 myCoverLetters.map((item: any, index: number) => (
-                  <ListItem key={item.id} index={index + 1} title={item.name} />
+                  <ListItem
+                    key={item.id}
+                    index={index + 1}
+                    title={item.name}
+                    navigation={navigation}
+                    file={item}
+                    type="coverletters"
+                    fetchFunc={async () => await fetchData()}
+                  />
                 ))
               ) : (
                 <Text className="text-gray-500 text-lg">

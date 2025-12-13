@@ -28,7 +28,10 @@ import LanguagesInfoStep from '../components/CreateResumeSteps/LanguagesInfoStep
 import ReferencesInfoStep from '../components/CreateResumeSteps/ReferencesInfoStep';
 import EducationsInfoStep from '../components/CreateResumeSteps/EducationsInfoStep';
 import Alert from '../components/Alert';
-import { PostResumeValues } from '../services/ResumeServices';
+import {
+  PostResumeValues,
+  UpdateResumeValues,
+} from '../services/ResumeServices';
 import TemplateSelectStep from '../components/CreateResumeSteps/TemplateSelectStep';
 import { resumeTemplatesData } from '../data/resumeTemplatesData';
 import CreatedInfoModal from '../components/CreatedInfoModal';
@@ -54,7 +57,7 @@ const isSmallScreen = screenWidth < 375;
 
 export default function CreateResume({ navigation, route }: Props) {
   const [formValues, setFormValues] = useState<ResumeFormValues>(
-    INITIAL_RESUME_VALUES,
+    route.params?.formValues ?? INITIAL_RESUME_VALUES,
   );
   const [selectedTemplateIndex, setSelectedTemplateIndex] = useState(
     route.params?.templateIndex ?? 0,
@@ -264,10 +267,20 @@ export default function CreateResume({ navigation, route }: Props) {
 
     try {
       setIsSubmitting(true);
-      const response = await PostResumeValues(
-        formValues,
-        resumeTemplatesData[selectedTemplateIndex].name,
-      );
+
+      let response;
+      if (route.params?.formValues) {
+        response = await UpdateResumeValues(
+          formValues,
+          resumeTemplatesData[selectedTemplateIndex].name,
+          route.params.resumeId,
+        );
+      } else {
+        response = await PostResumeValues(
+          formValues,
+          resumeTemplatesData[selectedTemplateIndex].name,
+        );
+      }
 
       if (response && response.ok) {
         setIsCreated(true);
@@ -292,7 +305,7 @@ export default function CreateResume({ navigation, route }: Props) {
       <Header
         handlePress={() => navigation.goBack()}
         iconName="chevron-back"
-        title="Create Resume"
+        title={`${route.params?.formValues ? 'Edit Resume' : 'Create Resume'}`}
       />
       <Page>
         <KeyboardAwareScrollView

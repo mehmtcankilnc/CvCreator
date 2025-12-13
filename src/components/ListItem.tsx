@@ -1,19 +1,50 @@
 /* eslint-disable react-native/no-inline-styles */
 import { View, Text } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { openBottomSheet } from '../store/slices/bottomSheetSlice';
+import {
+  closeBottomSheet,
+  openBottomSheet,
+} from '../store/slices/bottomSheetSlice';
+import { FileRespModel } from './MyFileCard';
+import { DeleteResumeById, GetMyResumeById } from '../services/ResumeServices';
+import {
+  DeleteCoverLetterById,
+  GetMyCoverLetterById,
+} from '../services/CoverLetterServices';
+import Alert from './Alert';
 
 type Props = {
+  navigation: any;
   index: number;
   title: string;
+  file: FileRespModel;
+  type: 'resumes' | 'coverletters';
+  fetchFunc: () => void;
 };
 
-export default function ListItem({ index, title }: Props) {
+export default function ListItem({
+  navigation,
+  index,
+  title,
+  file,
+  type,
+  fetchFunc,
+}: Props) {
   const dispatch = useAppDispatch();
   const { theme } = useAppSelector(state => state.theme);
+
+  const [alert, setAlert] = useState({
+    type: 'failure',
+    title: '',
+    desc: '',
+    onPress: () => {},
+  });
+  const [alertVisible, setAlertVisible] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleOpenPress = () => {
     dispatch(
@@ -22,20 +53,89 @@ export default function ListItem({ index, title }: Props) {
         props: {
           onShow: handleShow,
           onEdit: handleEdit,
-          onDelete: handleDelete,
+          onDelete: () => {
+            setAlertVisible(true);
+            setAlert({
+              type: 'failure',
+              title: 'Are you sure?',
+              desc: 'You are deleting this file permanently. Do you confirm?',
+              onPress: handleDelete,
+            });
+          },
         },
       }),
     );
   };
 
   const handleShow = async () => {
-    console.log('show');
+    if (type === 'resumes') {
+      const resume = await GetMyResumeById(file.id);
+
+      if (resume) {
+        dispatch(closeBottomSheet());
+        navigation.navigate('FileViewer', {
+          url: resume.url,
+          file: file,
+          type: type,
+        });
+      }
+    } else {
+      const coverLetter = await GetMyCoverLetterById(file.id);
+
+      if (coverLetter) {
+        dispatch(closeBottomSheet());
+        navigation.navigate('FileViewer', {
+          url: coverLetter.url,
+          file: file,
+          type: type,
+        });
+      }
+    }
   };
+
   const handleEdit = async () => {
-    console.log('edit');
+    if (type === 'resumes') {
+      const resume = await GetMyResumeById(file.id);
+
+      if (resume) {
+        dispatch(closeBottomSheet());
+        navigation.navigate('CreateResume', {
+          formValues: resume.formValues.resumeFormValues,
+          resumeId: resume.formValues.id,
+        });
+      }
+    } else {
+      const coverLetter = await GetMyCoverLetterById(file.id);
+
+      if (coverLetter) {
+        dispatch(closeBottomSheet());
+        navigation.navigate('CreateCoverLetter', {
+          formValues: coverLetter.formValues.coverLetterFormValues,
+          coverLetterId: coverLetter.formValues.id,
+        });
+      }
+    }
   };
+
   const handleDelete = async () => {
-    console.log('delete');
+    setIsLoading(true);
+    if (type === 'coverletters') {
+      const coverLetterDeleted = await DeleteCoverLetterById(file.id);
+
+      if (coverLetterDeleted) {
+        setIsLoading(false);
+        dispatch(closeBottomSheet());
+        fetchFunc();
+      }
+    } else {
+      const resumeDeleted = await DeleteResumeById(file.id);
+
+      if (resumeDeleted) {
+        setIsLoading(false);
+        dispatch(closeBottomSheet());
+        fetchFunc();
+      }
+    }
   };
 
   const iconColor = theme === 'LIGHT' ? '#585858' : '#D9D9D9';
@@ -94,6 +194,17 @@ export default function ListItem({ index, title }: Props) {
         color={iconColor}
         onPress={handleOpenPress}
       />
+      {alertVisible && (
+        <Alert
+          visible={alertVisible}
+          title={alert.title}
+          desc={alert.desc}
+          type={alert.type}
+          onPress={alert.onPress}
+          onDismiss={() => setAlertVisible(false)}
+          isLoading={isLoading}
+        />
+      )}
     </View>
   );
 }

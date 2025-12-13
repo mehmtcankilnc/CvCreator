@@ -18,40 +18,39 @@ export default function MyResumes({ navigation }: Props) {
   const [myResumes, setMyResumes] = useState<Array<FileRespModel>>([]);
   const [searchText, setSearchText] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const isUserAnon = useAppSelector(state => state.auth.isAnonymous);
-  const userId = useAppSelector(state => state.auth.userId);
+  const { isAnonymous, userId } = useAppSelector(state => state.auth);
+
+  const fetchResumes = useCallback(async () => {
+    setIsLoading(true);
+    if (!isAnonymous && userId) {
+      try {
+        const data = await GetMyResumes(searchText);
+        if (data) {
+          const mappedResumes = data.map((item: any) => ({
+            id: item.id,
+            name: item.fileName,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
+            storagePath: item.storagePath,
+          }));
+          setMyResumes(mappedResumes);
+        }
+      } catch (error) {
+        console.error('Error fetching resumes:', error);
+        setMyResumes([]);
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      setIsLoading(false);
+      setMyResumes([]);
+    }
+  }, [isAnonymous, userId, searchText]);
 
   useFocusEffect(
     useCallback(() => {
-      const fetchResumes = async () => {
-        setIsLoading(true);
-        if (!isUserAnon && userId) {
-          try {
-            const data = await GetMyResumes(searchText);
-            if (data) {
-              const mappedResumes = data.map((item: any) => ({
-                id: item.id,
-                name: item.fileName,
-                createdAt: item.createdAt,
-                updatedAt: item.updatedAt,
-                storagePath: item.storagePath,
-              }));
-              setMyResumes(mappedResumes);
-            }
-          } catch (error) {
-            console.error('Error fetching resumes:', error);
-            setMyResumes([]);
-          } finally {
-            setIsLoading(false);
-          }
-        } else {
-          setIsLoading(false);
-          setMyResumes([]);
-        }
-      };
-
       fetchResumes();
-    }, [isUserAnon, searchText, userId]),
+    }, [fetchResumes]),
   );
 
   useFocusEffect(
@@ -69,7 +68,7 @@ export default function MyResumes({ navigation }: Props) {
       );
     }
 
-    if (isUserAnon) {
+    if (isAnonymous) {
       return (
         <View
           className="flex-1 items-center justify-center"
@@ -102,7 +101,12 @@ export default function MyResumes({ navigation }: Props) {
           contentContainerStyle={{ padding: wp(3), gap: wp(3) }}
           keyExtractor={item => item.id}
           renderItem={({ item }) => (
-            <MyFileCard file={item} type="resumes" navigation={navigation} />
+            <MyFileCard
+              file={item}
+              type="resumes"
+              navigation={navigation}
+              fetchFunc={async () => await fetchResumes()}
+            />
           )}
           showsVerticalScrollIndicator={false}
           bounces={false}

@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import { View, Text } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Button from './Button';
@@ -9,9 +9,17 @@ import {
   closeBottomSheet,
   openBottomSheet,
 } from '../store/slices/bottomSheetSlice';
-import { downloadPDF } from '../utilities/downloadPDF';
-import { GetMyResumeById } from '../services/ResumeServices';
-import { GetMyCoverLetterById } from '../services/CoverLetterServices';
+import {
+  DeleteResumeById,
+  DownloadResumeById,
+  GetMyResumeById,
+} from '../services/ResumeServices';
+import {
+  DeleteCoverLetterById,
+  DownloadCoverLetterById,
+  GetMyCoverLetterById,
+} from '../services/CoverLetterServices';
+import Alert from './Alert';
 
 export type FileRespModel = {
   id: string;
@@ -25,12 +33,28 @@ type Props = {
   navigation: any;
   file: FileRespModel;
   type: 'resumes' | 'coverletters';
+  fetchFunc: () => void;
 };
 
-export default function MyFileCard({ navigation, file, type }: Props) {
+export default function MyFileCard({
+  navigation,
+  file,
+  type,
+  fetchFunc,
+}: Props) {
   const dispatch = useAppDispatch();
   const { theme } = useAppSelector(state => state.theme);
   const iconColor = theme === 'LIGHT' ? '#585858' : '#D4D4D4';
+
+  const [alert, setAlert] = useState({
+    type: 'failure',
+    title: '',
+    desc: '',
+    onPress: () => {},
+  });
+  const [alertVisible, setAlertVisible] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleOpenPress = () => {
     dispatch(
@@ -39,7 +63,15 @@ export default function MyFileCard({ navigation, file, type }: Props) {
         props: {
           onShow: handleShow,
           onEdit: handleEdit,
-          onDelete: handleDelete,
+          onDelete: () => {
+            setAlertVisible(true);
+            setAlert({
+              type: 'failure',
+              title: 'Are you sure?',
+              desc: 'You are deleting this file permanently. Do you confirm?',
+              onPress: handleDelete,
+            });
+          },
         },
       }),
     );
@@ -47,35 +79,81 @@ export default function MyFileCard({ navigation, file, type }: Props) {
 
   const handleShow = async () => {
     if (type === 'resumes') {
-      const resumeUrl = await GetMyResumeById(file.id);
+      const resume = await GetMyResumeById(file.id);
 
-      if (resumeUrl) {
+      if (resume) {
         dispatch(closeBottomSheet());
         navigation.navigate('FileViewer', {
-          url: resumeUrl,
+          url: resume.url,
           file: file,
           type: type,
         });
       }
     } else {
-      const coverLetterUrl = await GetMyCoverLetterById(file.id);
+      const coverLetter = await GetMyCoverLetterById(file.id);
 
-      if (coverLetterUrl) {
+      if (coverLetter) {
         dispatch(closeBottomSheet());
-        navigation.navigate('FileViewer', { url: coverLetterUrl });
+        navigation.navigate('FileViewer', {
+          url: coverLetter.url,
+          file: file,
+          type: type,
+        });
       }
     }
   };
 
   const handleEdit = async () => {
-    console.log('edit');
+    if (type === 'resumes') {
+      const resume = await GetMyResumeById(file.id);
+
+      if (resume) {
+        dispatch(closeBottomSheet());
+        navigation.navigate('CreateResume', {
+          formValues: resume.formValues.resumeFormValues,
+          resumeId: resume.formValues.id,
+        });
+      }
+    } else {
+      const coverLetter = await GetMyCoverLetterById(file.id);
+
+      if (coverLetter) {
+        dispatch(closeBottomSheet());
+        navigation.navigate('CreateCoverLetter', {
+          formValues: coverLetter.formValues.coverLetterFormValues,
+          coverLetterId: coverLetter.formValues.id,
+        });
+      }
+    }
   };
+
   const handleDelete = async () => {
-    console.log('delete');
+    setIsLoading(true);
+    if (type === 'coverletters') {
+      const coverLetterDeleted = await DeleteCoverLetterById(file.id);
+
+      if (coverLetterDeleted) {
+        setIsLoading(false);
+        dispatch(closeBottomSheet());
+        fetchFunc();
+      }
+    } else {
+      const resumeDeleted = await DeleteResumeById(file.id);
+
+      if (resumeDeleted) {
+        setIsLoading(false);
+        dispatch(closeBottomSheet());
+        fetchFunc();
+      }
+    }
   };
 
   const handleDownload = async () => {
-    await downloadPDF(file.storagePath, file.name, type);
+    if (type === 'coverletters') {
+      await DownloadCoverLetterById(file.id, file.name);
+    } else {
+      await DownloadResumeById(file.id, file.name);
+    }
   };
 
   return (
@@ -157,6 +235,17 @@ export default function MyFileCard({ navigation, file, type }: Props) {
       >
         <Button text="Download as PDF" handleSubmit={handleDownload} />
       </View>
+      {alertVisible && (
+        <Alert
+          visible={alertVisible}
+          title={alert.title}
+          desc={alert.desc}
+          type={alert.type}
+          onPress={alert.onPress}
+          onDismiss={() => setAlertVisible(false)}
+          isLoading={isLoading}
+        />
+      )}
     </View>
   );
 }
