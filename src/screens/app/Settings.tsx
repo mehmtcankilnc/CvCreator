@@ -143,11 +143,13 @@ export default function Settings({ navigation }: Props) {
     }
   };
 
-  const handleThemeChange = () => {
+  const handleThemeChange = async () => {
     if (theme === 'DARK') {
       dispatch(setTheme('LIGHT'));
+      await AsyncStorage.setItem('theme', 'LIGHT');
     } else {
       dispatch(setTheme('DARK'));
+      await AsyncStorage.setItem('theme', 'DARK');
     }
   };
 

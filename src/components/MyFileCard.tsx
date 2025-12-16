@@ -161,7 +161,7 @@ export default function MyFileCard({
 
   return (
     <View
-      className="bg-secondaryBackground dark:bg-dark-secondaryBackground elevation-md"
+      className="bg-secondaryBackground dark:bg-dark-secondaryBackground elevation-md border border-blue-100 dark:border-blue-800/30"
       style={{
         height: wp(60),
         borderRadius: wp(3),

@@ -145,7 +145,7 @@ export default function ListItem({
 
   return (
     <View
-      className="flex-row items-center justify-between w-full bg-secondaryBackground dark:bg-dark-secondaryBackground elevation-md"
+      className="flex-row items-center justify-between w-full bg-secondaryBackground dark:bg-dark-secondaryBackground elevation-md border border-blue-100 dark:border-blue-800/30"
       style={{ borderRadius: wp(2), padding: wp(2) }}
     >
       {/** Sayı? ve İsim? */}

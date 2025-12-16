@@ -103,65 +103,75 @@ export default function Home({ navigation }: Props) {
         <View className="flex-1 items-center" style={{ gap: wp(3) }}>
           {/** Özellik Butonları */}
           <View
-            className="flex-row justify-between"
+            className="flex justify-between"
             style={{
               width: wp(100),
               padding: wp(5),
               gap: wp(5),
-              height: wp(60),
+              height: wp(75),
             }}
           >
             {/** Özgeçmiş Oluştur Butonu */}
             <Pressable
-              className="flex-1 items-center justify-center bg-[#e5eded] dark:bg-[#122B29] elevation-md"
+              className="flex-1 flex-row items-center justify-start bg-main elevation-md"
               style={{
                 borderRadius: wp(4),
                 gap: wp(5),
+                padding: wp(5),
               }}
               onPress={() => navigation.navigate('CreateResume')}
             >
-              {theme === 'LIGHT' ? (
-                <Image
-                  source={require('../../assets/icons/resumeIconLight.png')}
-                  style={{ width: wp(20), height: wp(20) }}
-                />
-              ) : (
-                <Image
-                  source={require('../../assets/icons/resumeIconDark.png')}
-                  style={{ width: wp(20), height: wp(20) }}
-                />
-              )}
-              <Text
-                className="font-kavoon text-center color-[#2D706C] dark:text-[#92D3CF]"
-                style={{ fontSize: wp(4.5) }}
+              <View
+                className="bg-[#1b6eff] items-center justify-center"
+                style={{ padding: wp(4), borderRadius: wp(4) }}
               >
-                {t('create-resume')}
-              </Text>
+                <Image
+                  source={require('../../assets/icons/resumeIcon.png')}
+                  style={{ width: wp(10), height: wp(10) }}
+                />
+              </View>
+              <View className="flex-1">
+                <Text
+                  className="font-kavoon text-white dark:text-dark-textColor"
+                  style={{ fontSize: wp(5) }}
+                >
+                  {t('create-resume-header')}
+                </Text>
+                <Text className="text-blue-300" style={{ fontSize: wp(3) }}>
+                  {t('create-resume-desc')}
+                </Text>
+              </View>
+              <Feather name="chevron-right" size={wp(8)} color="#FFF" />
             </Pressable>
-            <View className="flex-1" style={{ gap: wp(5) }}>
+            <View className="flex-1 flex-row" style={{ gap: wp(5) }}>
               {/** Motivasyon Mektubu Oluştur Butonu */}
               <Pressable
-                className="flex-1 flex-row items-center justify-between bg-[#F6DDDB] dark:bg-[#50211E] elevation-md"
+                className="flex-1 items-center justify-center bg-[#f6edff] dark:bg-[#342359] elevation-md border border-purple-200/50"
                 style={{
                   borderRadius: wp(4),
                   paddingHorizontal: wp(5),
-                  gap: wp(3),
+                  gap: wp(1),
                 }}
                 onPress={() => navigation.navigate('CreateCoverLetter')}
               >
-                {theme === 'LIGHT' ? (
-                  <Image
-                    source={require('../../assets/icons/coverLetterIconLight.png')}
-                    style={{ width: wp(10), height: wp(10) }}
-                  />
-                ) : (
-                  <Image
-                    source={require('../../assets/icons/coverLetterIconDark.png')}
-                    style={{ width: wp(10), height: wp(10) }}
-                  />
-                )}
+                <View
+                  className="bg-white dark:bg-[#364153] items-center justify-center"
+                  style={{ padding: wp(2), borderRadius: wp(3) }}
+                >
+                  {theme === 'LIGHT' ? (
+                    <Image
+                      source={require('../../assets/icons/coverLetterIconLight.png')}
+                      style={{ width: wp(8), height: wp(8) }}
+                    />
+                  ) : (
+                    <Image
+                      source={require('../../assets/icons/coverLetterIconDark.png')}
+                      style={{ width: wp(8), height: wp(8) }}
+                    />
+                  )}
+                </View>
                 <Text
-                  className="font-kavoon text-center color-[#90542F] dark:text-[#D39B78]"
+                  className="font-kavoon text-center text-[#90168b] dark:text-[#e9d4ff]"
                   style={{ fontSize: wp(3) }}
                 >
                   {t('create-cover-letter')}
@@ -169,23 +179,32 @@ export default function Home({ navigation }: Props) {
               </Pressable>
               {/** Şablonlar Butonu */}
               <Pressable
-                className="flex-1 flex-row items-center justify-between bg-[#DCDBF6] dark:bg-[#1F1E39] elevation-md"
-                style={{ borderRadius: wp(4), paddingHorizontal: wp(5) }}
+                className="flex-1 items-center justify-center bg-[#fdecf5] dark:bg-[#421e3d] elevation-md border border-pink-200/50"
+                style={{
+                  borderRadius: wp(4),
+                  paddingHorizontal: wp(5),
+                  gap: wp(1),
+                }}
                 onPress={() => navigation.navigate('Templates')}
               >
-                {theme === 'LIGHT' ? (
-                  <Image
-                    source={require('../../assets/icons/templatesIconLight.png')}
-                    style={{ width: wp(10), height: wp(10) }}
-                  />
-                ) : (
-                  <Image
-                    source={require('../../assets/icons/templatesIconDark.png')}
-                    style={{ width: wp(10), height: wp(10) }}
-                  />
-                )}
+                <View
+                  className="bg-white dark:bg-[#364153] items-center justify-center"
+                  style={{ padding: wp(2), borderRadius: wp(3) }}
+                >
+                  {theme === 'LIGHT' ? (
+                    <Image
+                      source={require('../../assets/icons/templatesIconLight.png')}
+                      style={{ width: wp(8), height: wp(8) }}
+                    />
+                  ) : (
+                    <Image
+                      source={require('../../assets/icons/templatesIconDark.png')}
+                      style={{ width: wp(8), height: wp(8) }}
+                    />
+                  )}
+                </View>
                 <Text
-                  className="font-kavoon text-center color-[#553284] dark:text-[#A07DCE]"
+                  className="font-kavoon text-center text-textColor dark:text-[#fccedd]"
                   style={{ fontSize: wp(3) }}
                 >
                   {t('templates')}
