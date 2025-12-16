@@ -12,6 +12,7 @@ import Button from '../Button';
 import TextInput from '../TextInput';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import AccordionItem from '../AccordionItem';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   initial: Array<ReferenceInfo>;
@@ -26,6 +27,8 @@ if (
 }
 
 export default function ReferencesInfoStep({ initial, handleForward }: Props) {
+  const { t } = useTranslation();
+
   const [references, setReferences] = useState<ReferenceInfo[]>(
     initial.length > 0 ? initial : [{ fullName: '', contact: '' }],
   );
@@ -98,37 +101,37 @@ export default function ReferencesInfoStep({ initial, handleForward }: Props) {
           marginBottom: wp(3),
         }}
       >
-        References
+        {t('resume-step8-title')}
       </Text>
       {references.map((ref, i) => (
         <AccordionItem
           key={i}
           isActive={activeIndex === i}
           onToggle={() => handleToggle(i)}
-          title={ref.fullName || `Reference #${i + 1}`}
+          title={ref.fullName || `${t('resume-step8-text')} #${i + 1}`}
         >
           <TextInput
             handleChangeText={value => handleInputChange(i, 'fullName', value)}
             value={ref.fullName}
-            placeholder="Full Name"
+            placeholder={t('resume-step8-field1')}
             autoCapitalize="words"
           />
           <TextInput
             handleChangeText={value => handleInputChange(i, 'contact', value)}
             value={ref.contact}
-            placeholder="Contact"
+            placeholder={t('resume-step8-field2')}
             autoCapitalize="none"
           />
           {i > 0 && (
             <Button
               handleSubmit={() => handleDelete(i)}
-              text="Delete This Reference"
+              text={t('resume-step8-delete')}
               type="delete"
             />
           )}
         </AccordionItem>
       ))}
-      <Button handleSubmit={handleAddNew} text="Add New Reference" />
+      <Button handleSubmit={handleAddNew} text={t('resume-step8-btn')} />
     </ScrollView>
   );
 }

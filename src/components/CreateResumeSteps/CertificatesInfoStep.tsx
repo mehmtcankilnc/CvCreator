@@ -12,6 +12,7 @@ import Button from '../Button';
 import TextInput from '../TextInput';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import AccordionItem from '../AccordionItem';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   initial: Array<CertificateInfo>;
@@ -29,6 +30,8 @@ export default function CertificatesInfoStep({
   initial,
   handleForward,
 }: Props) {
+  const { t } = useTranslation();
+
   const [certificates, setCertificates] = useState<CertificateInfo[]>(
     initial.length > 0
       ? initial
@@ -105,47 +108,47 @@ export default function CertificatesInfoStep({
           marginBottom: wp(3),
         }}
       >
-        Certificates
+        {t('resume-step5-title')}
       </Text>
       {certificates.map((cert, i) => (
         <AccordionItem
           key={i}
           isActive={activeIndex === i}
           onToggle={() => handleToggle(i)}
-          title={cert.title || `Certificate #${i + 1}`}
+          title={cert.title || `${t('resume-step5-text')} #${i + 1}`}
         >
           <TextInput
             handleChangeText={value => handleInputChange(i, 'title', value)}
             value={cert.title}
-            placeholder="Title"
+            placeholder={t('resume-step5-field1')}
             autoCapitalize="words"
           />
           <TextInput
             handleChangeText={value => handleInputChange(i, 'issuer', value)}
             value={cert.issuer}
-            placeholder="Issuer"
+            placeholder={t('resume-step5-field2')}
             autoCapitalize="words"
           />
           <TextInput
             handleChangeText={value => handleInputChange(i, 'date', value)}
             value={cert.date}
-            placeholder="Date"
+            placeholder={t('resume-step5-field3')}
           />
           <TextInput
             handleChangeText={value => handleInputChange(i, 'link', value)}
             value={cert.link}
-            placeholder="Verification Link"
+            placeholder={t('resume-step5-field4')}
           />
           {i > 0 && (
             <Button
               handleSubmit={() => handleDelete(i)}
-              text="Delete This Certificate"
+              text={t('resume-step5-delete')}
               type="delete"
             />
           )}
         </AccordionItem>
       ))}
-      <Button handleSubmit={handleAddNew} text="Add New Certificate" />
+      <Button handleSubmit={handleAddNew} text={t('resume-step5-btn')} />
     </ScrollView>
   );
 }

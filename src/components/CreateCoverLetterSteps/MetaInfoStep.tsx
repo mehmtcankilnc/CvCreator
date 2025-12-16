@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CoverLetterMetaInfo } from '../../types/coverLetterTypes';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import TextInput from '../TextInput';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   initial: CoverLetterMetaInfo;
@@ -11,6 +12,8 @@ type Props = {
 };
 
 export default function MetaInfoStep({ initial, handleForward }: Props) {
+  const { t } = useTranslation();
+
   const [metaInfo, setMetaInfo] = useState<CoverLetterMetaInfo>(initial);
 
   const handleForwardRef = useRef(handleForward);
@@ -33,7 +36,7 @@ export default function MetaInfoStep({ initial, handleForward }: Props) {
           marginBottom: wp(3),
         }}
       >
-        Header Information
+        {t('coverletter-step3-title')}
       </Text>
       <View style={{ gap: wp(3) }}>
         <TextInput
@@ -41,7 +44,7 @@ export default function MetaInfoStep({ initial, handleForward }: Props) {
             setMetaInfo(prev => ({ ...prev, subject: value }))
           }
           value={metaInfo.subject}
-          placeholder="Subject*"
+          placeholder={t('coverletter-step3-field1')}
           autoCapitalize="words"
         />
         <TextInput
@@ -49,7 +52,7 @@ export default function MetaInfoStep({ initial, handleForward }: Props) {
             setMetaInfo(prev => ({ ...prev, sentDate: value }))
           }
           value={metaInfo.sentDate}
-          placeholder="Date*"
+          placeholder={t('coverletter-step3-field2')}
           autoCapitalize="none"
         />
       </View>

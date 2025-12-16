@@ -9,12 +9,15 @@ import MyFileCard, { FileRespModel } from '../../components/MyFileCard';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import SearchBar from '../../components/SearchBar';
 import ShimmerFileCard from '../../components/ShimmerFileCard';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   navigation: any;
 };
 
 export default function MyResumes({ navigation }: Props) {
+  const { t } = useTranslation();
+
   const [myResumes, setMyResumes] = useState<Array<FileRespModel>>([]);
   const [searchText, setSearchText] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -75,11 +78,11 @@ export default function MyResumes({ navigation }: Props) {
           style={{ gap: wp(5) }}
         >
           <Text className="text-gray-500 text-lg text-center">
-            You need to login via Google to save and access your resumes.
+            {t('resume-login-required')}
           </Text>
           <Pressable onPress={() => navigation.navigate('Settings')}>
             <Text className="text-gray-500 text-xl italic underline">
-              Login Now
+              {t('login-now')}
             </Text>
           </Pressable>
         </View>
@@ -89,7 +92,7 @@ export default function MyResumes({ navigation }: Props) {
     if (myResumes.length === 0) {
       return (
         <View className="flex-1 items-center justify-center">
-          <Text className="text-gray-500 text-lg">No resumes found.</Text>
+          <Text className="text-gray-500 text-lg">{t('no-resumes')}</Text>
         </View>
       );
     }
@@ -119,7 +122,7 @@ export default function MyResumes({ navigation }: Props) {
     <View className="flex-1">
       <Header
         handlePress={() => navigation.toggleDrawer()}
-        title="My Resumes"
+        title={t('my-resumes')}
       />
       <Page>
         <SearchBar searchText={searchText} setSearchText={setSearchText} />

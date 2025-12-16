@@ -13,6 +13,7 @@ import { useAppSelector } from '../store/hooks';
 import { shareRemotePdf } from '../utilities/shareFile';
 import { DownloadCoverLetterById } from '../services/CoverLetterServices';
 import { DownloadResumeById } from '../services/ResumeServices';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   navigation: any;
@@ -20,6 +21,8 @@ type Props = {
 };
 
 export default function FileViewer({ navigation, route }: Props) {
+  const { t } = useTranslation();
+
   const { url, file, type } = route.params;
   const theme = useAppSelector(state => state.theme.theme);
 
@@ -40,7 +43,7 @@ export default function FileViewer({ navigation, route }: Props) {
       <Header
         handlePress={() => navigation.goBack()}
         iconName="chevron-back"
-        title="File Viewer"
+        title={t('file-viewer')}
       />
       <Page>
         <Pdf
@@ -65,12 +68,12 @@ export default function FileViewer({ navigation, route }: Props) {
           type="success"
           handleSubmit={handleShare}
           style={{ flex: 1 }}
-          text="Share"
+          text={t('share')}
         />
         <Button
           handleSubmit={handleDownload}
           style={{ flex: 1 }}
-          text="Download"
+          text={t('download')}
         />
       </View>
     </View>

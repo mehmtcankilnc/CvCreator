@@ -13,6 +13,7 @@ import Button from '../Button';
 import AccordionItem from '../AccordionItem';
 import TextInput from '../TextInput';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   initial: Array<ExperienceInfo>;
@@ -20,6 +21,8 @@ type Props = {
 };
 
 export default function ExperiencesInfoStep({ initial, handleForward }: Props) {
+  const { t } = useTranslation();
+
   const [experiences, setExperiences] = useState<ExperienceInfo[]>(
     initial.length > 0
       ? initial
@@ -109,14 +112,14 @@ export default function ExperiencesInfoStep({ initial, handleForward }: Props) {
           marginBottom: wp(3),
         }}
       >
-        Experiences
+        {t('resume-step3-title')}
       </Text>
       {experiences.map((exp, i) => (
         <AccordionItem
           key={i}
           isActive={activeIndex === i}
           onToggle={() => handleToggle(i)}
-          title={exp.title || `Experience #${i + 1}`}
+          title={exp.title || `${t('resume-step3-text')} #${i + 1}`}
         >
           <View
             className="flex-row justify-end items-center"
@@ -144,19 +147,19 @@ export default function ExperiencesInfoStep({ initial, handleForward }: Props) {
                 fontSize: wp(3),
               }}
             >
-              Present
+              {t('present')}
             </Text>
           </View>
           <TextInput
             handleChangeText={value => handleInputChange(i, 'title', value)}
             value={exp.title}
-            placeholder="Title"
+            placeholder={t('resume-step3-field1')}
             autoCapitalize="words"
           />
           <TextInput
             handleChangeText={value => handleInputChange(i, 'company', value)}
             value={exp.company}
-            placeholder="Company"
+            placeholder={t('resume-step3-field2')}
             autoCapitalize="words"
           />
           <View className="flex-row items-center" style={{ gap: wp(3) }}>
@@ -166,7 +169,7 @@ export default function ExperiencesInfoStep({ initial, handleForward }: Props) {
                   handleInputChange(i, 'startDate', value)
                 }
                 value={exp.startDate}
-                placeholder="Start Date"
+                placeholder={t('resume-step3-field3')}
               />
             </View>
             <View className="flex-1">
@@ -178,7 +181,7 @@ export default function ExperiencesInfoStep({ initial, handleForward }: Props) {
                     fontSize: wp(4),
                   }}
                 >
-                  - Present
+                  - {t('present')}
                 </Text>
               ) : (
                 <TextInput
@@ -186,7 +189,7 @@ export default function ExperiencesInfoStep({ initial, handleForward }: Props) {
                     handleInputChange(i, 'endDate', value)
                   }
                   value={exp.endDate}
-                  placeholder="End Date"
+                  placeholder={t('resume-step3-field4')}
                 />
               )}
             </View>
@@ -194,19 +197,19 @@ export default function ExperiencesInfoStep({ initial, handleForward }: Props) {
           <TextInput
             handleChangeText={value => handleInputChange(i, 'text', value)}
             value={exp.text}
-            placeholder="Description"
+            placeholder={t('resume-step3-field5')}
             multiline
           />
           {i > 0 && (
             <Button
               handleSubmit={() => handleDelete(i)}
-              text="Delete This Experience"
+              text={t('resume-step3-delete')}
               type="delete"
             />
           )}
         </AccordionItem>
       ))}
-      <Button handleSubmit={handleAddNew} text="Add New Experience" />
+      <Button handleSubmit={handleAddNew} text={t('resume-step3-btn')} />
     </ScrollView>
   );
 }

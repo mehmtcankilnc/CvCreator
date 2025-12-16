@@ -8,6 +8,7 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { resumeTemplatesData } from '../data/resumeTemplatesData';
 import { TemplateCard } from '../components/CreateResumeSteps/TemplateSelectStep';
 import Button from '../components/Button';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   navigation: any;
@@ -17,6 +18,8 @@ const { width: screenWidth } = Dimensions.get('window');
 const isSmallScreen = screenWidth < 375;
 
 export default function Templates({ navigation }: Props) {
+  const { t } = useTranslation();
+
   const [selectedTemplateIndex, setSelectedTemplateIndex] = useState(0);
 
   return (
@@ -24,7 +27,7 @@ export default function Templates({ navigation }: Props) {
       <Header
         handlePress={() => navigation.goBack()}
         iconName="chevron-back"
-        title="Templates"
+        title={t('templates-header')}
       />
       <Page>
         <KeyboardAwareScrollView
@@ -62,7 +65,7 @@ export default function Templates({ navigation }: Props) {
             })
           }
           style={{ flex: 1 }}
-          text="Create Now"
+          text={t('create-now')}
         />
       </View>
     </View>

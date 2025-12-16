@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CoverLetterContent } from '../../types/coverLetterTypes';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import TextInput from '../TextInput';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   initial: CoverLetterContent;
@@ -11,6 +12,8 @@ type Props = {
 };
 
 export default function ContentStep({ initial, handleForward }: Props) {
+  const { t } = useTranslation();
+
   const [content, setContent] = useState<CoverLetterContent>(initial);
 
   const handleForwardRef = useRef(handleForward);
@@ -33,7 +36,7 @@ export default function ContentStep({ initial, handleForward }: Props) {
           marginBottom: wp(3),
         }}
       >
-        Content
+        {t('coverletter-step4-title')}
       </Text>
       <View style={{ gap: wp(3) }}>
         <TextInput
@@ -41,7 +44,7 @@ export default function ContentStep({ initial, handleForward }: Props) {
             setContent(prev => ({ ...prev, salutation: value }))
           }
           value={content.salutation}
-          placeholder="Salutation*"
+          placeholder={t('coverletter-step4-field1')}
           autoCapitalize="words"
         />
         <TextInput
@@ -49,7 +52,7 @@ export default function ContentStep({ initial, handleForward }: Props) {
             setContent(prev => ({ ...prev, introduction: value }))
           }
           value={content.introduction}
-          placeholder="Introduction*"
+          placeholder={t('coverletter-step4-field2')}
           multiline={true}
         />
         <TextInput
@@ -57,7 +60,7 @@ export default function ContentStep({ initial, handleForward }: Props) {
             setContent(prev => ({ ...prev, body: value }))
           }
           value={content.body}
-          placeholder="Content*"
+          placeholder={t('coverletter-step4-field3')}
           multiline={true}
         />
         <TextInput
@@ -65,7 +68,7 @@ export default function ContentStep({ initial, handleForward }: Props) {
             setContent(prev => ({ ...prev, conclusion: value }))
           }
           value={content.conclusion}
-          placeholder="Conclusion*"
+          placeholder={t('coverletter-step4-field4')}
           multiline={true}
         />
         <TextInput
@@ -73,7 +76,7 @@ export default function ContentStep({ initial, handleForward }: Props) {
             setContent(prev => ({ ...prev, signOff: value }))
           }
           value={content.signOff}
-          placeholder="Sign Off*"
+          placeholder={t('coverletter-step4-field5')}
           multiline={true}
         />
       </View>

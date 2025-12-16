@@ -9,12 +9,15 @@ import { useAppSelector } from '../../store/hooks';
 import { GetMyCoverLetters } from '../../services/CoverLetterServices';
 import { useFocusEffect } from '@react-navigation/native';
 import ShimmerFileCard from '../../components/ShimmerFileCard';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   navigation: any;
 };
 
 export default function MyCoverLetters({ navigation }: Props) {
+  const { t } = useTranslation();
+
   const [myCoverLetters, setMyCoverLetters] = useState<Array<FileRespModel>>(
     [],
   );
@@ -77,11 +80,11 @@ export default function MyCoverLetters({ navigation }: Props) {
           style={{ gap: wp(5) }}
         >
           <Text className="text-gray-500 text-lg text-center">
-            You need to login via Google to save and access your cover letters.
+            {t('coverletter-login-required')}
           </Text>
           <Pressable onPress={() => navigation.navigate('Settings')}>
             <Text className="text-gray-500 text-xl italic underline">
-              Login Now
+              {t('login-now')}
             </Text>
           </Pressable>
         </View>
@@ -91,7 +94,7 @@ export default function MyCoverLetters({ navigation }: Props) {
     if (myCoverLetters.length === 0) {
       return (
         <View className="flex-1 items-center justify-center">
-          <Text className="text-gray-500 text-lg">No resumes found.</Text>
+          <Text className="text-gray-500 text-lg">{t('no-coverletter')}</Text>
         </View>
       );
     }
@@ -121,7 +124,7 @@ export default function MyCoverLetters({ navigation }: Props) {
     <View className="flex-1">
       <Header
         handlePress={() => navigation.toggleDrawer()}
-        title="My Cover Letters"
+        title={t('my-cover-letters')}
       />
       <Page>
         <SearchBar searchText={searchText} setSearchText={setSearchText} />

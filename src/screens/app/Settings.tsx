@@ -16,12 +16,16 @@ import { LanguageTypes, setLanguage } from '../../store/slices/languageSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import InAppBrowser from 'react-native-inappbrowser-reborn';
 import { deleteUser } from '../../services/UserServices';
+import i18n from '../../utilities/i18n';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   navigation: any;
 };
 
 export default function Settings({ navigation }: Props) {
+  const { t } = useTranslation();
+
   const { isAnonymous, userName } = useAppSelector(state => state.auth);
   const { theme } = useAppSelector(state => state.theme);
   const dispatch = useAppDispatch();
@@ -53,8 +57,8 @@ export default function Settings({ navigation }: Props) {
         setAlertVisible(true);
         setAlert({
           type: 'failure',
-          title: 'Fail',
-          desc: 'Something went wrong.',
+          title: t('google-signin-error-title'),
+          desc: t('google-signin-error-text'),
           onPress: () => setAlertVisible(false),
         });
         return;
@@ -103,8 +107,8 @@ export default function Settings({ navigation }: Props) {
               setAlertVisible(true);
               setAlert({
                 type: 'failure',
-                title: 'Fail',
-                desc: 'Something went wrong.',
+                title: t('session-error-title'),
+                desc: t('session-error-text'),
                 onPress: () => setAlertVisible(false),
               });
             } else {
@@ -130,8 +134,8 @@ export default function Settings({ navigation }: Props) {
       setAlertVisible(true);
       setAlert({
         type: 'failure',
-        title: 'Fail',
-        desc: 'Something went wrong.',
+        title: t('unknown-fail-alert-title'),
+        desc: t('unknown-fail-alert-text'),
         onPress: () => setAlertVisible(false),
       });
     } finally {
@@ -156,8 +160,10 @@ export default function Settings({ navigation }: Props) {
     );
   };
 
-  const handleLangSelect = (lang: LanguageTypes) => {
+  const handleLangSelect = async (lang: LanguageTypes) => {
     dispatch(setLanguage(lang));
+    i18n.changeLanguage(lang);
+    await AsyncStorage.setItem('preferredLanguage', lang);
   };
 
   const handleLogout = async () => {
@@ -167,8 +173,8 @@ export default function Settings({ navigation }: Props) {
       setAlertVisible(true);
       setAlert({
         type: 'failure',
-        title: 'Something went wrong!',
-        desc: 'Something went wrong during logging you out. Please try again later.',
+        title: t('signout-error-title'),
+        desc: t('signout-error-text'),
         onPress: () => setAlertVisible(false),
       });
     } else {
@@ -186,125 +192,12 @@ export default function Settings({ navigation }: Props) {
 
   return (
     <View className="flex-1">
-      <Header handlePress={() => navigation.toggleDrawer()} title="Settings" />
+      <Header
+        handlePress={() => navigation.toggleDrawer()}
+        title={t('settings')}
+      />
       <Page>
         <View className="w-full" style={{ gap: wp(3) }}>
-          {/** Hesap Bilgileri */}
-          <View
-            className="w-full bg-secondaryBackground dark:bg-dark-secondaryBackground elevation-md"
-            style={{ borderRadius: wp(4), padding: wp(5), gap: wp(3) }}
-          >
-            <View style={{ gap: wp(1) }}>
-              <Text
-                style={{ fontSize: wp(4), color: '#1954E5', fontWeight: '600' }}
-              >
-                Account Information
-              </Text>
-              <View className="border-b w-full border-b-borderColor dark:border-b-dark-borderColor" />
-            </View>
-            {isAnonymous ? (
-              <GoogleSignInBtn // Google Sign In
-                handleGoogle={handleAccountLink}
-                isLoading={isLinking}
-              />
-            ) : (
-              <View // Kullanıcı Adı
-                className="flex-row items-center"
-                style={{ gap: wp(3) }}
-              >
-                <MaterialCommunityIcons
-                  name="account-outline"
-                  size={wp(8)}
-                  color={color}
-                />
-                <Text
-                  style={{
-                    fontFamily: 'Kavoon-Regular',
-                    fontSize: wp(4.5),
-                    fontWeight: '600',
-                    color: color,
-                  }}
-                >
-                  {userName}
-                </Text>
-              </View>
-            )}
-            <Pressable // Çıkış Yap
-              className={`flex-row items-center ${
-                isAnonymous ? 'opacity-25' : 'opacity-100'
-              }`}
-              style={{ gap: wp(3) }}
-              onPress={() => {
-                setAlertVisible(true);
-                setAlert({
-                  type: 'inform',
-                  title: 'Are you sure?',
-                  desc: 'You are logging out from the CvCreator. Do you confirm?',
-                  onPress: () => {
-                    setAlertVisible(false);
-                    handleLogout();
-                  },
-                });
-              }}
-              disabled={isAnonymous}
-            >
-              <MaterialCommunityIcons
-                name="logout"
-                size={wp(8)}
-                color={color}
-              />
-              <Text
-                style={{
-                  fontFamily: 'Kavoon-Regular',
-                  fontSize: wp(4.5),
-                  fontWeight: '600',
-                  color: color,
-                }}
-              >
-                Logout
-              </Text>
-            </Pressable>
-            <Pressable // Hesabı Sil
-              className={`flex-row items-center ${
-                isAnonymous ? 'opacity-25' : 'opacity-100'
-              }`}
-              style={{ gap: wp(3) }}
-              onPress={() => {
-                setAlertVisible(true);
-                setAlert({
-                  type: 'inform',
-                  title: 'Are you sure?',
-                  desc: 'You are deleting your account permanently. Do you confirm?',
-                  onPress: async () => {
-                    setAlertVisible(false);
-                    const res = await deleteUser();
-                    if (res && res.ok) {
-                      handleLogout();
-                    } else {
-                      console.log(res);
-                    }
-                  },
-                });
-              }}
-              disabled={isAnonymous}
-            >
-              <MaterialCommunityIcons
-                name="delete-forever-outline"
-                size={wp(8)}
-                color={color}
-              />
-              <Text
-                style={{
-                  fontFamily: 'Kavoon-Regular',
-                  fontSize: wp(4.5),
-                  fontWeight: '600',
-                  color: color,
-                }}
-              >
-                Delete your Account
-              </Text>
-            </Pressable>
-          </View>
           {/** Genel Ayarlar */}
           <View
             className="w-full bg-secondaryBackground dark:bg-dark-secondaryBackground elevation-md"
@@ -314,7 +207,7 @@ export default function Settings({ navigation }: Props) {
               <Text
                 style={{ fontSize: wp(4), color: '#1954E5', fontWeight: '600' }}
               >
-                General Settings
+                {t('general-settings')}
               </Text>
               <View className="border-b w-full border-b-borderColor dark:border-b-dark-borderColor" />
             </View>
@@ -337,7 +230,7 @@ export default function Settings({ navigation }: Props) {
                   color: color,
                 }}
               >
-                Switch Theme
+                {t('switch-theme')}
               </Text>
             </Pressable>
             {/** Dil Değişme */}
@@ -355,10 +248,129 @@ export default function Settings({ navigation }: Props) {
                   color: color,
                 }}
               >
-                Language
+                {t('language')}
               </Text>
             </Pressable>
           </View>
+          {isAnonymous ? (
+            <GoogleSignInBtn // Google Sign In
+              handleGoogle={handleAccountLink}
+              isLoading={isLinking}
+            />
+          ) : (
+            <View // Hesap Bilgileri
+              className="w-full bg-secondaryBackground dark:bg-dark-secondaryBackground elevation-md"
+              style={{ borderRadius: wp(4), padding: wp(5), gap: wp(3) }}
+            >
+              <View style={{ gap: wp(1) }}>
+                <Text
+                  style={{
+                    fontSize: wp(4),
+                    color: '#1954E5',
+                    fontWeight: '600',
+                  }}
+                >
+                  {t('account-info')}
+                </Text>
+                <View className="border-b w-full border-b-borderColor dark:border-b-dark-borderColor" />
+              </View>
+              <View // Kullanıcı Adı
+                className="flex-row items-center"
+                style={{ gap: wp(3) }}
+              >
+                <MaterialCommunityIcons
+                  name="account-outline"
+                  size={wp(8)}
+                  color={color}
+                />
+                <Text
+                  style={{
+                    fontFamily: 'Kavoon-Regular',
+                    fontSize: wp(4.5),
+                    fontWeight: '600',
+                    color: color,
+                  }}
+                >
+                  {userName}
+                </Text>
+              </View>
+              <Pressable // Çıkış Yap
+                className={`flex-row items-center ${
+                  isAnonymous ? 'opacity-25' : 'opacity-100'
+                }`}
+                style={{ gap: wp(3) }}
+                onPress={() => {
+                  setAlertVisible(true);
+                  setAlert({
+                    type: 'inform',
+                    title: t('are-you-sure'),
+                    desc: t('logout-msg'),
+                    onPress: () => {
+                      setAlertVisible(false);
+                      handleLogout();
+                    },
+                  });
+                }}
+                disabled={isAnonymous}
+              >
+                <MaterialCommunityIcons
+                  name="logout"
+                  size={wp(8)}
+                  color={color}
+                />
+                <Text
+                  style={{
+                    fontFamily: 'Kavoon-Regular',
+                    fontSize: wp(4.5),
+                    fontWeight: '600',
+                    color: color,
+                  }}
+                >
+                  {t('logout')}
+                </Text>
+              </Pressable>
+              <Pressable // Hesabı Sil
+                className={`flex-row items-center ${
+                  isAnonymous ? 'opacity-25' : 'opacity-100'
+                }`}
+                style={{ gap: wp(3) }}
+                onPress={() => {
+                  setAlertVisible(true);
+                  setAlert({
+                    type: 'failure',
+                    title: t('are-you-sure'),
+                    desc: t('delete-acc-msg'),
+                    onPress: async () => {
+                      setAlertVisible(false);
+                      const res = await deleteUser();
+                      if (res && res.ok) {
+                        handleLogout();
+                      } else {
+                        console.log(res);
+                      }
+                    },
+                  });
+                }}
+                disabled={isAnonymous}
+              >
+                <MaterialCommunityIcons
+                  name="delete-forever-outline"
+                  size={wp(8)}
+                  color={color}
+                />
+                <Text
+                  style={{
+                    fontFamily: 'Kavoon-Regular',
+                    fontSize: wp(4.5),
+                    fontWeight: '600',
+                    color: color,
+                  }}
+                >
+                  {t('delete-acc')}
+                </Text>
+              </Pressable>
+            </View>
+          )}
         </View>
       </Page>
       {alertVisible && (

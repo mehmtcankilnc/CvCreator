@@ -15,6 +15,7 @@ import {
 import { ResumeTemplate } from '../../types/resumeTemplates';
 import Icon from 'react-native-vector-icons/Feather';
 import { resumeTemplatesData } from '../../data/resumeTemplatesData';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   initial: ResumeTemplate;
@@ -71,6 +72,8 @@ export const TemplateCard = ({
 };
 
 export default function TemplateSelectStep({ initial, handleForward }: Props) {
+  const { t } = useTranslation();
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -86,7 +89,7 @@ export default function TemplateSelectStep({ initial, handleForward }: Props) {
           marginBottom: wp(3),
         }}
       >
-        Choose a Resume Template
+        {t('resume-step10-title')}
       </Text>
       <View
         className="flex-row flex-wrap justify-between"

@@ -1,13 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export type LanguageTypes = 'TR' | 'EN';
+export type LanguageTypes = 'en' | 'tr';
 
 interface LanguageState {
   lang: LanguageTypes;
 }
 
 const initialState: LanguageState = {
-  lang: 'EN',
+  lang: 'en',
 };
 
 const languageSlice = createSlice({

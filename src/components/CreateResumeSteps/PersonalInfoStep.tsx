@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import TextInput from '../TextInput';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { PersonalInfo } from '../../types/resumeTypes';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   initial: PersonalInfo;
@@ -11,6 +12,8 @@ type Props = {
 };
 
 export default function PersonalInfoStep({ handleForward, initial }: Props) {
+  const { t } = useTranslation();
+
   const [personalInfo, setPersonalInfo] = useState<PersonalInfo>(initial);
 
   const handleForwardRef = useRef(handleForward);
@@ -33,7 +36,7 @@ export default function PersonalInfoStep({ handleForward, initial }: Props) {
           marginBottom: wp(3),
         }}
       >
-        Personal Information
+        {t('resume-step1-title')}
       </Text>
       <View style={{ gap: wp(3) }}>
         <TextInput
@@ -41,7 +44,7 @@ export default function PersonalInfoStep({ handleForward, initial }: Props) {
             setPersonalInfo(prev => ({ ...prev, fullName: value }))
           }
           value={personalInfo.fullName}
-          placeholder="Full Name*"
+          placeholder={t('resume-step1-field1')}
           autoCapitalize="words"
         />
         <TextInput
@@ -49,7 +52,7 @@ export default function PersonalInfoStep({ handleForward, initial }: Props) {
             setPersonalInfo(prev => ({ ...prev, jobTitle: value }))
           }
           value={personalInfo.jobTitle}
-          placeholder="Job Title"
+          placeholder={t('resume-step1-field2')}
           autoCapitalize="words"
         />
         <TextInput
@@ -57,7 +60,7 @@ export default function PersonalInfoStep({ handleForward, initial }: Props) {
             setPersonalInfo(prev => ({ ...prev, phoneNumber: value }))
           }
           value={personalInfo.phoneNumber}
-          placeholder="Phone Number"
+          placeholder={t('resume-step1-field3')}
           type="phone-pad"
         />
         <TextInput
@@ -65,7 +68,7 @@ export default function PersonalInfoStep({ handleForward, initial }: Props) {
             setPersonalInfo(prev => ({ ...prev, email: value }))
           }
           value={personalInfo.email}
-          placeholder="Email*"
+          placeholder={t('resume-step1-field4')}
           type="email-address"
           autoCapitalize="none"
         />
@@ -74,7 +77,7 @@ export default function PersonalInfoStep({ handleForward, initial }: Props) {
             setPersonalInfo(prev => ({ ...prev, website: value }))
           }
           value={personalInfo.website}
-          placeholder="Link"
+          placeholder={t('resume-step1-field5')}
           autoCapitalize="none"
         />
       </View>

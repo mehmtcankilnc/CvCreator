@@ -13,12 +13,14 @@ import { supabase } from '../../lib/supabase';
 import { setUser } from '../../store/slices/authSlice';
 import { GetMyCoverLetters } from '../../services/CoverLetterServices';
 import ShimmerListItem from '../../components/ShimmerListItem';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   navigation: any;
 };
 
 export default function Home({ navigation }: Props) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { theme } = useAppSelector(state => state.theme);
   const iconColor = theme === 'LIGHT' ? '#1954E5' : '#D9D9D9';
@@ -27,9 +29,11 @@ export default function Home({ navigation }: Props) {
 
   const { isAnonymous, userId } = useAppSelector(state => state.auth);
   const [myResumes, setMyResumes] = useState([]);
-  const [isResumesLoading, setIsResumesLoading] = useState(true);
+  const [isResumesLoading, setIsResumesLoading] = useState(!isAnonymous);
   const [myCoverLetters, setMyCoverLetters] = useState([]);
-  const [isCoverLettersLoading, setIsCoverLettersLoading] = useState(true);
+  const [isCoverLettersLoading, setIsCoverLettersLoading] = useState(
+    !isAnonymous,
+  );
 
   useEffect(() => {
     const ensureUserData = async () => {
@@ -103,69 +107,91 @@ export default function Home({ navigation }: Props) {
             style={{
               width: wp(100),
               padding: wp(5),
-              gap: wp(3),
-              height: wp(50),
+              gap: wp(5),
+              height: wp(60),
             }}
           >
-            <View className="flex-1" style={{ gap: wp(3) }}>
-              {/** Özgeçmiş Oluştur Butonu */}
-              <Pressable
-                className="flex-1 flex-row items-center justify-between bg-[#F6F2DB] dark:bg-[#58512B] elevation-md"
-                style={{
-                  borderRadius: wp(4),
-                  paddingHorizontal: wp(5),
-                }}
-                onPress={() => navigation.navigate('CreateResume')}
-              >
+            {/** Özgeçmiş Oluştur Butonu */}
+            <Pressable
+              className="flex-1 items-center justify-center bg-[#e5eded] dark:bg-[#122B29] elevation-md"
+              style={{
+                borderRadius: wp(4),
+                gap: wp(5),
+              }}
+              onPress={() => navigation.navigate('CreateResume')}
+            >
+              {theme === 'LIGHT' ? (
                 <Image
-                  source={require('../../assets/icons/resumeIcon.png')}
-                  style={{ width: wp(10), height: wp(10) }}
+                  source={require('../../assets/icons/resumeIconLight.png')}
+                  style={{ width: wp(20), height: wp(20) }}
                 />
-                <Text
-                  className="font-kavoon text-center color-textColor dark:text-dark-textColor"
-                  style={{ fontSize: wp(3.5) }}
-                >
-                  Create your{'\n'}resume
-                </Text>
-              </Pressable>
+              ) : (
+                <Image
+                  source={require('../../assets/icons/resumeIconDark.png')}
+                  style={{ width: wp(20), height: wp(20) }}
+                />
+              )}
+              <Text
+                className="font-kavoon text-center color-[#2D706C] dark:text-[#92D3CF]"
+                style={{ fontSize: wp(4.5) }}
+              >
+                {t('create-resume')}
+              </Text>
+            </Pressable>
+            <View className="flex-1" style={{ gap: wp(5) }}>
               {/** Motivasyon Mektubu Oluştur Butonu */}
               <Pressable
                 className="flex-1 flex-row items-center justify-between bg-[#F6DDDB] dark:bg-[#50211E] elevation-md"
                 style={{
                   borderRadius: wp(4),
                   paddingHorizontal: wp(5),
+                  gap: wp(3),
                 }}
                 onPress={() => navigation.navigate('CreateCoverLetter')}
               >
-                <Image
-                  source={require('../../assets/icons/coverLetterIcon.png')}
-                  style={{ width: wp(10), height: wp(10) }}
-                />
+                {theme === 'LIGHT' ? (
+                  <Image
+                    source={require('../../assets/icons/coverLetterIconLight.png')}
+                    style={{ width: wp(10), height: wp(10) }}
+                  />
+                ) : (
+                  <Image
+                    source={require('../../assets/icons/coverLetterIconDark.png')}
+                    style={{ width: wp(10), height: wp(10) }}
+                  />
+                )}
                 <Text
-                  className="font-kavoon text-center color-textColor dark:text-dark-textColor"
-                  style={{ fontSize: wp(3.5) }}
+                  className="font-kavoon text-center color-[#90542F] dark:text-[#D39B78]"
+                  style={{ fontSize: wp(3) }}
                 >
-                  Create your{'\n'}cover letter
+                  {t('create-cover-letter')}
+                </Text>
+              </Pressable>
+              {/** Şablonlar Butonu */}
+              <Pressable
+                className="flex-1 flex-row items-center justify-between bg-[#DCDBF6] dark:bg-[#1F1E39] elevation-md"
+                style={{ borderRadius: wp(4), paddingHorizontal: wp(5) }}
+                onPress={() => navigation.navigate('Templates')}
+              >
+                {theme === 'LIGHT' ? (
+                  <Image
+                    source={require('../../assets/icons/templatesIconLight.png')}
+                    style={{ width: wp(10), height: wp(10) }}
+                  />
+                ) : (
+                  <Image
+                    source={require('../../assets/icons/templatesIconDark.png')}
+                    style={{ width: wp(10), height: wp(10) }}
+                  />
+                )}
+                <Text
+                  className="font-kavoon text-center color-[#553284] dark:text-[#A07DCE]"
+                  style={{ fontSize: wp(3) }}
+                >
+                  {t('templates')}
                 </Text>
               </Pressable>
             </View>
-            {/** Şablonlar Butonu */}
-            <Pressable
-              className="flex-1 items-center justify-between bg-[#DCDBF6] dark:bg-[#1F1E39] elevation-md"
-              style={{ borderRadius: wp(4), paddingVertical: wp(5) }}
-              onPress={() => navigation.navigate('Templates')}
-            >
-              <Image
-                source={require('../../assets/icons/templatesIcon.png')}
-                style={{ width: wp(15), height: wp(15) }}
-              />
-              <Text
-                className="font-kavoon text-center color-textColor dark:text-dark-textColor"
-                style={{ fontSize: wp(3.5) }}
-              >
-                Explore all{'\n'}templates
-              </Text>
-            </Pressable>
           </View>
           {/** Özgeçmişlerim Bölgesi */}
           <View style={{ width: wp(100), paddingHorizontal: wp(5) }}>
@@ -178,10 +204,10 @@ export default function Home({ navigation }: Props) {
                   fontSize: wp(5),
                 }}
               >
-                My Resumes
+                {t('my-resumes')}
               </Text>
               <Pressable
-                className="flex-row items-center justify-between bg-[#DCDBF6] dark:bg-main"
+                className="flex-row items-center justify-between"
                 style={{
                   paddingVertical: wp(1),
                   paddingLeft: wp(2),
@@ -196,7 +222,7 @@ export default function Home({ navigation }: Props) {
                     fontSize: wp(3),
                   }}
                 >
-                  More
+                  {t('more')}
                 </Text>
                 <Feather name="chevron-right" size={wp(5)} color={iconColor} />
               </Pressable>
@@ -207,12 +233,12 @@ export default function Home({ navigation }: Props) {
                 <ShimmerListItem />
               ) : isAnonymous ? (
                 <Text className="text-gray-500 text-lg">
-                  You need to login via Google to save and access your resumes.{' '}
+                  {t('resume-login-required')}{' '}
                   <Text
                     onPress={() => navigation.navigate('Settings')}
                     className="text-gray-500 italic underline"
                   >
-                    Login Now
+                    {t('login-now')}
                   </Text>
                 </Text>
               ) : myResumes && myResumes.length > 0 ? (
@@ -229,12 +255,12 @@ export default function Home({ navigation }: Props) {
                 ))
               ) : (
                 <Text className="text-gray-500 text-lg">
-                  You don't have any saved resumes.{' '}
+                  {t('no-resume')}{' '}
                   <Text
                     onPress={() => navigation.navigate('CreateResume')}
                     className="text-gray-500 italic underline"
                   >
-                    Create Now
+                    {t('create-now')}
                   </Text>
                 </Text>
               )}
@@ -251,10 +277,10 @@ export default function Home({ navigation }: Props) {
                   fontSize: wp(5),
                 }}
               >
-                My Cover Letters
+                {t('my-cover-letters')}
               </Text>
               <Pressable
-                className="flex-row items-center justify-between bg-[#DCDBF6] dark:bg-main"
+                className="flex-row items-center justify-between"
                 style={{
                   paddingVertical: wp(1),
                   paddingLeft: wp(2),
@@ -269,7 +295,7 @@ export default function Home({ navigation }: Props) {
                     fontSize: wp(3),
                   }}
                 >
-                  More
+                  {t('more')}
                 </Text>
                 <Feather name="chevron-right" size={wp(5)} color={iconColor} />
               </Pressable>
@@ -280,13 +306,12 @@ export default function Home({ navigation }: Props) {
                 <ShimmerListItem />
               ) : isAnonymous ? (
                 <Text className="text-gray-500 text-lg">
-                  You need to login via Google to save and access your cover
-                  letters.{' '}
+                  {t('coverletter-login-required')}{' '}
                   <Text
                     onPress={() => navigation.navigate('Settings')}
                     className="text-gray-500 italic underline"
                   >
-                    Login Now
+                    {t('login-now')}
                   </Text>
                 </Text>
               ) : myCoverLetters && myCoverLetters.length > 0 ? (
@@ -303,12 +328,12 @@ export default function Home({ navigation }: Props) {
                 ))
               ) : (
                 <Text className="text-gray-500 text-lg">
-                  You don't have any saved cover letters.{' '}
+                  {t('no-coverletter')}{' '}
                   <Text
                     onPress={() => navigation.navigate('CreateCoverLetter')}
                     className="text-gray-500 italic underline"
                   >
-                    Login Now
+                    {t('create-now')}
                   </Text>
                 </Text>
               )}

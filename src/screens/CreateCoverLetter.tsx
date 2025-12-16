@@ -24,6 +24,7 @@ import {
   PostCoverLetterValues,
   UpdateCoverLetterValues,
 } from '../services/CoverLetterServices';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   navigation: any;
@@ -60,6 +61,7 @@ const { width: screenWidth } = Dimensions.get('window');
 const isSmallScreen = screenWidth < 375;
 
 export default function CreateCoverLetter({ navigation, route }: Props) {
+  const { t } = useTranslation();
   const [formValues, setFormValues] = useState<CoverLetterFormValues>(
     route.params?.formValues ?? INITIAL_COVER_LETTER_VALUES,
   );
@@ -110,8 +112,8 @@ export default function CreateCoverLetter({ navigation, route }: Props) {
       setAlertVisible(true);
       setAlert({
         type: 'failure',
-        title: 'Eksik Gönderen Bilgisi',
-        desc: 'Lütfen Gönderen Bilgileri adımındaki zorunlu alanları (*) doldurunuz.',
+        title: t('cl-missingsender-alert-title'),
+        desc: t('cl-missingsender-alert-text'),
         onPress: () => {
           setAlertVisible(false);
           setCurrentStep(1);
@@ -127,8 +129,8 @@ export default function CreateCoverLetter({ navigation, route }: Props) {
       setAlertVisible(true);
       setAlert({
         type: 'failure',
-        title: 'Eksik Alıcı Bilgisi',
-        desc: 'Lütfen Alıcı Bilgileri adımındaki zorunlu alanları (*) doldurunuz.',
+        title: t('cl-missingreceiver-alert-title'),
+        desc: t('cl-missingreceiver-alert-text'),
         onPress: () => {
           setAlertVisible(false);
           setCurrentStep(1);
@@ -141,8 +143,8 @@ export default function CreateCoverLetter({ navigation, route }: Props) {
       setAlertVisible(true);
       setAlert({
         type: 'failure',
-        title: 'Eksik Başlık Bilgisi',
-        desc: 'Lütfen Başlık Bilgileri adımındaki zorunlu alanları (*) doldurunuz.',
+        title: t('cl-missingheader-alert-title'),
+        desc: t('cl-missingheader-alert-text'),
         onPress: () => {
           setAlertVisible(false);
           setCurrentStep(1);
@@ -161,8 +163,8 @@ export default function CreateCoverLetter({ navigation, route }: Props) {
       setAlertVisible(true);
       setAlert({
         type: 'failure',
-        title: 'Eksik Mektup Detay Bilgisi',
-        desc: 'Lütfen Mektup Detay Bilgileri adımındaki zorunlu alanları (*) doldurunuz.',
+        title: t('cl-missingcontent-alert-title'),
+        desc: t('cl-missingcontent-alert-text'),
         onPress: () => {
           setAlertVisible(false);
           setCurrentStep(1);
@@ -193,8 +195,8 @@ export default function CreateCoverLetter({ navigation, route }: Props) {
       setAlertVisible(true);
       setAlert({
         type: 'failure',
-        title: 'Bir Hata Oluştu',
-        desc: 'Motivasyon mektubunuz oluşturulamadı. Lütfen tekrar deneyiniz.',
+        title: t('cl-unknown-alert-title'),
+        desc: t('cl-unknown-alert-text'),
         onPress: () => setAlertVisible(false),
       });
     } finally {
@@ -208,7 +210,9 @@ export default function CreateCoverLetter({ navigation, route }: Props) {
         handlePress={() => navigation.goBack()}
         iconName="chevron-back"
         title={`${
-          route.params?.formValues ? 'Edit Cover Letter' : 'Create Cover Letter'
+          route.params?.formValues
+            ? t('edit-cover-letter-header')
+            : t('create-cover-letter-header')
         }`}
       />
       <Page>
@@ -245,7 +249,7 @@ export default function CreateCoverLetter({ navigation, route }: Props) {
       >
         <Button
           handleSubmit={stepBack}
-          text="Back"
+          text={t('back')}
           style={{ flex: 1 }}
           type="back"
           isDisabled={currentStep === 1}
@@ -255,7 +259,7 @@ export default function CreateCoverLetter({ navigation, route }: Props) {
             currentStep !== 4 ? stepForward() : submitCoverLetterValues();
           }}
           style={{ flex: 1 }}
-          text={currentStep !== 4 ? 'Continue' : 'Submit'}
+          text={currentStep !== 4 ? t('continue') : t('submit')}
           isLoading={isSubmitting}
         />
       </View>

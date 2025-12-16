@@ -12,6 +12,7 @@ import Button from '../Button';
 import TextInput from '../TextInput';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import AccordionItem from '../AccordionItem';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   initial: Array<SkillInfo>;
@@ -26,6 +27,8 @@ if (
 }
 
 export default function SkillsInfoStep({ initial, handleForward }: Props) {
+  const { t } = useTranslation();
+
   const [skills, setSkills] = useState<SkillInfo[]>(
     initial.length > 0 ? initial : [{ title: '', scale: '' }],
   );
@@ -94,36 +97,36 @@ export default function SkillsInfoStep({ initial, handleForward }: Props) {
           marginBottom: wp(3),
         }}
       >
-        Skills
+        {t('resume-step6-title')}
       </Text>
       {skills.map((skill, i) => (
         <AccordionItem
           key={i}
           isActive={activeIndex === i}
           onToggle={() => handleToggle(i)}
-          title={skill.title || `Skill #${i + 1}`}
+          title={skill.title || `${t('resume-step6-text')} #${i + 1}`}
         >
           <TextInput
             handleChangeText={value => handleInputChange(i, 'title', value)}
             value={skill.title}
-            placeholder="Skill"
+            placeholder={t('resume-step6-field1')}
             autoCapitalize="words"
           />
           <TextInput
             handleChangeText={value => handleInputChange(i, 'scale', value)}
             value={skill.scale}
-            placeholder="Level (e.g., Advanced, 4/5)"
+            placeholder={t('resume-step6-field2')}
           />
           {i > 0 && (
             <Button
               handleSubmit={() => handleDelete(i)}
-              text="Delete This Skill"
+              text={t('resume-step6-delete')}
               type="delete"
             />
           )}
         </AccordionItem>
       ))}
-      <Button handleSubmit={handleAddNew} text="Add New Skill" />
+      <Button handleSubmit={handleAddNew} text={t('resume-step6-btn')} />
     </ScrollView>
   );
 }

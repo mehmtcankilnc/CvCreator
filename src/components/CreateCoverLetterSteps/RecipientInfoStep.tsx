@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CoverLetterRecipientInfo } from '../../types/coverLetterTypes';
 import TextInput from '../TextInput';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   initial: CoverLetterRecipientInfo;
@@ -11,6 +12,8 @@ type Props = {
 };
 
 export default function RecipientInfoStep({ initial, handleForward }: Props) {
+  const { t } = useTranslation();
+
   const [recipientInfo, setRecipientInfo] =
     useState<CoverLetterRecipientInfo>(initial);
 
@@ -34,7 +37,7 @@ export default function RecipientInfoStep({ initial, handleForward }: Props) {
           marginBottom: wp(3),
         }}
       >
-        Receiver Information
+        {t('coverletter-step2-title')}
       </Text>
       <View style={{ gap: wp(3) }}>
         <TextInput
@@ -42,7 +45,7 @@ export default function RecipientInfoStep({ initial, handleForward }: Props) {
             setRecipientInfo(prev => ({ ...prev, companyName: value }))
           }
           value={recipientInfo.companyName}
-          placeholder="Company Name*"
+          placeholder={t('coverletter-step2-field1')}
           autoCapitalize="words"
         />
         <TextInput
@@ -50,7 +53,7 @@ export default function RecipientInfoStep({ initial, handleForward }: Props) {
             setRecipientInfo(prev => ({ ...prev, hiringManagerName: value }))
           }
           value={recipientInfo.hiringManagerName}
-          placeholder="Hiring Manager Name*"
+          placeholder={t('coverletter-step2-field2')}
           autoCapitalize="words"
         />
       </View>

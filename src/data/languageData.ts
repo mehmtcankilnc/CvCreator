@@ -1,4 +1,4 @@
 export const languageData = [
-  { flag: 'EN', name: 'English' },
-  { flag: 'TR', name: 'Türkçe' },
+  { flag: 'en', name: 'English' },
+  { flag: 'tr', name: 'Türkçe' },
 ];

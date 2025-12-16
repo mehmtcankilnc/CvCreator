@@ -18,10 +18,12 @@ import MyCoverLetters from '../screens/app/MyCoverLetters';
 import About from '../screens/app/About';
 import Settings from '../screens/app/Settings';
 import { useAppSelector } from '../store/hooks';
+import { useTranslation } from 'react-i18next';
 
 const Drawer = createDrawerNavigator();
 
 export default function DrawerNav() {
+  const { t } = useTranslation();
   const isUserAnon = useAppSelector(state => state.auth.isAnonymous);
   const username = useAppSelector(state =>
     state.auth.isAnonymous ? '' : state.auth.userName ?? '',
@@ -63,8 +65,9 @@ export default function DrawerNav() {
                   paddingBottom: hp(2),
                 }}
               >
-                Guest{'\n'}
-                <Text className="underline">Link your account</Text>
+                {t('guest')}
+                {'\n'}
+                <Text className="underline">{t('link-acc')}</Text>
               </Text>
             </Pressable>
           ) : (
@@ -78,10 +81,11 @@ export default function DrawerNav() {
                 paddingBottom: hp(2),
               }}
             >
-              Hello, {username}
+              {t('hello')}
+              {'\n'}
+              {username}
             </Text>
           )}
-
           <DrawerItemList {...props} />
         </DrawerContentScrollView>
       )}
@@ -95,7 +99,7 @@ export default function DrawerNav() {
               color={focused ? activeColor : mainBackgroundColor}
             />
           ),
-          drawerLabel: 'Home',
+          drawerLabel: t('home'),
         }}
         name="Home"
         component={Home}
@@ -109,7 +113,7 @@ export default function DrawerNav() {
               color={focused ? activeColor : mainBackgroundColor}
             />
           ),
-          drawerLabel: 'My Resumes',
+          drawerLabel: t('my-resumes'),
         }}
         name="MyResumes"
         component={MyResumes}
@@ -123,7 +127,7 @@ export default function DrawerNav() {
               color={focused ? activeColor : mainBackgroundColor}
             />
           ),
-          drawerLabel: 'My Cover Letters',
+          drawerLabel: t('my-cover-letters'),
         }}
         name="MyCoverLetters"
         component={MyCoverLetters}
@@ -137,7 +141,7 @@ export default function DrawerNav() {
               color={focused ? activeColor : mainBackgroundColor}
             />
           ),
-          drawerLabel: 'Settings',
+          drawerLabel: t('settings'),
         }}
         name="Settings"
         component={Settings}
@@ -151,7 +155,7 @@ export default function DrawerNav() {
               color={focused ? activeColor : mainBackgroundColor}
             />
           ),
-          drawerLabel: 'About',
+          drawerLabel: t('about'),
         }}
         name="About"
         component={About}

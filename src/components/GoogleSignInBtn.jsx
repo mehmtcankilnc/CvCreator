@@ -2,8 +2,11 @@
 import { ActivityIndicator, Image, Pressable, Text, View } from 'react-native';
 import React from 'react';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { useTranslation } from 'react-i18next';
 
 export default function GoogleSignInBtn({ handleGoogle, isLoading }) {
+  const { t } = useTranslation();
+
   return (
     <View className="w-full items-center">
       <Pressable
@@ -28,7 +31,7 @@ export default function GoogleSignInBtn({ handleGoogle, isLoading }) {
             <Text
               style={{ fontSize: wp(4.5), fontWeight: '500', color: 'white' }}
             >
-              Sign in with Google
+              {t('google-signin')}
             </Text>
           </>
         )}

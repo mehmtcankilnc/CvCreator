@@ -12,6 +12,7 @@ import Button from '../Button';
 import TextInput from '../TextInput';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import AccordionItem from '../AccordionItem';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   initial: Array<LanguageInfo>;
@@ -26,6 +27,8 @@ if (
 }
 
 export default function LanguagesInfoStep({ initial, handleForward }: Props) {
+  const { t } = useTranslation();
+
   const [languages, setLanguages] = useState<LanguageInfo[]>(
     initial.length > 0 ? initial : [{ title: '', scale: '' }],
   );
@@ -97,35 +100,35 @@ export default function LanguagesInfoStep({ initial, handleForward }: Props) {
           marginBottom: wp(3),
         }}
       >
-        Languages
+        {t('resume-step7-title')}
       </Text>
       {languages.map((lang, i) => (
         <AccordionItem
           key={i}
           isActive={activeIndex === i}
           onToggle={() => handleToggle(i)}
-          title={lang.title || `Language #${i + 1}`}
+          title={lang.title || `${t('resume-step7-text')} #${i + 1}`}
         >
           <TextInput
             handleChangeText={value => handleInputChange(i, 'title', value)}
             value={lang.title}
-            placeholder="Title"
+            placeholder={t('resume-step7-field1')}
           />
           <TextInput
             handleChangeText={value => handleInputChange(i, 'scale', value)}
             value={lang.scale}
-            placeholder="Scale"
+            placeholder={t('resume-step7-field2')}
           />
           {i > 0 && (
             <Button
               handleSubmit={() => handleDelete(i)}
-              text="Delete This Language"
+              text={t('resume-step7-delete')}
               type="delete"
             />
           )}
         </AccordionItem>
       ))}
-      <Button handleSubmit={handleAddNew} text="Add New Language" />
+      <Button handleSubmit={handleAddNew} text={t('resume-step7-btn')} />
     </ScrollView>
   );
 }

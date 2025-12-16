@@ -36,6 +36,7 @@ import TemplateSelectStep from '../components/CreateResumeSteps/TemplateSelectSt
 import { resumeTemplatesData } from '../data/resumeTemplatesData';
 import CreatedInfoModal from '../components/CreatedInfoModal';
 import UploadPhotoStep from '../components/CreateResumeSteps/UploadPhotoStep';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   navigation: any;
@@ -56,6 +57,7 @@ const { width: screenWidth } = Dimensions.get('window');
 const isSmallScreen = screenWidth < 375;
 
 export default function CreateResume({ navigation, route }: Props) {
+  const { t } = useTranslation();
   const [formValues, setFormValues] = useState<ResumeFormValues>(
     route.params?.formValues ?? INITIAL_RESUME_VALUES,
   );
@@ -134,8 +136,8 @@ export default function CreateResume({ navigation, route }: Props) {
       setAlertVisible(true);
       setAlert({
         type: 'failure',
-        title: 'Eksik Kişisel Bilgi',
-        desc: 'Lütfen Kişisel Bilgiler adımındaki zorunlu alanları (*) doldurunuz.',
+        title: t('r-missingpersonal-alert-title'),
+        desc: t('r-missingpersonal-alert-text'),
         onPress: () => {
           setAlertVisible(false);
           setCurrentStep(1);
@@ -154,8 +156,8 @@ export default function CreateResume({ navigation, route }: Props) {
         setAlertVisible(true);
         setAlert({
           type: 'failure',
-          title: 'Eksik Eğitim Bilgisi',
-          desc: 'Başladığınız bir eğitim kaydında zorunlu alanları (*) doldurmadınız. Lütfen kontrol edin.',
+          title: t('r-missingeducation-alert-title'),
+          desc: t('r-missingeducation-alert-text'),
           onPress: () => {
             setAlertVisible(false);
             setCurrentStep(4);
@@ -174,8 +176,8 @@ export default function CreateResume({ navigation, route }: Props) {
         setAlertVisible(true);
         setAlert({
           type: 'failure',
-          title: 'Eksik Deneyim Bilgisi',
-          desc: 'Başladığınız bir deneyim kaydında zorunlu alanları (*) doldurmadınız. Lütfen kontrol edin.',
+          title: t('r-missingexperience-alert-title'),
+          desc: t('r-missingexperience-alert-text'),
           onPress: () => {
             setAlertVisible(false);
             setCurrentStep(3);
@@ -194,8 +196,8 @@ export default function CreateResume({ navigation, route }: Props) {
         setAlertVisible(true);
         setAlert({
           type: 'failure',
-          title: 'Eksik Sertifika Bilgisi',
-          desc: 'Başladığınız bir sertifika kaydında zorunlu alanları (*) doldurmadınız. Lütfen kontrol edin.',
+          title: t('r-missingcertificate-alert-title'),
+          desc: t('r-missingcertificate-alert-text'),
           onPress: () => {
             setAlertVisible(false);
             setCurrentStep(5);
@@ -214,8 +216,8 @@ export default function CreateResume({ navigation, route }: Props) {
         setAlertVisible(true);
         setAlert({
           type: 'failure',
-          title: 'Eksik Yetenek Bilgisi',
-          desc: 'Başladığınız bir yetenek kaydında zorunlu alanları (*) doldurmadınız. Lütfen kontrol edin.',
+          title: t('r-missingskill-alert-title'),
+          desc: t('r-missingskill-alert-text'),
           onPress: () => {
             setAlertVisible(false);
             setCurrentStep(6);
@@ -234,8 +236,8 @@ export default function CreateResume({ navigation, route }: Props) {
         setAlertVisible(true);
         setAlert({
           type: 'failure',
-          title: 'Eksik Dil Bilgisi',
-          desc: 'Başladığınız bir dil kaydında zorunlu alanları (*) doldurmadınız. Lütfen kontrol edin.',
+          title: t('r-missinglanguage-alert-title'),
+          desc: t('r-missinglanguage-alert-text'),
           onPress: () => {
             setAlertVisible(false);
             setCurrentStep(7);
@@ -254,8 +256,8 @@ export default function CreateResume({ navigation, route }: Props) {
         setAlertVisible(true);
         setAlert({
           type: 'failure',
-          title: 'Eksik Referans Bilgisi',
-          desc: 'Başladığınız bir referans kaydında zorunlu alanları (*) doldurmadınız. Lütfen kontrol edin.',
+          title: t('r-missingreference-alert-title'),
+          desc: t('r-missingreference-alert-text'),
           onPress: () => {
             setAlertVisible(false);
             setCurrentStep(8);
@@ -291,8 +293,8 @@ export default function CreateResume({ navigation, route }: Props) {
       setAlertVisible(true);
       setAlert({
         type: 'failure',
-        title: 'Bir Hata Oluştu',
-        desc: 'Özgeçmişiniz oluşturulamadı. Lütfen tekrar deneyiniz.',
+        title: t('r-unknown-alert-title'),
+        desc: t('r-unknown-alert-text'),
         onPress: () => setAlertVisible(false),
       });
     } finally {
@@ -305,7 +307,11 @@ export default function CreateResume({ navigation, route }: Props) {
       <Header
         handlePress={() => navigation.goBack()}
         iconName="chevron-back"
-        title={`${route.params?.formValues ? 'Edit Resume' : 'Create Resume'}`}
+        title={`${
+          route.params?.formValues
+            ? t('edit-resume-header')
+            : t('create-resume-header')
+        }`}
       />
       <Page>
         <KeyboardAwareScrollView
@@ -365,7 +371,7 @@ export default function CreateResume({ navigation, route }: Props) {
       >
         <Button
           handleSubmit={stepBack}
-          text="Back"
+          text={t('back')}
           style={{ flex: 1 }}
           type="back"
           isDisabled={currentStep === 1}
@@ -375,7 +381,7 @@ export default function CreateResume({ navigation, route }: Props) {
             currentStep !== 10 ? stepForward() : submitResumeValues();
           }}
           style={{ flex: 1 }}
-          text={currentStep !== 10 ? 'Continue' : 'Submit'}
+          text={currentStep !== 10 ? t('continue') : t('submit')}
           isLoading={isSubmitting}
         />
       </View>

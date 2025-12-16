@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CoverLetterSenderInfo } from '../../types/coverLetterTypes';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import TextInput from '../TextInput';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   initial: CoverLetterSenderInfo;
@@ -11,6 +12,8 @@ type Props = {
 };
 
 export default function SenderInfoStep({ initial, handleForward }: Props) {
+  const { t } = useTranslation();
+
   const [senderInfo, setSenderInfo] = useState<CoverLetterSenderInfo>(initial);
 
   const handleForwardRef = useRef(handleForward);
@@ -33,7 +36,7 @@ export default function SenderInfoStep({ initial, handleForward }: Props) {
           marginBottom: wp(3),
         }}
       >
-        Sender Information
+        {t('coverletter-step1-title')}
       </Text>
       <View style={{ gap: wp(3) }}>
         <TextInput
@@ -41,7 +44,7 @@ export default function SenderInfoStep({ initial, handleForward }: Props) {
             setSenderInfo(prev => ({ ...prev, fullName: value }))
           }
           value={senderInfo.fullName}
-          placeholder="Full Name*"
+          placeholder={t('coverletter-step1-field1')}
           autoCapitalize="words"
         />
         <TextInput
@@ -49,7 +52,7 @@ export default function SenderInfoStep({ initial, handleForward }: Props) {
             setSenderInfo(prev => ({ ...prev, jobTitle: value }))
           }
           value={senderInfo.jobTitle}
-          placeholder="Job Title"
+          placeholder={t('coverletter-step1-field2')}
           autoCapitalize="words"
         />
         <TextInput
@@ -57,7 +60,7 @@ export default function SenderInfoStep({ initial, handleForward }: Props) {
             setSenderInfo(prev => ({ ...prev, phoneNumber: value }))
           }
           value={senderInfo.phoneNumber}
-          placeholder="Phone Number"
+          placeholder={t('coverletter-step1-field3')}
           type="phone-pad"
         />
         <TextInput
@@ -65,7 +68,7 @@ export default function SenderInfoStep({ initial, handleForward }: Props) {
             setSenderInfo(prev => ({ ...prev, email: value }))
           }
           value={senderInfo.email}
-          placeholder="Email*"
+          placeholder={t('coverletter-step1-field4')}
           type="email-address"
           autoCapitalize="none"
         />
@@ -74,7 +77,7 @@ export default function SenderInfoStep({ initial, handleForward }: Props) {
             setSenderInfo(prev => ({ ...prev, website: value }))
           }
           value={senderInfo.website}
-          placeholder="Website"
+          placeholder={t('coverletter-step1-field5')}
           autoCapitalize="none"
         />
         <TextInput
@@ -82,7 +85,7 @@ export default function SenderInfoStep({ initial, handleForward }: Props) {
             setSenderInfo(prev => ({ ...prev, address: value }))
           }
           value={senderInfo.address}
-          placeholder="Address"
+          placeholder={t('coverletter-step1-field6')}
           autoCapitalize="none"
         />
       </View>

@@ -21,6 +21,7 @@ import InAppBrowser from 'react-native-inappbrowser-reborn';
 import Alert from '../../components/Alert';
 import { useAppDispatch } from '../../store/hooks';
 import { setAnon, setUser } from '../../store/slices/authSlice';
+import { useTranslation } from 'react-i18next';
 
 type AlertType = 'failure' | 'success' | 'inform';
 
@@ -32,6 +33,8 @@ interface AlertState {
 }
 
 export default function OnboardingScreen2() {
+  const { t } = useTranslation();
+
   const navigation =
     useNavigation<
       CompositeNavigationProp<
@@ -69,8 +72,8 @@ export default function OnboardingScreen2() {
     setAlertVisible(true);
     setAlert({
       type: 'inform',
-      title: 'Continue?',
-      desc: 'Are you sure you want to continue as guest, you can link your account later, whenever you want!',
+      title: t('anon-signin-alert-title'),
+      desc: t('anon-signin-alert-text'),
       onPress: async () => {
         setIsAlertLoading(true);
         const { error } = await supabase.auth.signInAnonymously();
@@ -101,8 +104,8 @@ export default function OnboardingScreen2() {
         setAlertVisible(true);
         setAlert({
           type: 'failure',
-          title: 'Fail',
-          desc: 'Something went wrong.',
+          title: t('google-signin-error-title'),
+          desc: t('google-signin-error-text'),
           onPress: () => setAlertVisible(false),
         });
         return;
@@ -151,8 +154,8 @@ export default function OnboardingScreen2() {
               setAlertVisible(true);
               setAlert({
                 type: 'failure',
-                title: 'Fail',
-                desc: 'Something went wrong.',
+                title: t('session-error-title'),
+                desc: t('session-error-text'),
                 onPress: () => setAlertVisible(false),
               });
             } else {
@@ -177,8 +180,8 @@ export default function OnboardingScreen2() {
       setAlertVisible(true);
       setAlert({
         type: 'failure',
-        title: 'Fail',
-        desc: 'Something went wrong.',
+        title: t('unknown-fail-alert-title'),
+        desc: t('unknown-fail-alert-text'),
         onPress: () => setAlertVisible(false),
       });
     } finally {

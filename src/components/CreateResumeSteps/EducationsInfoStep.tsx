@@ -15,6 +15,7 @@ import Button from '../Button';
 import TextInput from '../TextInput';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import AccordionItem from '../AccordionItem';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   initial: Array<EducationInfo>;
@@ -29,6 +30,8 @@ if (
 }
 
 export default function EducationsInfoStep({ initial, handleForward }: Props) {
+  const { t } = useTranslation();
+
   const [educations, setEducations] = useState<EducationInfo[]>(
     initial.length > 0
       ? initial
@@ -120,14 +123,14 @@ export default function EducationsInfoStep({ initial, handleForward }: Props) {
           marginBottom: wp(3),
         }}
       >
-        Educations
+        {t('resume-step4-title')}
       </Text>
       {educations.map((edu, i) => (
         <AccordionItem
           key={i}
           isActive={activeIndex === i}
           onToggle={() => handleToggle(i)}
-          title={edu.title || `Education #${i + 1}`}
+          title={edu.title || `${t('resume-step4-text')} #${i + 1}`}
         >
           <View
             className="flex-row justify-end items-center"
@@ -155,19 +158,19 @@ export default function EducationsInfoStep({ initial, handleForward }: Props) {
                 fontSize: wp(3),
               }}
             >
-              Present
+              {t('present')}
             </Text>
           </View>
           <TextInput
             handleChangeText={value => handleInputChange(i, 'title', value)}
             value={edu.title}
-            placeholder="Title*"
+            placeholder={t('resume-step4-field1')}
             autoCapitalize="words"
           />
           <TextInput
             handleChangeText={value => handleInputChange(i, 'institute', value)}
             value={edu.institute}
-            placeholder="Institute*"
+            placeholder={t('resume-step4-field2')}
             autoCapitalize="words"
           />
           <View className="flex-row items-center" style={{ gap: wp(3) }}>
@@ -177,7 +180,7 @@ export default function EducationsInfoStep({ initial, handleForward }: Props) {
                   handleInputChange(i, 'startDate', value)
                 }
                 value={edu.startDate}
-                placeholder="Start Date*"
+                placeholder={t('resume-step4-field3')}
               />
             </View>
             <View className="flex-1">
@@ -189,7 +192,7 @@ export default function EducationsInfoStep({ initial, handleForward }: Props) {
                     fontSize: wp(4),
                   }}
                 >
-                  - Present
+                  - {t('present')}
                 </Text>
               ) : (
                 <TextInput
@@ -197,7 +200,7 @@ export default function EducationsInfoStep({ initial, handleForward }: Props) {
                     handleInputChange(i, 'endDate', value)
                   }
                   value={edu.endDate}
-                  placeholder="End Date"
+                  placeholder={t('resume-step4-field4')}
                 />
               )}
             </View>
@@ -205,19 +208,19 @@ export default function EducationsInfoStep({ initial, handleForward }: Props) {
           <TextInput
             handleChangeText={value => handleInputChange(i, 'gpa', value)}
             value={edu.gpa}
-            placeholder="GPA"
+            placeholder={t('resume-step4-field5')}
             autoCapitalize="none"
           />
           {i > 0 && (
             <Button
               handleSubmit={() => handleDelete(i)}
-              text="Delete This Education"
+              text={t('resume-step4-delete')}
               type="delete"
             />
           )}
         </AccordionItem>
       ))}
-      <Button handleSubmit={handleAddNew} text="Add New Education" />
+      <Button handleSubmit={handleAddNew} text={t('resume-step4-btn')} />
     </ScrollView>
   );
 }

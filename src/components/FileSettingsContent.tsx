@@ -4,6 +4,7 @@ import React from 'react';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAppSelector } from '../store/hooks';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   onShow: () => void;
@@ -16,6 +17,8 @@ export default function FileSettingsContent({
   onEdit,
   onDelete,
 }: Props) {
+  const { t } = useTranslation();
+
   const { theme } = useAppSelector(state => state.theme);
 
   const iconColor = theme === 'LIGHT' ? '#585858' : '#D9D9D9';
@@ -36,7 +39,7 @@ export default function FileSettingsContent({
             fontWeight: '600',
           }}
         >
-          Show
+          {t('show')}
         </Text>
       </Pressable>
       <View className="border-b w-full border-b-borderColor dark:border-b-dark-borderColor" />
@@ -58,7 +61,7 @@ export default function FileSettingsContent({
             fontWeight: '600',
           }}
         >
-          Edit
+          {t('edit')}
         </Text>
       </Pressable>
       <View className="border-b w-full border-b-borderColor dark:border-b-dark-borderColor" />
@@ -80,7 +83,7 @@ export default function FileSettingsContent({
             fontWeight: '600',
           }}
         >
-          Delete
+          {t('delete')}
         </Text>
       </Pressable>
     </View>

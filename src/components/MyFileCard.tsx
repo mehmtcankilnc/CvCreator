@@ -20,6 +20,7 @@ import {
   GetMyCoverLetterById,
 } from '../services/CoverLetterServices';
 import Alert from './Alert';
+import { useTranslation } from 'react-i18next';
 
 export type FileRespModel = {
   id: string;
@@ -42,6 +43,8 @@ export default function MyFileCard({
   type,
   fetchFunc,
 }: Props) {
+  const { t } = useTranslation();
+
   const dispatch = useAppDispatch();
   const { theme } = useAppSelector(state => state.theme);
   const iconColor = theme === 'LIGHT' ? '#585858' : '#D4D4D4';
@@ -67,8 +70,8 @@ export default function MyFileCard({
             setAlertVisible(true);
             setAlert({
               type: 'failure',
-              title: 'Are you sure?',
-              desc: 'You are deleting this file permanently. Do you confirm?',
+              title: t('are-you-sure'),
+              desc: t('file-delete-alert-text'),
               onPress: handleDelete,
             });
           },
@@ -204,7 +207,7 @@ export default function MyFileCard({
             className="color-textColor dark:color-dark-textColor"
             style={{ fontWeight: '500', fontSize: wp(4) }}
           >
-            Created:{' '}
+            {t('created-at')}:{' '}
           </Text>
           <Text
             className="color-textColor dark:color-dark-textColor"
@@ -218,7 +221,7 @@ export default function MyFileCard({
             className="color-textColor dark:color-dark-textColor"
             style={{ fontWeight: '500', fontSize: wp(4) }}
           >
-            Last Updated:{' '}
+            {t('updated-at')}:{' '}
           </Text>
           <Text
             className="color-textColor dark:color-dark-textColor"
@@ -233,7 +236,7 @@ export default function MyFileCard({
         className="w-full"
         style={{ paddingHorizontal: wp(5), paddingTop: wp(2.5) }}
       >
-        <Button text="Download as PDF" handleSubmit={handleDownload} />
+        <Button text={t('download-as-pdf')} handleSubmit={handleDownload} />
       </View>
       {alertVisible && (
         <Alert

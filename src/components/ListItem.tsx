@@ -15,6 +15,7 @@ import {
   GetMyCoverLetterById,
 } from '../services/CoverLetterServices';
 import Alert from './Alert';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   navigation: any;
@@ -33,6 +34,8 @@ export default function ListItem({
   type,
   fetchFunc,
 }: Props) {
+  const { t } = useTranslation();
+
   const dispatch = useAppDispatch();
   const { theme } = useAppSelector(state => state.theme);
 
@@ -57,8 +60,8 @@ export default function ListItem({
             setAlertVisible(true);
             setAlert({
               type: 'failure',
-              title: 'Are you sure?',
-              desc: 'You are deleting this file permanently. Do you confirm?',
+              title: t('are-you-sure'),
+              desc: t('file-delete-alert-text'),
               onPress: handleDelete,
             });
           },

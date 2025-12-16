@@ -18,6 +18,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { launchImageLibrary } from 'react-native-image-picker';
 import Alert from '../Alert';
 import Button from '../Button';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   initial: PhotoInfo;
@@ -25,6 +26,8 @@ type Props = {
 };
 
 export default function UploadPhotoStep({ initial, handleForward }: Props) {
+  const { t } = useTranslation();
+
   const [photoInfo, setPhotoInfo] = useState<PhotoInfo>(initial);
   const [alert, setAlert] = useState({
     type: 'failure',
@@ -48,8 +51,8 @@ export default function UploadPhotoStep({ initial, handleForward }: Props) {
     if (!hasPermission) {
       setAlert({
         type: 'failure',
-        title: 'İzin Gerekli',
-        desc: 'Galeriye erişim izni verilmedi.',
+        title: t('gallery-perm-alert-title'),
+        desc: t('gallery-perm-alert-text'),
         onPress: () => setAlertVisible(false),
       });
       setAlertVisible(true);
@@ -116,7 +119,7 @@ export default function UploadPhotoStep({ initial, handleForward }: Props) {
           marginBottom: wp(3),
         }}
       >
-        Upload a Photo
+        {t('resume-step9-title')}
       </Text>
       <View className="w-full items-center border border-borderColor dark:border-dark-borderColor rounded-xl overflow-hidden">
         {photoInfo.base64Image ? (
@@ -132,7 +135,11 @@ export default function UploadPhotoStep({ initial, handleForward }: Props) {
               }}
               resizeMode="contain"
             />
-            <Button type="delete" text="Vazgeç" handleSubmit={removeImage} />
+            <Button
+              type="delete"
+              text={t('cancel')}
+              handleSubmit={removeImage}
+            />
           </View>
         ) : (
           <Pressable onPress={selectImage} style={{ marginVertical: wp(2) }}>
@@ -144,7 +151,7 @@ export default function UploadPhotoStep({ initial, handleForward }: Props) {
               style={{ padding: wp(5), margin: wp(2), borderRadius: wp(3) }}
             />
             <Text className="color-textColor dark:color-dark-textColor">
-              Resminizi yüklemek için tıklayın
+              {t('resume-step9-text')}
             </Text>
           </Pressable>
         )}
