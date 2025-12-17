@@ -27,7 +27,6 @@ export type FileRespModel = {
   name: string;
   createdAt: string;
   updatedAt: string;
-  storagePath: string;
 };
 
 type Props = {

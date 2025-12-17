@@ -83,8 +83,8 @@ export const GetMyCoverLetters = async (
       return;
     }
 
-    const data = await response.json();
-    return data;
+    const json = await response.json();
+    return json.data;
   } catch (error) {
     console.error('Mektupları çekme hatası: ', error);
   }
@@ -120,8 +120,8 @@ export const GetMyCoverLetterById = async (coverLetterId: string) => {
       return;
     }
 
-    const data = await response.json();
-    return data;
+    const json = await response.json();
+    return json.data;
   } catch (error) {
     console.error('Mektup çekme hatası: ', error);
   }

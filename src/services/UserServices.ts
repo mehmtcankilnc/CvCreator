@@ -22,11 +22,11 @@ export const deleteUser = async () => {
     });
 
     if (!response.ok) {
-      const errorData = await response.text();
-      throw new Error(errorData || 'Kullanıcı silinemedi!');
-    } else {
-      return response;
+      console.error('Hata: ', response);
+      return;
     }
+
+    return await response.json();
   } catch (error) {
     console.error('Kullanıcı silinirken bir hata oluştu: ', error);
   }

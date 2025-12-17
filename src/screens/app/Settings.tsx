@@ -345,7 +345,7 @@ export default function Settings({ navigation }: Props) {
                     onPress: async () => {
                       setAlertVisible(false);
                       const res = await deleteUser();
-                      if (res && res.ok) {
+                      if (res && res.isSuccess) {
                         handleLogout();
                       } else {
                         console.log(res);

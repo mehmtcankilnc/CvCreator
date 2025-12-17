@@ -61,6 +61,7 @@ export const GetMyResumes = async (searchText?: string, number?: number) => {
   if (session?.access_token && !session?.user.is_anonymous) {
     // eslint-disable-next-line dot-notation
     headers['Authorization'] = `Bearer ${session.access_token}`;
+    console.log(session.access_token);
   }
 
   try {
@@ -84,8 +85,8 @@ export const GetMyResumes = async (searchText?: string, number?: number) => {
       return;
     }
 
-    const data = await response.json();
-    return data;
+    const json = await response.json();
+    return json.data;
   } catch (error) {
     console.error("Bütün CV'leri çekme hatası: ", error);
   }
@@ -119,8 +120,8 @@ export const GetMyResumeById = async (resumeId: string) => {
       return;
     }
 
-    const data = await response.json();
-    return data;
+    const json = await response.json();
+    return json.data;
   } catch (error) {
     console.error('CV çekme hatası: ', error);
   }

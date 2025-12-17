@@ -36,7 +36,6 @@ export default function MyCoverLetters({ navigation }: Props) {
             name: item.fileName,
             createdAt: item.createdAt,
             updatedAt: item.updatedAt,
-            storagePath: item.storagePath,
           }));
           setMyCoverLetters(mappedCoverLetters);
         }
