@@ -29,7 +29,11 @@ export default function GoogleSignInBtn({ handleGoogle, isLoading }) {
               resizeMode="contain"
             />
             <Text
-              style={{ fontSize: wp(4.5), fontWeight: '500', color: 'white' }}
+              style={{
+                fontSize: wp(4.5),
+                fontFamily: 'InriaSerif-Bold',
+                color: 'white',
+              }}
             >
               {t('google-signin')}
             </Text>

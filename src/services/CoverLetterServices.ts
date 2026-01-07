@@ -21,7 +21,7 @@ export const PostCoverLetterValues = async (
   }
 
   try {
-    const response = await fetch(`http://localhost:5001/api/coverletters`, {
+    const response = await fetch(`http://localhost:5001/api/v1/coverletters`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(coverLetterData),
@@ -63,7 +63,7 @@ export const GetMyCoverLetters = async (
       headers['Authorization'] = `Bearer ${session.access_token}`;
     }
 
-    const url = new URL(`http://localhost:5001/api/coverletters`);
+    const url = new URL(`http://localhost:5001/api/v1/coverletters`);
 
     if (searchText) {
       url.searchParams.append('searchText', searchText);
@@ -107,7 +107,7 @@ export const GetMyCoverLetterById = async (coverLetterId: string) => {
 
   try {
     const url = new URL(
-      `http://localhost:5001/api/coverletters/${coverLetterId}`,
+      `http://localhost:5001/api/v1/coverletters/${coverLetterId}`,
     );
 
     const response = await fetch(url.toString(), {
@@ -160,7 +160,7 @@ export const DownloadCoverLetterById = async (
       },
     }).fetch(
       'GET',
-      `http://localhost:5001/api/coverletters/download/${coverLetterId}`,
+      `http://localhost:5001/api/v1/coverletters/download/${coverLetterId}`,
       headers,
     );
   } catch (error) {
@@ -185,7 +185,7 @@ export const DeleteCoverLetterById = async (coverLetterId: string) => {
 
   try {
     const url = new URL(
-      `http://localhost:5001/api/coverletters/${coverLetterId}`,
+      `http://localhost:5001/api/v1/coverletters/${coverLetterId}`,
     );
 
     const response = await fetch(url.toString(), {
@@ -225,7 +225,7 @@ export const UpdateCoverLetterValues = async (
 
   try {
     const response = await fetch(
-      `http://localhost:5001/api/coverletters/${coverLetterId}`,
+      `http://localhost:5001/api/v1/coverletters/${coverLetterId}`,
       {
         method: 'PUT',
         headers: headers,

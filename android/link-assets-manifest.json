@@ -2,6 +2,14 @@
   "migIndex": 1,
   "data": [
     {
+      "path": "src/assets/fonts/InriaSerif-Bold.ttf",
+      "sha1": "6d472f4c54a66c4f3d102a4523020066149390ae"
+    },
+    {
+      "path": "src/assets/fonts/InriaSerif-Regular.ttf",
+      "sha1": "c9a699f48f08554a42ffea5772ac3d456affb8a6"
+    },
+    {
       "path": "src/assets/fonts/Kavoon-Regular.ttf",
       "sha1": "3c2ce2e6ded93054f5b43ef09f80ff3b96dfd09d"
     }

@@ -49,7 +49,7 @@ export default function Button({
             type === 'back' ? 'color-[#585858]' : 'color-white'
           } dark:color-dark-textColor`}
           style={{
-            fontFamily: 'Kavoon-Regular',
+            fontFamily: 'InriaSerif-Bold',
             fontSize: wp(4),
           }}
         >

@@ -207,7 +207,11 @@ export default function Settings({ navigation }: Props) {
           >
             <View style={{ gap: wp(1) }}>
               <Text
-                style={{ fontSize: wp(4), color: '#1954E5', fontWeight: '600' }}
+                style={{
+                  fontSize: wp(4),
+                  color: '#1954E5',
+                  fontFamily: 'InriaSerif-Bold',
+                }}
               >
                 {t('general-settings')}
               </Text>
@@ -226,7 +230,7 @@ export default function Settings({ navigation }: Props) {
               />
               <Text
                 style={{
-                  fontFamily: 'Kavoon-Regular',
+                  fontFamily: 'InriaSerif-Bold',
                   fontSize: wp(4.5),
                   fontWeight: '600',
                   color: color,
@@ -244,7 +248,7 @@ export default function Settings({ navigation }: Props) {
               <MaterialCommunityIcons name="web" size={wp(8)} color={color} />
               <Text
                 style={{
-                  fontFamily: 'Kavoon-Regular',
+                  fontFamily: 'InriaSerif-Bold',
                   fontSize: wp(4.5),
                   fontWeight: '600',
                   color: color,
@@ -269,7 +273,7 @@ export default function Settings({ navigation }: Props) {
                   style={{
                     fontSize: wp(4),
                     color: '#1954E5',
-                    fontWeight: '600',
+                    fontFamily: 'InriaSerif-Bold',
                   }}
                 >
                   {t('account-info')}
@@ -287,7 +291,7 @@ export default function Settings({ navigation }: Props) {
                 />
                 <Text
                   style={{
-                    fontFamily: 'Kavoon-Regular',
+                    fontFamily: 'InriaSerif-Bold',
                     fontSize: wp(4.5),
                     fontWeight: '600',
                     color: color,
@@ -322,7 +326,7 @@ export default function Settings({ navigation }: Props) {
                 />
                 <Text
                   style={{
-                    fontFamily: 'Kavoon-Regular',
+                    fontFamily: 'InriaSerif-Bold',
                     fontSize: wp(4.5),
                     fontWeight: '600',
                     color: color,
@@ -362,7 +366,7 @@ export default function Settings({ navigation }: Props) {
                 />
                 <Text
                   style={{
-                    fontFamily: 'Kavoon-Regular',
+                    fontFamily: 'InriaSerif-Bold',
                     fontSize: wp(4.5),
                     fontWeight: '600',
                     color: color,

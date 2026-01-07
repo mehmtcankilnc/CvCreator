@@ -95,7 +95,7 @@ export default function ReferencesInfoStep({ initial, handleForward }: Props) {
       <Text
         className="color-textColor dark:color-dark-textColor"
         style={{
-          fontFamily: 'Kavoon-Regular',
+          fontFamily: 'InriaSerif-Bold',
           textAlign: 'center',
           fontSize: wp(4),
           marginBottom: wp(3),
@@ -108,7 +108,7 @@ export default function ReferencesInfoStep({ initial, handleForward }: Props) {
           key={i}
           isActive={activeIndex === i}
           onToggle={() => handleToggle(i)}
-          title={ref.fullName || `${t('resume-step8-text')} #${i + 1}`}
+          title={ref.fullName || `${t('resume-step8-text')} ${i + 1}`}
         >
           <TextInput
             handleChangeText={value => handleInputChange(i, 'fullName', value)}

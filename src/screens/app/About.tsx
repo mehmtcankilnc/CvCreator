@@ -27,7 +27,7 @@ export default function About({ navigation }: Props) {
             <Text
               className="color-textColor dark:color-dark-textColor"
               style={{
-                fontFamily: 'Kavoon-Regular',
+                fontFamily: 'InriaSerif-Bold',
                 textAlign: 'center',
                 fontSize: wp(4),
               }}
@@ -37,7 +37,7 @@ export default function About({ navigation }: Props) {
             <Text
               className="color-textColor dark:color-dark-textColor"
               style={{
-                fontFamily: 'Kavoon-Regular',
+                fontFamily: 'InriaSerif-Regular',
                 textAlign: 'center',
                 fontSize: wp(4),
               }}

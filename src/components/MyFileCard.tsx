@@ -183,8 +183,8 @@ export default function MyFileCard({
             }}
           />
           <Text
-            className="color-black dark:color-dark-textColor"
-            style={{ fontWeight: '600', fontSize: wp(5) }}
+            className="color-black dark:color-dark-textColor font-inriaBold"
+            style={{ fontSize: wp(5) }}
           >
             {file.name}
           </Text>
@@ -203,28 +203,28 @@ export default function MyFileCard({
       >
         <View className="flex-row items-center justify-between">
           <Text
-            className="color-textColor dark:color-dark-textColor"
-            style={{ fontWeight: '500', fontSize: wp(4) }}
+            className="color-textColor dark:color-dark-textColor font-inriaRegular"
+            style={{ fontSize: wp(4) }}
           >
             {t('created-at')}:{' '}
           </Text>
           <Text
-            className="color-textColor dark:color-dark-textColor"
-            style={{ fontWeight: '500', fontSize: wp(4) }}
+            className="color-textColor dark:color-dark-textColor font-inriaRegular"
+            style={{ fontSize: wp(4) }}
           >
             {new Date(file.createdAt).toLocaleDateString()}
           </Text>
         </View>
         <View className="flex-row items-center justify-between">
           <Text
-            className="color-textColor dark:color-dark-textColor"
-            style={{ fontWeight: '500', fontSize: wp(4) }}
+            className="color-textColor dark:color-dark-textColor font-inriaRegular"
+            style={{ fontSize: wp(4) }}
           >
             {t('updated-at')}:{' '}
           </Text>
           <Text
-            className="color-textColor dark:color-dark-textColor"
-            style={{ fontWeight: '500', fontSize: wp(4) }}
+            className="color-textColor dark:color-dark-textColor font-inriaRegular"
+            style={{ fontSize: wp(4) }}
           >
             {new Date(file.updatedAt).toLocaleDateString()}
           </Text>

@@ -16,7 +16,7 @@ export const deleteUser = async () => {
   }
 
   try {
-    const response = await fetch(`http://localhost:5001/api/users`, {
+    const response = await fetch(`http://localhost:5001/api/v1/users`, {
       method: 'DELETE',
       headers: headers,
     });

@@ -113,7 +113,7 @@ export default function UploadPhotoStep({ initial, handleForward }: Props) {
       <Text
         className="color-textColor dark:color-dark-textColor"
         style={{
-          fontFamily: 'Kavoon-Regular',
+          fontFamily: 'InriaSerif-Bold',
           textAlign: 'center',
           fontSize: wp(4),
           marginBottom: wp(3),
@@ -150,7 +150,7 @@ export default function UploadPhotoStep({ initial, handleForward }: Props) {
               className="border border-main border-dashed self-center"
               style={{ padding: wp(5), margin: wp(2), borderRadius: wp(3) }}
             />
-            <Text className="color-textColor dark:color-dark-textColor">
+            <Text className="color-textColor dark:color-dark-textColor font-inriaRegular">
               {t('resume-step9-text')}
             </Text>
           </Pressable>

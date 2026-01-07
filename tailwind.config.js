@@ -22,6 +22,8 @@ module.exports = {
       },
       fontFamily: {
         kavoon: ['Kavoon-Regular'],
+        inriaBold: ['InriaSerif-Bold'],
+        inriaRegular: ['InriaSerif-Regular'],
       },
     },
   },

@@ -23,7 +23,7 @@ export const PostResumeValues = async (
 
   try {
     const response = await fetch(
-      `http://localhost:5001/api/resumes?templateName=${templateName}`,
+      `http://localhost:5001/api/v1/resumes?templateName=${templateName}`,
       {
         method: 'POST',
         headers: headers,
@@ -65,7 +65,7 @@ export const GetMyResumes = async (searchText?: string, number?: number) => {
   }
 
   try {
-    const url = new URL(`http://localhost:5001/api/resumes`);
+    const url = new URL(`http://localhost:5001/api/v1/resumes`);
 
     if (searchText) {
       url.searchParams.append('searchText', searchText);
@@ -108,7 +108,7 @@ export const GetMyResumeById = async (resumeId: string) => {
   }
 
   try {
-    const url = new URL(`http://localhost:5001/api/resumes/${resumeId}`);
+    const url = new URL(`http://localhost:5001/api/v1/resumes/${resumeId}`);
 
     const response = await fetch(url.toString(), {
       method: 'GET',
@@ -160,7 +160,7 @@ export const DownloadResumeById = async (
       },
     }).fetch(
       'GET',
-      `http://localhost:5001/api/resumes/download/${resumeId}`,
+      `http://localhost:5001/api/v1/resumes/download/${resumeId}`,
       headers,
     );
   } catch (error) {
@@ -184,7 +184,7 @@ export const DeleteResumeById = async (resumeId: string) => {
   }
 
   try {
-    const url = new URL(`http://localhost:5001/api/resumes/${resumeId}`);
+    const url = new URL(`http://localhost:5001/api/v1/resumes/${resumeId}`);
 
     const response = await fetch(url.toString(), {
       method: 'DELETE',
@@ -224,7 +224,7 @@ export const UpdateResumeValues = async (
 
   try {
     const response = await fetch(
-      `http://localhost:5001/api/resumes/${resumeId}?templateName=${templateName}`,
+      `http://localhost:5001/api/v1/resumes/${resumeId}?templateName=${templateName}`,
       {
         method: 'PUT',
         headers: headers,

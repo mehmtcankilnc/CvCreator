@@ -56,7 +56,7 @@ export const TemplateCard = ({
         onLoadEnd={() => setIsLoading(false)}
         style={{ top: wp(2), width: wp(40), height: hp(21) }}
       />
-      <Text className="absolute font-medium w-full text-center bottom-0 capitalize text-textColor dark:text-dark-textColor">
+      <Text className="absolute font-medium w-full text-center bottom-0 capitalize text-textColor dark:text-dark-textColor font-inriaRegular">
         {template.name}
       </Text>
       {isSelected && (
@@ -83,7 +83,7 @@ export default function TemplateSelectStep({ initial, handleForward }: Props) {
       <Text
         className="color-textColor dark:color-dark-textColor"
         style={{
-          fontFamily: 'Kavoon-Regular',
+          fontFamily: 'InriaSerif-Bold',
           textAlign: 'center',
           fontSize: wp(4),
           marginBottom: wp(3),

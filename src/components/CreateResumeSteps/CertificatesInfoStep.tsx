@@ -102,7 +102,7 @@ export default function CertificatesInfoStep({
       <Text
         className="color-textColor dark:color-dark-textColor"
         style={{
-          fontFamily: 'Kavoon-Regular',
+          fontFamily: 'InriaSerif-Bold',
           textAlign: 'center',
           fontSize: wp(4),
           marginBottom: wp(3),
@@ -115,7 +115,7 @@ export default function CertificatesInfoStep({
           key={i}
           isActive={activeIndex === i}
           onToggle={() => handleToggle(i)}
-          title={cert.title || `${t('resume-step5-text')} #${i + 1}`}
+          title={cert.title || `${t('resume-step5-text')} ${i + 1}`}
         >
           <TextInput
             handleChangeText={value => handleInputChange(i, 'title', value)}

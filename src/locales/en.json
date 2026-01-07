@@ -162,5 +162,8 @@
   "signout-error-title": "Sign Out Failure",
   "signout-error-text": "Something went wrong while signing out. Please try again.",
   "anon-signin-alert-title": "Continue?",
-  "anon-signin-alert-text": "Are you sure you want to continue as guest, you can link your account later, whenever you want!"
+  "anon-signin-alert-text": "Are you sure you want to continue as guest, you can link your account later, whenever you want!",
+  "updateAvailable": "Update Available",
+  "updateDesc": "A new version of the app is available. Please update to continue using.",
+  "updateNow": "Update Now"
 }

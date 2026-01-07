@@ -48,7 +48,7 @@ export default function DrawerNav() {
         },
         drawerLabelStyle: {
           fontSize: wp(5),
-          fontFamily: 'Kavoon-Regular',
+          fontFamily: 'InriaSerif-Bold',
         },
       }}
       drawerContent={props => (
@@ -59,7 +59,7 @@ export default function DrawerNav() {
                 style={{
                   fontSize: hp(2),
                   color: mainBackgroundColor,
-                  fontFamily: 'Kavoon-Regular',
+                  fontFamily: 'InriaSerif-Bold',
                   lineHeight: hp(5),
                   textAlign: 'center',
                   paddingBottom: hp(2),
@@ -75,7 +75,7 @@ export default function DrawerNav() {
               style={{
                 fontSize: hp(2),
                 color: mainBackgroundColor,
-                fontFamily: 'Kavoon-Regular',
+                fontFamily: 'InriaSerif-Bold',
                 lineHeight: hp(5),
                 textAlign: 'center',
                 paddingBottom: hp(2),

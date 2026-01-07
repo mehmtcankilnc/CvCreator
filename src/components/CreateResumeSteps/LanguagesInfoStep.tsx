@@ -94,7 +94,7 @@ export default function LanguagesInfoStep({ initial, handleForward }: Props) {
       <Text
         className="color-textColor dark:color-dark-textColor"
         style={{
-          fontFamily: 'Kavoon-Regular',
+          fontFamily: 'InriaSerif-Bold',
           textAlign: 'center',
           fontSize: wp(4),
           marginBottom: wp(3),
@@ -107,7 +107,7 @@ export default function LanguagesInfoStep({ initial, handleForward }: Props) {
           key={i}
           isActive={activeIndex === i}
           onToggle={() => handleToggle(i)}
-          title={lang.title || `${t('resume-step7-text')} #${i + 1}`}
+          title={lang.title || `${t('resume-step7-text')} ${i + 1}`}
         >
           <TextInput
             handleChangeText={value => handleInputChange(i, 'title', value)}

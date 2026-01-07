@@ -91,7 +91,7 @@ export default function SkillsInfoStep({ initial, handleForward }: Props) {
       <Text
         className="color-textColor dark:color-dark-textColor"
         style={{
-          fontFamily: 'Kavoon-Regular',
+          fontFamily: 'InriaSerif-Bold',
           textAlign: 'center',
           fontSize: wp(4),
           marginBottom: wp(3),
@@ -104,7 +104,7 @@ export default function SkillsInfoStep({ initial, handleForward }: Props) {
           key={i}
           isActive={activeIndex === i}
           onToggle={() => handleToggle(i)}
-          title={skill.title || `${t('resume-step6-text')} #${i + 1}`}
+          title={skill.title || `${t('resume-step6-text')} ${i + 1}`}
         >
           <TextInput
             handleChangeText={value => handleInputChange(i, 'title', value)}

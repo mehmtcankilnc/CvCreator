@@ -78,7 +78,7 @@ export default function MyCoverLetters({ navigation }: Props) {
           className="flex-1 items-center justify-center"
           style={{ gap: wp(5) }}
         >
-          <Text className="text-gray-500 text-lg text-center">
+          <Text className="text-gray-500 text-lg text-center font-inriaRegular">
             {t('coverletter-login-required')}
           </Text>
           <Pressable onPress={() => navigation.navigate('Settings')}>
@@ -93,7 +93,9 @@ export default function MyCoverLetters({ navigation }: Props) {
     if (myCoverLetters.length === 0) {
       return (
         <View className="flex-1 items-center justify-center">
-          <Text className="text-gray-500 text-lg">{t('no-coverletter')}</Text>
+          <Text className="text-gray-500 text-lg font-inriaBold">
+            {t('no-coverletter')}
+          </Text>
         </View>
       );
     }

@@ -18,7 +18,7 @@ export default function OnboardingWave({ title }: Props) {
         x={wp(10)}
         y={wp(40)}
         fill="white"
-        fontFamily="Kavoon-Regular"
+        fontFamily="InriaSerif-Bold"
         fontSize={wp(10)}
       >
         {title}

@@ -162,5 +162,8 @@
   "signout-error-title": "Çıkış Hatası",
   "signout-error-text": "Çıkış yaparken bir hata oluştu. Lütfen tekrar deneyin.",
   "anon-signin-alert-title": "Devam?",
-  "anon-signin-alert-text": "Misafir olarak devam etmek istediğine emin misin? Daha sonra istediğin zaman hesabını bağlayabilirsin!"
+  "anon-signin-alert-text": "Misafir olarak devam etmek istediğine emin misin? Daha sonra istediğin zaman hesabını bağlayabilirsin!",
+  "updateAvailable": "Güncelleme Mevcut",
+  "updateDesc": "Bu uygulamanın yeni bir versiyonu mevcut. Kullanmaya devam edebilmek için lütfen uygulamayı güncelleyin.",
+  "updateNow": "Şimdi Güncelle"
 }

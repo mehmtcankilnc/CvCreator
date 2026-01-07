@@ -215,7 +215,7 @@ export default function OnboardingScreen2() {
       >
         <Text
           style={{
-            fontFamily: 'Kavoon-Regular',
+            fontFamily: 'InriaSerif-Bold',
             fontSize: wp(8),
             color: '#585858',
           }}

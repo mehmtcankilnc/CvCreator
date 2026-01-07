@@ -49,7 +49,7 @@ export default function AccordionItem({
         <Text
           className="color-textColor dark:color-dark-textColor"
           style={{
-            fontFamily: 'Kavoon-Regular',
+            fontFamily: 'InriaSerif-Regular',
             fontSize: wp(4),
           }}
         >

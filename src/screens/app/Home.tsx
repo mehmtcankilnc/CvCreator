@@ -132,12 +132,15 @@ export default function Home({ navigation }: Props) {
               </View>
               <View className="flex-1">
                 <Text
-                  className="font-kavoon text-white dark:text-dark-textColor"
+                  className="font-inriaBold text-white dark:text-dark-textColor"
                   style={{ fontSize: wp(5) }}
                 >
                   {t('create-resume-header')}
                 </Text>
-                <Text className="text-blue-300" style={{ fontSize: wp(3) }}>
+                <Text
+                  className="font-inriaRegular text-blue-300"
+                  style={{ fontSize: wp(3) }}
+                >
                   {t('create-resume-desc')}
                 </Text>
               </View>
@@ -171,7 +174,7 @@ export default function Home({ navigation }: Props) {
                   )}
                 </View>
                 <Text
-                  className="font-kavoon text-center text-[#90168b] dark:text-[#e9d4ff]"
+                  className="font-inriaBold text-center text-[#90168b] dark:text-[#e9d4ff]"
                   style={{ fontSize: wp(3) }}
                 >
                   {t('create-cover-letter')}
@@ -204,7 +207,7 @@ export default function Home({ navigation }: Props) {
                   )}
                 </View>
                 <Text
-                  className="font-kavoon text-center text-textColor dark:text-[#fccedd]"
+                  className="font-inriaBold text-center text-textColor dark:text-[#fccedd]"
                   style={{ fontSize: wp(3) }}
                 >
                   {t('templates')}
@@ -217,9 +220,8 @@ export default function Home({ navigation }: Props) {
             {/** Başlık ve Daha Fazla Butonu */}
             <View className="flex-row items-center justify-between">
               <Text
-                className="text-main"
+                className="text-main font-inriaBold"
                 style={{
-                  fontWeight: '800',
                   fontSize: wp(5),
                 }}
               >
@@ -235,9 +237,8 @@ export default function Home({ navigation }: Props) {
                 onPress={() => navigation.jumpTo('MyResumes')}
               >
                 <Text
-                  className="color-main dark:color-dark-textColor"
+                  className="color-main dark:color-dark-textColor font-inriaRegular"
                   style={{
-                    fontWeight: '500',
                     fontSize: wp(3),
                   }}
                 >
@@ -251,11 +252,11 @@ export default function Home({ navigation }: Props) {
               {isResumesLoading ? (
                 <ShimmerListItem />
               ) : isAnonymous ? (
-                <Text className="text-gray-500 text-lg">
+                <Text className="text-gray-500 text-lg font-inriaRegular">
                   {t('resume-login-required')}{' '}
                   <Text
                     onPress={() => navigation.navigate('Settings')}
-                    className="text-gray-500 italic underline"
+                    className="text-gray-500 italic underline font-inriaBold"
                   >
                     {t('login-now')}
                   </Text>
@@ -273,11 +274,11 @@ export default function Home({ navigation }: Props) {
                   />
                 ))
               ) : (
-                <Text className="text-gray-500 text-lg">
+                <Text className="text-gray-500 text-lg font-inriaRegular">
                   {t('no-resume')}{' '}
                   <Text
                     onPress={() => navigation.navigate('CreateResume')}
-                    className="text-gray-500 italic underline"
+                    className="text-gray-500 italic underline font-inriaBold"
                   >
                     {t('create-now')}
                   </Text>
@@ -290,9 +291,8 @@ export default function Home({ navigation }: Props) {
             {/** Başlık ve Daha Fazla Butonu */}
             <View className="flex-row items-center justify-between">
               <Text
-                className="text-main"
+                className="text-main font-inriaBold"
                 style={{
-                  fontWeight: '800',
                   fontSize: wp(5),
                 }}
               >
@@ -308,9 +308,8 @@ export default function Home({ navigation }: Props) {
                 onPress={() => navigation.jumpTo('MyCoverLetters')}
               >
                 <Text
-                  className="color-main dark:color-dark-textColor"
+                  className="color-main dark:color-dark-textColor font-inriaRegular"
                   style={{
-                    fontWeight: '500',
                     fontSize: wp(3),
                   }}
                 >
@@ -324,11 +323,11 @@ export default function Home({ navigation }: Props) {
               {isCoverLettersLoading ? (
                 <ShimmerListItem />
               ) : isAnonymous ? (
-                <Text className="text-gray-500 text-lg">
+                <Text className="text-gray-500 text-lg font-inriaRegular">
                   {t('coverletter-login-required')}{' '}
                   <Text
                     onPress={() => navigation.navigate('Settings')}
-                    className="text-gray-500 italic underline"
+                    className="text-gray-500 italic underline font-inriaBold"
                   >
                     {t('login-now')}
                   </Text>
@@ -346,11 +345,11 @@ export default function Home({ navigation }: Props) {
                   />
                 ))
               ) : (
-                <Text className="text-gray-500 text-lg">
+                <Text className="text-gray-500 text-lg font-inriaRegular">
                   {t('no-coverletter')}{' '}
                   <Text
                     onPress={() => navigation.navigate('CreateCoverLetter')}
-                    className="text-gray-500 italic underline"
+                    className="text-gray-500 italic underline font-inriaBold"
                   >
                     {t('create-now')}
                   </Text>

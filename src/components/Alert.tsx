@@ -70,7 +70,7 @@ export default function Alert({
           <View style={{ gap: wp(2) }}>
             <Text
               className="text-center text-xl text-textColor dark:text-dark-textColor"
-              style={{ fontFamily: 'Kavoon-Regular' }}
+              style={{ fontFamily: 'InriaSerif-Bold' }}
             >
               {title}
             </Text>

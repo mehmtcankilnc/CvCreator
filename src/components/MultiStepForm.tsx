@@ -191,8 +191,9 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   stepText: {
-    fontFamily: 'Kavoon-Regular',
+    fontFamily: 'InriaSerif-Bold',
     fontSize: wp(6),
+    lineHeight: wp(9),
   },
   separator: {
     width: wp(8),

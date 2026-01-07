@@ -117,7 +117,7 @@ export default function EducationsInfoStep({ initial, handleForward }: Props) {
       <Text
         className="color-textColor dark:color-dark-textColor"
         style={{
-          fontFamily: 'Kavoon-Regular',
+          fontFamily: 'InriaSerif-Bold',
           textAlign: 'center',
           fontSize: wp(4),
           marginBottom: wp(3),
@@ -130,7 +130,7 @@ export default function EducationsInfoStep({ initial, handleForward }: Props) {
           key={i}
           isActive={activeIndex === i}
           onToggle={() => handleToggle(i)}
-          title={edu.title || `${t('resume-step4-text')} #${i + 1}`}
+          title={edu.title || `${t('resume-step4-text')} ${i + 1}`}
         >
           <View
             className="flex-row justify-end items-center"
@@ -154,7 +154,7 @@ export default function EducationsInfoStep({ initial, handleForward }: Props) {
             <Text
               className="color-textColor dark:color-dark-textColor"
               style={{
-                fontFamily: 'Kavoon-Regular',
+                fontFamily: 'InriaSerif-Regular',
                 fontSize: wp(3),
               }}
             >
@@ -188,7 +188,7 @@ export default function EducationsInfoStep({ initial, handleForward }: Props) {
                 <Text
                   className="text-center color-textColor dark:color-dark-textColor"
                   style={{
-                    fontFamily: 'Kavoon-Regular',
+                    fontFamily: 'InriaSerif-Regular',
                     fontSize: wp(4),
                   }}
                 >
