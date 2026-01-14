@@ -165,5 +165,17 @@
   "anon-signin-alert-text": "Misafir olarak devam etmek istediğine emin misin? Daha sonra istediğin zaman hesabını bağlayabilirsin!",
   "updateAvailable": "Güncelleme Mevcut",
   "updateDesc": "Bu uygulamanın yeni bir versiyonu mevcut. Kullanmaya devam edebilmek için lütfen uygulamayı güncelleyin.",
-  "updateNow": "Şimdi Güncelle"
+  "updateNow": "Şimdi Güncelle",
+  "successTitle": "Başarılı",
+  "successText": "{{fileType}} başarıyla oluşturulmuştur. Aşağıdaki paylaş butonuna basarak indirebilir veya cihazınıza kaydedebilirsiniz.",
+  "yourCoverLetter": "Ön yazınız",
+  "yourResume": "Özgeçmişiniz",
+  "next": "Sonraki",
+  "guest-signin": "Misafir Girişi",
+  "onboarding_step1_title": "Cv Creator'a\nHoşgeldiniz",
+  "onboarding_step2_title1": "Profesyonel Özgeçmiş",
+  "onboarding_step2_title2": "Kurumsal Ön Yazı",
+  "onboarding_step3_title": "Çeşitli Şablonlarla\nÖzgeçmişini Oluştur",
+  "onboarding_step4_title": "Üye Olmadan\nHemen Başla",
+  "file_loading": "Dosya Yükleniyor..."
 }

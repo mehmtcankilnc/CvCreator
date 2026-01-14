@@ -1,4 +1,5 @@
 {
   "name": "CvCreator",
-  "displayName": "CvCreator"
+  "displayName": "CvCreator",
+  "icon": "./src/assets/CvCreatorAppIcon.png"
 }

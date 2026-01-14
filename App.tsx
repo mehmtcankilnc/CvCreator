@@ -11,6 +11,7 @@ import { useAppSelector } from './src/store/hooks';
 import { useColorScheme } from 'nativewind';
 import { useEffect, useState } from 'react';
 import UpdateAppModal from './src/components/UpdateAppModal';
+import AuthProvider from './src/context/AuthContext';
 
 const CURRENT_VERSION = '1.0';
 const VERSION_URL =
@@ -76,14 +77,16 @@ function App() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <Provider store={store}>
-        <ThemeSynchronizer />
-        <SafeAreaProvider>
-          <AppNavigator />
-          <GlobalBottomSheet />
-          <UpdateAppModal visible={isUpdateRequired} storeUrl={storeUrl} />
-        </SafeAreaProvider>
-      </Provider>
+      <AuthProvider>
+        <Provider store={store}>
+          <ThemeSynchronizer />
+          <SafeAreaProvider>
+            <AppNavigator />
+            <GlobalBottomSheet />
+            <UpdateAppModal visible={isUpdateRequired} storeUrl={storeUrl} />
+          </SafeAreaProvider>
+        </Provider>
+      </AuthProvider>
     </GestureHandlerRootView>
   );
 }

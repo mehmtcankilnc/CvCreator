@@ -16,6 +16,7 @@ import {
 } from '../services/CoverLetterServices';
 import Alert from './Alert';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../context/AuthContext';
 
 type Props = {
   navigation: any;
@@ -35,6 +36,7 @@ export default function ListItem({
   fetchFunc,
 }: Props) {
   const { t } = useTranslation();
+  const { authenticatedFetch } = useAuth();
 
   const dispatch = useAppDispatch();
   const { theme } = useAppSelector(state => state.theme);
@@ -72,7 +74,7 @@ export default function ListItem({
 
   const handleShow = async () => {
     if (type === 'resumes') {
-      const resume = await GetMyResumeById(file.id);
+      const resume = await GetMyResumeById(authenticatedFetch, file.id);
 
       if (resume) {
         dispatch(closeBottomSheet());
@@ -83,7 +85,10 @@ export default function ListItem({
         });
       }
     } else {
-      const coverLetter = await GetMyCoverLetterById(file.id);
+      const coverLetter = await GetMyCoverLetterById(
+        authenticatedFetch,
+        file.id,
+      );
 
       if (coverLetter) {
         dispatch(closeBottomSheet());
@@ -98,7 +103,7 @@ export default function ListItem({
 
   const handleEdit = async () => {
     if (type === 'resumes') {
-      const resume = await GetMyResumeById(file.id);
+      const resume = await GetMyResumeById(authenticatedFetch, file.id);
 
       if (resume) {
         dispatch(closeBottomSheet());
@@ -108,7 +113,10 @@ export default function ListItem({
         });
       }
     } else {
-      const coverLetter = await GetMyCoverLetterById(file.id);
+      const coverLetter = await GetMyCoverLetterById(
+        authenticatedFetch,
+        file.id,
+      );
 
       if (coverLetter) {
         dispatch(closeBottomSheet());
@@ -123,17 +131,23 @@ export default function ListItem({
   const handleDelete = async () => {
     setIsLoading(true);
     if (type === 'coverletters') {
-      const coverLetterDeleted = await DeleteCoverLetterById(file.id);
+      const isCoverLetterDeleted = await DeleteCoverLetterById(
+        authenticatedFetch,
+        file.id,
+      );
 
-      if (coverLetterDeleted) {
+      if (isCoverLetterDeleted) {
         setIsLoading(false);
         dispatch(closeBottomSheet());
         fetchFunc();
       }
     } else {
-      const resumeDeleted = await DeleteResumeById(file.id);
+      const isResumeDeleted = await DeleteResumeById(
+        authenticatedFetch,
+        file.id,
+      );
 
-      if (resumeDeleted) {
+      if (isResumeDeleted) {
         setIsLoading(false);
         dispatch(closeBottomSheet());
         fetchFunc();

@@ -9,11 +9,11 @@ import DrawerNav from './DrawerNav';
 import CreateResume from '../screens/CreateResume';
 import CreateCoverLetter from '../screens/CreateCoverLetter';
 import Templates from '../screens/Templates';
-import OnboardingStack from './OnboardingStack';
 import SplashScreen from '../screens/SplashScreen';
 
 import linking from '../Linking';
 import FileViewer from '../screens/FileViewer';
+import OnboardingScreen from '../screens/OnboardingScreen';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -34,7 +34,7 @@ export default function AppNavigator() {
           }}
         >
           <Stack.Screen name="Splash" component={SplashScreen} />
-          <Stack.Screen name="Onboarding" component={OnboardingStack} />
+          <Stack.Screen name="Onboarding" component={OnboardingScreen} />
           <Stack.Screen name="App" component={DrawerNav} />
           <Stack.Screen name="CreateResume" component={CreateResume} />
           <Stack.Screen

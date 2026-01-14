@@ -19,15 +19,13 @@ import About from '../screens/app/About';
 import Settings from '../screens/app/Settings';
 import { useAppSelector } from '../store/hooks';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../context/AuthContext';
 
 const Drawer = createDrawerNavigator();
 
 export default function DrawerNav() {
   const { t } = useTranslation();
-  const isUserAnon = useAppSelector(state => state.auth.isAnonymous);
-  const username = useAppSelector(state =>
-    state.auth.isAnonymous ? '' : state.auth.userName ?? '',
-  );
+  const { user } = useAuth();
   const theme = useAppSelector(state => state.theme.theme);
 
   const mainBackgroundColor = theme === 'LIGHT' ? 'white' : '#0F181F';
@@ -53,7 +51,7 @@ export default function DrawerNav() {
       }}
       drawerContent={props => (
         <DrawerContentScrollView {...props}>
-          {isUserAnon ? (
+          {user?.isGuest ? (
             <Pressable onPress={() => props.navigation.navigate('Settings')}>
               <Text
                 style={{
@@ -83,7 +81,7 @@ export default function DrawerNav() {
             >
               {t('hello')}
               {'\n'}
-              {username}
+              {user?.name}
             </Text>
           )}
           <DrawerItemList {...props} />

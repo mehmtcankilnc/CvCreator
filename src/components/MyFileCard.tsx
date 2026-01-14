@@ -21,6 +21,7 @@ import {
 } from '../services/CoverLetterServices';
 import Alert from './Alert';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../context/AuthContext';
 
 export type FileRespModel = {
   id: string;
@@ -43,6 +44,7 @@ export default function MyFileCard({
   fetchFunc,
 }: Props) {
   const { t } = useTranslation();
+  const { authenticatedFetch, token } = useAuth();
 
   const dispatch = useAppDispatch();
   const { theme } = useAppSelector(state => state.theme);
@@ -81,7 +83,7 @@ export default function MyFileCard({
 
   const handleShow = async () => {
     if (type === 'resumes') {
-      const resume = await GetMyResumeById(file.id);
+      const resume = await GetMyResumeById(authenticatedFetch, file.id);
 
       if (resume) {
         dispatch(closeBottomSheet());
@@ -92,7 +94,10 @@ export default function MyFileCard({
         });
       }
     } else {
-      const coverLetter = await GetMyCoverLetterById(file.id);
+      const coverLetter = await GetMyCoverLetterById(
+        authenticatedFetch,
+        file.id,
+      );
 
       if (coverLetter) {
         dispatch(closeBottomSheet());
@@ -107,7 +112,7 @@ export default function MyFileCard({
 
   const handleEdit = async () => {
     if (type === 'resumes') {
-      const resume = await GetMyResumeById(file.id);
+      const resume = await GetMyResumeById(authenticatedFetch, file.id);
 
       if (resume) {
         dispatch(closeBottomSheet());
@@ -117,7 +122,10 @@ export default function MyFileCard({
         });
       }
     } else {
-      const coverLetter = await GetMyCoverLetterById(file.id);
+      const coverLetter = await GetMyCoverLetterById(
+        authenticatedFetch,
+        file.id,
+      );
 
       if (coverLetter) {
         dispatch(closeBottomSheet());
@@ -132,7 +140,10 @@ export default function MyFileCard({
   const handleDelete = async () => {
     setIsLoading(true);
     if (type === 'coverletters') {
-      const coverLetterDeleted = await DeleteCoverLetterById(file.id);
+      const coverLetterDeleted = await DeleteCoverLetterById(
+        authenticatedFetch,
+        file.id,
+      );
 
       if (coverLetterDeleted) {
         setIsLoading(false);
@@ -140,7 +151,7 @@ export default function MyFileCard({
         fetchFunc();
       }
     } else {
-      const resumeDeleted = await DeleteResumeById(file.id);
+      const resumeDeleted = await DeleteResumeById(authenticatedFetch, file.id);
 
       if (resumeDeleted) {
         setIsLoading(false);
@@ -152,9 +163,9 @@ export default function MyFileCard({
 
   const handleDownload = async () => {
     if (type === 'coverletters') {
-      await DownloadCoverLetterById(file.id, file.name);
+      await DownloadCoverLetterById(file.id, file.name, token);
     } else {
-      await DownloadResumeById(file.id, file.name);
+      await DownloadResumeById(file.id, file.name, token);
     }
   };
 

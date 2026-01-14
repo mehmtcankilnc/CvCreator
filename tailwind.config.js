@@ -12,7 +12,7 @@ module.exports = {
         textColor: '#585858',
         borderColor: '#D4D4D4',
         rejectColor: '#C21D10',
-        confirmColor: '#C2A510', //#2bc210
+        confirmColor: '#2BC210',
         dark: {
           backgroundColor: '#0F181F',
           textColor: '#D9D9D9',

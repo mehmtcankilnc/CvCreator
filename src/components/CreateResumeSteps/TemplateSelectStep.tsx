@@ -32,6 +32,7 @@ export const TemplateCard = ({
   onPress: () => void;
 }) => {
   const [isLoading, setIsLoading] = useState(true);
+  const { t } = useTranslation();
 
   return (
     <Pressable
@@ -57,7 +58,7 @@ export const TemplateCard = ({
         style={{ top: wp(2), width: wp(40), height: hp(21) }}
       />
       <Text className="absolute font-medium w-full text-center bottom-0 capitalize text-textColor dark:text-dark-textColor font-inriaRegular">
-        {template.name}
+        {t(`${template.name}`)}
       </Text>
       {isSelected && (
         <View

@@ -37,6 +37,7 @@ import { resumeTemplatesData } from '../data/resumeTemplatesData';
 import CreatedInfoModal from '../components/CreatedInfoModal';
 import UploadPhotoStep from '../components/CreateResumeSteps/UploadPhotoStep';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../context/AuthContext';
 
 type Props = {
   navigation: any;
@@ -58,6 +59,7 @@ const isSmallScreen = screenWidth < 375;
 
 export default function CreateResume({ navigation, route }: Props) {
   const { t } = useTranslation();
+  const { authenticatedFetch } = useAuth();
   const [formValues, setFormValues] = useState<ResumeFormValues>(
     route.params?.formValues ?? INITIAL_RESUME_VALUES,
   );
@@ -273,14 +275,16 @@ export default function CreateResume({ navigation, route }: Props) {
       let response;
       if (route.params?.formValues) {
         response = await UpdateResumeValues(
+          authenticatedFetch,
           formValues,
-          resumeTemplatesData[selectedTemplateIndex].name,
+          resumeTemplatesData[selectedTemplateIndex].code,
           route.params.resumeId,
         );
       } else {
         response = await PostResumeValues(
+          authenticatedFetch,
           formValues,
-          resumeTemplatesData[selectedTemplateIndex].name,
+          resumeTemplatesData[selectedTemplateIndex].code,
         );
       }
 
@@ -402,10 +406,10 @@ export default function CreateResume({ navigation, route }: Props) {
           createdInfo={createdInfo}
           handleDismiss={() => {
             setIsCreated(false);
-            // setCreatedInfo(null);
-            // setFormValues(INITIAL_RESUME_VALUES);
-            // setCurrentStep(1);
-            // navigation.goBack();
+            setCreatedInfo(null);
+            setFormValues(INITIAL_RESUME_VALUES);
+            setCurrentStep(1);
+            navigation.goBack();
           }}
         />
       )}

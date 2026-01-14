@@ -25,6 +25,7 @@ import {
   UpdateCoverLetterValues,
 } from '../services/CoverLetterServices';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../context/AuthContext';
 
 type Props = {
   navigation: any;
@@ -62,6 +63,7 @@ const isSmallScreen = screenWidth < 375;
 
 export default function CreateCoverLetter({ navigation, route }: Props) {
   const { t } = useTranslation();
+  const { authenticatedFetch } = useAuth();
   const [formValues, setFormValues] = useState<CoverLetterFormValues>(
     route.params?.formValues ?? INITIAL_COVER_LETTER_VALUES,
   );
@@ -179,11 +181,12 @@ export default function CreateCoverLetter({ navigation, route }: Props) {
       let response;
       if (route.params?.formValues) {
         response = await UpdateCoverLetterValues(
+          authenticatedFetch,
           formValues,
           route.params.coverLetterId,
         );
       } else {
-        response = await PostCoverLetterValues(formValues);
+        response = await PostCoverLetterValues(authenticatedFetch, formValues);
       }
 
       if (response && response.ok) {
@@ -280,10 +283,10 @@ export default function CreateCoverLetter({ navigation, route }: Props) {
           createdInfo={createdInfo}
           handleDismiss={() => {
             setIsCreated(false);
-            // setCreatedInfo(null);
-            // setFormValues(INITIAL_COVER_LETTER_VALUES);
-            // setCurrentStep(1);
-            // navigation.goBack();
+            setCreatedInfo(null);
+            setFormValues(INITIAL_COVER_LETTER_VALUES);
+            setCurrentStep(1);
+            navigation.goBack();
           }}
         />
       )}

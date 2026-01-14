@@ -1,24 +1,26 @@
-import { t } from 'i18next';
-
 export const resumeTemplatesData = [
   {
     id: 0,
-    name: t('classic-template'),
+    name: 'classic-template',
     img: require('../assets/classicplaceholder.png'),
+    code: 'classic',
   },
   {
     id: 1,
-    name: t('modern-template'),
+    name: 'modern-template',
     img: require('../assets/modernplaceholder.png'),
+    code: 'modern',
   },
   {
     id: 2,
-    name: t('vertical-template'),
+    name: 'vertical-template',
     img: require('../assets/verticalplaceholder.png'),
+    code: 'vertical',
   },
   {
     id: 3,
-    name: t('minimal-template'),
+    name: 'minimal-template',
     img: require('../assets/minimalplaceholder.png'),
+    code: 'minimal',
   },
 ];

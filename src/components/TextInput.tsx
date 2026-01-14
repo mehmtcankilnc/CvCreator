@@ -124,7 +124,7 @@ export default function TextInput({
               }),
               lineHeight: focusAnim.interpolate({
                 inputRange: [0, 1],
-                outputRange: [initialFontSize * 1.2, finalFontSize],
+                outputRange: [initialFontSize * 1.2, finalFontSize * 1.2],
               }),
             }}
           >

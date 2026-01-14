@@ -3,10 +3,8 @@ import { View, Text, Pressable } from 'react-native';
 import React, { useState } from 'react';
 import Header from '../../components/Header';
 import Page from '../../components/Page';
-import { supabase } from '../../lib/supabase';
 import GoogleSignInBtn from '../../components/GoogleSignInBtn';
 import Alert from '../../components/Alert';
-import { setAnon, setUser } from '../../store/slices/authSlice';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -14,10 +12,10 @@ import { setTheme } from '../../store/slices/themeSlice';
 import { openBottomSheet } from '../../store/slices/bottomSheetSlice';
 import { LanguageTypes, setLanguage } from '../../store/slices/languageSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import InAppBrowser from 'react-native-inappbrowser-reborn';
 import { deleteUser } from '../../services/UserServices';
 import i18n from '../../utilities/i18n';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
 
 type Props = {
   navigation: any;
@@ -25,8 +23,8 @@ type Props = {
 
 export default function Settings({ navigation }: Props) {
   const { t } = useTranslation();
-
-  const { isAnonymous, userName } = useAppSelector(state => state.auth);
+  const { user, loginGoogle, logout, loginGuest, authenticatedFetch } =
+    useAuth();
   const { theme } = useAppSelector(state => state.theme);
   const dispatch = useAppDispatch();
 
@@ -43,92 +41,12 @@ export default function Settings({ navigation }: Props) {
 
   const handleAccountLink = async () => {
     if (isLinking) return;
-    setIsLinking(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: 'cvcreator://google-auth',
-        },
-      });
-
-      if (error || !data.url) {
-        setAlertVisible(true);
-        setAlert({
-          type: 'failure',
-          title: t('google-signin-error-title'),
-          desc: t('google-signin-error-text'),
-          onPress: () => setAlertVisible(false),
-        });
-        return;
-      }
-
-      const { url } = data;
-
-      if (url) {
-        const deepLink = 'cvcreator://google-auth';
-        console.log('URL:', url);
-        const result = await InAppBrowser.openAuth(url, deepLink, {
-          dismissButtonStyle: 'cancel',
-          preferredBarTintColor: '#453AA4',
-          preferredControlTintColor: 'white',
-          readerMode: false,
-          animated: true,
-          modalPresentationStyle: 'fullScreen',
-          modalTransitionStyle: 'coverVertical',
-          modalEnabled: true,
-          enableBarCollapsing: false,
-          showTitle: false,
-          toolbarColor: '#6200EE',
-          secondaryToolbarColor: 'black',
-          enableUrlBarHiding: true,
-          enableDefaultShare: true,
-          forceCloseOnRedirection: true,
-        });
-
-        if (result.type === 'success' && result.url) {
-          const resultUrl = result.url;
-          const params: { [key: string]: string } = {};
-          const regex = /[?&#]([^=]+)=([^&]*)/g;
-          let match;
-          while ((match = regex.exec(resultUrl))) {
-            params[match[1]] = match[2];
-          }
-          const { access_token, refresh_token } = params;
-
-          if (access_token && refresh_token) {
-            const { error: sessionError } = await supabase.auth.setSession({
-              access_token,
-              refresh_token,
-            });
-
-            if (sessionError) {
-              setAlertVisible(true);
-              setAlert({
-                type: 'failure',
-                title: t('session-error-title'),
-                desc: t('session-error-text'),
-                onPress: () => setAlertVisible(false),
-              });
-            } else {
-              const {
-                data: { user },
-              } = await supabase.auth.getUser();
-              if (user) {
-                dispatch(
-                  setUser({
-                    id: user.id,
-                    name: user.email ?? null,
-                  }),
-                );
-                await AsyncStorage.setItem('isGuest', 'false');
-              }
-
-              navigation.navigate('Home');
-            }
-          }
-        }
+      setIsLinking(true);
+      const isSucceed = await loginGoogle();
+      if (isSucceed) {
+        navigation.navigate('Home');
       }
     } catch (error) {
       setAlertVisible(true);
@@ -169,9 +87,9 @@ export default function Settings({ navigation }: Props) {
   };
 
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
+    const isSucceed = await logout();
 
-    if (error) {
+    if (!isSucceed) {
       setAlertVisible(true);
       setAlert({
         type: 'failure',
@@ -180,14 +98,10 @@ export default function Settings({ navigation }: Props) {
         onPress: () => setAlertVisible(false),
       });
     } else {
-      const { error: anonErr } = await supabase.auth.signInAnonymously();
-      if (anonErr == null) {
-        dispatch(setAnon(true));
-        await AsyncStorage.removeItem('isGuest');
-      } else {
-        console.log(anonErr);
+      const isGuestSucceed = await loginGuest();
+      if (isGuestSucceed) {
+        await AsyncStorage.setItem('isGuest', 'false');
       }
-
       navigation.navigate('Home');
     }
   };
@@ -258,7 +172,7 @@ export default function Settings({ navigation }: Props) {
               </Text>
             </Pressable>
           </View>
-          {isAnonymous ? (
+          {user?.isGuest ? (
             <GoogleSignInBtn // Google Sign In
               handleGoogle={handleAccountLink}
               isLoading={isLinking}
@@ -297,12 +211,12 @@ export default function Settings({ navigation }: Props) {
                     color: color,
                   }}
                 >
-                  {userName}
+                  {user?.name}
                 </Text>
               </View>
               <Pressable // Çıkış Yap
                 className={`flex-row items-center ${
-                  isAnonymous ? 'opacity-25' : 'opacity-100'
+                  user?.isGuest ? 'opacity-25' : 'opacity-100'
                 }`}
                 style={{ gap: wp(3) }}
                 onPress={() => {
@@ -317,7 +231,7 @@ export default function Settings({ navigation }: Props) {
                     },
                   });
                 }}
-                disabled={isAnonymous}
+                disabled={user?.isGuest}
               >
                 <MaterialCommunityIcons
                   name="logout"
@@ -337,7 +251,7 @@ export default function Settings({ navigation }: Props) {
               </Pressable>
               <Pressable // Hesabı Sil
                 className={`flex-row items-center ${
-                  isAnonymous ? 'opacity-25' : 'opacity-100'
+                  user?.isGuest ? 'opacity-25' : 'opacity-100'
                 }`}
                 style={{ gap: wp(3) }}
                 onPress={() => {
@@ -348,7 +262,7 @@ export default function Settings({ navigation }: Props) {
                     desc: t('delete-acc-msg'),
                     onPress: async () => {
                       setAlertVisible(false);
-                      const res = await deleteUser();
+                      const res = await deleteUser(authenticatedFetch);
                       if (res && res.isSuccess) {
                         handleLogout();
                       } else {
@@ -357,7 +271,7 @@ export default function Settings({ navigation }: Props) {
                     },
                   });
                 }}
-                disabled={isAnonymous}
+                disabled={user?.isGuest}
               >
                 <MaterialCommunityIcons
                   name="delete-forever-outline"

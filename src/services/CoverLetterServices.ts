@@ -1,29 +1,15 @@
 import { CoverLetterFormValues } from '../types/coverLetterTypes';
-// import { API_BASE_URL } from '@env';
-import { supabase } from '../lib/supabase';
 import RNFetchBlob from 'react-native-blob-util';
 
+type Fetcher = (url: string, options?: RequestInit) => Promise<Response>;
+
 export const PostCoverLetterValues = async (
+  authenticatedFetch: Fetcher,
   coverLetterData: CoverLetterFormValues,
 ) => {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  const headers: HeadersInit_ = {
-    'Content-Type': 'application/json',
-    Accept: 'application/pdf',
-  };
-
-  if (session?.access_token && !session?.user.is_anonymous) {
-    // eslint-disable-next-line dot-notation
-    headers['Authorization'] = `Bearer ${session.access_token}`;
-  }
-
   try {
-    const response = await fetch(`http://localhost:5001/api/v1/coverletters`, {
+    const response = await authenticatedFetch('/coverletters', {
       method: 'POST',
-      headers: headers,
       body: JSON.stringify(coverLetterData),
     });
 
@@ -45,37 +31,18 @@ export const PostCoverLetterValues = async (
 };
 
 export const GetMyCoverLetters = async (
+  authenticatedFetch: Fetcher,
   searchText?: string,
-  number?: number,
+  limit?: number,
 ) => {
   try {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
+    const params = new URLSearchParams();
+    if (searchText) params.append('searchText', searchText);
+    if (limit) params.append('limit', limit.toString());
 
-    const headers: HeadersInit_ = {
-      'Content-Type': 'application/json',
-      Accept: 'application/pdf',
-    };
-
-    if (session?.access_token && !session?.user.is_anonymous) {
-      // eslint-disable-next-line dot-notation
-      headers['Authorization'] = `Bearer ${session.access_token}`;
-    }
-
-    const url = new URL(`http://localhost:5001/api/v1/coverletters`);
-
-    if (searchText) {
-      url.searchParams.append('searchText', searchText);
-    }
-
-    if (number !== undefined && number !== null) {
-      url.searchParams.append('number', number.toString());
-    }
-
-    const response = await fetch(url.toString(), {
+    const url = `/coverletters?${params.toString()}`;
+    const response = await authenticatedFetch(url, {
       method: 'GET',
-      headers: headers,
     });
 
     if (!response.ok) {
@@ -90,30 +57,17 @@ export const GetMyCoverLetters = async (
   }
 };
 
-export const GetMyCoverLetterById = async (coverLetterId: string) => {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  const headers: HeadersInit_ = {
-    'Content-Type': 'application/json',
-    Accept: 'application/pdf',
-  };
-
-  if (session?.access_token && !session?.user.is_anonymous) {
-    // eslint-disable-next-line dot-notation
-    headers['Authorization'] = `Bearer ${session.access_token}`;
-  }
-
+export const GetMyCoverLetterById = async (
+  authenticatedFetch: Fetcher,
+  coverLetterId: string,
+) => {
   try {
-    const url = new URL(
-      `http://localhost:5001/api/v1/coverletters/${coverLetterId}`,
+    const response = await authenticatedFetch(
+      `/coverletters/${coverLetterId}`,
+      {
+        method: 'GET',
+      },
     );
-
-    const response = await fetch(url.toString(), {
-      method: 'GET',
-      headers: headers,
-    });
 
     if (!response.ok) {
       console.error('Hata: ', response);
@@ -130,26 +84,28 @@ export const GetMyCoverLetterById = async (coverLetterId: string) => {
 export const DownloadCoverLetterById = async (
   coverLetterId: string,
   fileName: string,
+  token: string | null,
 ) => {
-  const { config } = RNFetchBlob;
+  if (!token) {
+    console.error('İndirme başarısız: Token bulunamadı.');
+    return;
+  }
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  const { config } = RNFetchBlob;
 
   const headers: HeadersInit_ = {
     'Content-Type': 'application/json',
     Accept: 'application/pdf',
+    Authorization: `Bearer ${token}`,
   };
 
-  if (session?.access_token && !session?.user.is_anonymous) {
-    // eslint-disable-next-line dot-notation
-    headers['Authorization'] = `Bearer ${session.access_token}`;
-  }
+  const downloadUrl = `http://192.168.1.101:5128/api/v1/coverletters/download/${coverLetterId}`;
 
   try {
-    await config({
+    const res = await config({
       fileCache: true,
+      // path: filePath,
+      trusty: true,
       addAndroidDownloads: {
         useDownloadManager: true,
         notification: true,
@@ -158,40 +114,31 @@ export const DownloadCoverLetterById = async (
         mime: 'application/pdf',
         mediaScannable: true,
       },
-    }).fetch(
-      'GET',
-      `http://localhost:5001/api/v1/coverletters/download/${coverLetterId}`,
-      headers,
-    );
+    }).fetch('GET', downloadUrl, headers);
+
+    try {
+      await RNFetchBlob.fs.scanFile([
+        { path: res.path(), mime: 'application/pdf' },
+      ]);
+    } catch (scanErr) {
+      console.warn('Dosya tarama hatası:', scanErr);
+    }
   } catch (error) {
     console.error('Mektup indirme hatası:', error);
   }
 };
 
-export const DeleteCoverLetterById = async (coverLetterId: string) => {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  const headers: HeadersInit_ = {
-    'Content-Type': 'application/json',
-    Accept: 'application/pdf',
-  };
-
-  if (session?.access_token && !session?.user.is_anonymous) {
-    // eslint-disable-next-line dot-notation
-    headers['Authorization'] = `Bearer ${session.access_token}`;
-  }
-
+export const DeleteCoverLetterById = async (
+  authenticatedFetch: Fetcher,
+  coverLetterId: string,
+) => {
   try {
-    const url = new URL(
-      `http://localhost:5001/api/v1/coverletters/${coverLetterId}`,
+    const response = await authenticatedFetch(
+      `/coverletters/${coverLetterId}`,
+      {
+        method: 'DELETE',
+      },
     );
-
-    const response = await fetch(url.toString(), {
-      method: 'DELETE',
-      headers: headers,
-    });
 
     if (!response.ok) {
       console.error('Hata: ', response);
@@ -206,31 +153,14 @@ export const DeleteCoverLetterById = async (coverLetterId: string) => {
 };
 
 export const UpdateCoverLetterValues = async (
+  authenticatedFetch: Fetcher,
   coverLetterData: CoverLetterFormValues,
   coverLetterId: string,
 ) => {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  const headers: HeadersInit_ = {
-    'Content-Type': 'application/json',
-    Accept: 'application/pdf',
-  };
-
-  if (session?.access_token && !session?.user.is_anonymous) {
-    // eslint-disable-next-line dot-notation
-    headers['Authorization'] = `Bearer ${session.access_token}`;
-  }
-
   try {
-    const response = await fetch(
-      `http://localhost:5001/api/v1/coverletters/${coverLetterId}`,
-      {
-        method: 'PUT',
-        headers: headers,
-        body: JSON.stringify(coverLetterData),
-      },
+    const response = await authenticatedFetch(
+      `/coverletters/${coverLetterId}`,
+      { method: 'PUT', body: JSON.stringify(coverLetterData) },
     );
 
     if (!response.ok) {

@@ -5,11 +5,11 @@ import Page from '../../components/Page';
 import SearchBar from '../../components/SearchBar';
 import MyFileCard, { FileRespModel } from '../../components/MyFileCard';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { useAppSelector } from '../../store/hooks';
 import { GetMyCoverLetters } from '../../services/CoverLetterServices';
 import { useFocusEffect } from '@react-navigation/native';
 import ShimmerFileCard from '../../components/ShimmerFileCard';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
 
 type Props = {
   navigation: any;
@@ -17,19 +17,19 @@ type Props = {
 
 export default function MyCoverLetters({ navigation }: Props) {
   const { t } = useTranslation();
+  const { user, authenticatedFetch } = useAuth();
 
   const [myCoverLetters, setMyCoverLetters] = useState<Array<FileRespModel>>(
     [],
   );
   const [searchText, setSearchText] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const { isAnonymous, userId } = useAppSelector(state => state.auth);
 
   const fetchCoverLetters = useCallback(async () => {
     setIsLoading(true);
-    if (!isAnonymous && userId) {
+    if (!user?.isGuest && user?.id) {
       try {
-        const data = await GetMyCoverLetters(searchText);
+        const data = await GetMyCoverLetters(authenticatedFetch, searchText);
         if (data) {
           const mappedCoverLetters = data.map((item: any) => ({
             id: item.id,
@@ -49,7 +49,7 @@ export default function MyCoverLetters({ navigation }: Props) {
       setIsLoading(false);
       setMyCoverLetters([]);
     }
-  }, [isAnonymous, userId, searchText]);
+  }, [user?.isGuest, user?.id, authenticatedFetch, searchText]);
 
   useFocusEffect(
     useCallback(() => {
@@ -72,7 +72,7 @@ export default function MyCoverLetters({ navigation }: Props) {
       );
     }
 
-    if (isAnonymous) {
+    if (user?.isGuest) {
       return (
         <View
           className="flex-1 items-center justify-center"

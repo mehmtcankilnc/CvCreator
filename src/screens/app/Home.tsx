@@ -9,57 +9,50 @@ import ListItem from '../../components/ListItem';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { useFocusEffect } from '@react-navigation/native';
 import { GetMyResumes } from '../../services/ResumeServices';
-import { supabase } from '../../lib/supabase';
-import { setUser } from '../../store/slices/authSlice';
 import { GetMyCoverLetters } from '../../services/CoverLetterServices';
 import ShimmerListItem from '../../components/ShimmerListItem';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
 
 type Props = {
   navigation: any;
 };
 
 export default function Home({ navigation }: Props) {
+  const FILE_NUMBER = 2;
+
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { theme } = useAppSelector(state => state.theme);
+  const { user, getUser, authenticatedFetch } = useAuth();
+
   const iconColor = theme === 'LIGHT' ? '#1954E5' : '#D9D9D9';
 
-  const FILE_NUMBER = 2;
-
-  const { isAnonymous, userId } = useAppSelector(state => state.auth);
   const [myResumes, setMyResumes] = useState([]);
-  const [isResumesLoading, setIsResumesLoading] = useState(!isAnonymous);
+  const [isResumesLoading, setIsResumesLoading] = useState(!user?.isGuest);
   const [myCoverLetters, setMyCoverLetters] = useState([]);
   const [isCoverLettersLoading, setIsCoverLettersLoading] = useState(
-    !isAnonymous,
+    !user?.isGuest,
   );
 
   useEffect(() => {
     const ensureUserData = async () => {
-      if (!isAnonymous && !userId) {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-
-        if (user) {
-          dispatch(
-            setUser({
-              id: user.id,
-              name: user.email ?? null,
-            }),
-          );
-        }
+      if (!user?.isGuest && !user?.id) {
+        await getUser();
       }
     };
 
     ensureUserData();
-  }, [isAnonymous, userId, dispatch]);
+  }, [user?.isGuest, user?.id, dispatch, getUser]);
 
   const fetchData = useCallback(async () => {
-    if (!isAnonymous && userId) {
+    if (!user?.isGuest && user?.id) {
       setIsResumesLoading(true);
-      const resumeData = await GetMyResumes('', FILE_NUMBER);
+      const resumeData = await GetMyResumes(
+        authenticatedFetch,
+        '',
+        FILE_NUMBER,
+      );
       if (resumeData) {
         const mappedResumes = resumeData.map((r: any) => ({
           id: r.id,
@@ -73,7 +66,11 @@ export default function Home({ navigation }: Props) {
       }
 
       setIsCoverLettersLoading(true);
-      const coverLetterData = await GetMyCoverLetters('', FILE_NUMBER);
+      const coverLetterData = await GetMyCoverLetters(
+        authenticatedFetch,
+        '',
+        FILE_NUMBER,
+      );
       if (coverLetterData) {
         const mappedCoverLetters = coverLetterData.map((r: any) => ({
           id: r.id,
@@ -85,8 +82,11 @@ export default function Home({ navigation }: Props) {
         setMyCoverLetters(mappedCoverLetters);
         setIsCoverLettersLoading(false);
       }
+    } else {
+      setIsResumesLoading(false);
+      setIsCoverLettersLoading(false);
     }
-  }, [isAnonymous, userId]);
+  }, [authenticatedFetch, user?.id, user?.isGuest]);
 
   useFocusEffect(
     useCallback(() => {
@@ -240,6 +240,7 @@ export default function Home({ navigation }: Props) {
                   className="color-main dark:color-dark-textColor font-inriaRegular"
                   style={{
                     fontSize: wp(3),
+                    lineHeight: wp(5),
                   }}
                 >
                   {t('more')}
@@ -251,12 +252,12 @@ export default function Home({ navigation }: Props) {
             <View style={{ gap: wp(2), paddingVertical: wp(3) }}>
               {isResumesLoading ? (
                 <ShimmerListItem />
-              ) : isAnonymous ? (
-                <Text className="text-gray-500 text-lg font-inriaRegular">
+              ) : user?.isGuest ? (
+                <Text className="text-gray-500 text-lg font-light">
                   {t('resume-login-required')}{' '}
                   <Text
                     onPress={() => navigation.navigate('Settings')}
-                    className="text-gray-500 italic underline font-inriaBold"
+                    className="text-gray-500 italic underline font-medium"
                   >
                     {t('login-now')}
                   </Text>
@@ -274,11 +275,11 @@ export default function Home({ navigation }: Props) {
                   />
                 ))
               ) : (
-                <Text className="text-gray-500 text-lg font-inriaRegular">
+                <Text className="text-gray-500 text-lg font-light">
                   {t('no-resume')}{' '}
                   <Text
                     onPress={() => navigation.navigate('CreateResume')}
-                    className="text-gray-500 italic underline font-inriaBold"
+                    className="text-gray-500 italic underline font-medium"
                   >
                     {t('create-now')}
                   </Text>
@@ -311,6 +312,7 @@ export default function Home({ navigation }: Props) {
                   className="color-main dark:color-dark-textColor font-inriaRegular"
                   style={{
                     fontSize: wp(3),
+                    lineHeight: wp(5),
                   }}
                 >
                   {t('more')}
@@ -322,12 +324,12 @@ export default function Home({ navigation }: Props) {
             <View style={{ gap: wp(2), paddingVertical: wp(3) }}>
               {isCoverLettersLoading ? (
                 <ShimmerListItem />
-              ) : isAnonymous ? (
-                <Text className="text-gray-500 text-lg font-inriaRegular">
+              ) : user?.isGuest ? (
+                <Text className="text-gray-500 text-lg font-light">
                   {t('coverletter-login-required')}{' '}
                   <Text
                     onPress={() => navigation.navigate('Settings')}
-                    className="text-gray-500 italic underline font-inriaBold"
+                    className="text-gray-500 italic underline font-medium"
                   >
                     {t('login-now')}
                   </Text>
@@ -345,11 +347,11 @@ export default function Home({ navigation }: Props) {
                   />
                 ))
               ) : (
-                <Text className="text-gray-500 text-lg font-inriaRegular">
+                <Text className="text-gray-500 text-lg font-light">
                   {t('no-coverletter')}{' '}
                   <Text
                     onPress={() => navigation.navigate('CreateCoverLetter')}
-                    className="text-gray-500 italic underline font-inriaBold"
+                    className="text-gray-500 italic underline font-medium"
                   >
                     {t('create-now')}
                   </Text>

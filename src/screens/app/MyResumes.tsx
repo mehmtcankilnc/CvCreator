@@ -4,12 +4,12 @@ import { useFocusEffect } from '@react-navigation/native';
 import Header from '../../components/Header';
 import Page from '../../components/Page';
 import { GetMyResumes } from '../../services/ResumeServices';
-import { useAppSelector } from '../../store/hooks';
 import MyFileCard, { FileRespModel } from '../../components/MyFileCard';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import SearchBar from '../../components/SearchBar';
 import ShimmerFileCard from '../../components/ShimmerFileCard';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
 
 type Props = {
   navigation: any;
@@ -17,17 +17,17 @@ type Props = {
 
 export default function MyResumes({ navigation }: Props) {
   const { t } = useTranslation();
+  const { user, authenticatedFetch } = useAuth();
 
   const [myResumes, setMyResumes] = useState<Array<FileRespModel>>([]);
   const [searchText, setSearchText] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const { isAnonymous, userId } = useAppSelector(state => state.auth);
 
   const fetchResumes = useCallback(async () => {
     setIsLoading(true);
-    if (!isAnonymous && userId) {
+    if (!user?.isGuest && user?.id) {
       try {
-        const data = await GetMyResumes(searchText);
+        const data = await GetMyResumes(authenticatedFetch, searchText);
         if (data) {
           const mappedResumes = data.map((item: any) => ({
             id: item.id,
@@ -47,7 +47,7 @@ export default function MyResumes({ navigation }: Props) {
       setIsLoading(false);
       setMyResumes([]);
     }
-  }, [isAnonymous, userId, searchText]);
+  }, [user?.isGuest, user?.id, authenticatedFetch, searchText]);
 
   useFocusEffect(
     useCallback(() => {
@@ -70,7 +70,7 @@ export default function MyResumes({ navigation }: Props) {
       );
     }
 
-    if (isAnonymous) {
+    if (user?.isGuest) {
       return (
         <View
           className="flex-1 items-center justify-center"

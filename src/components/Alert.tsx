@@ -5,6 +5,7 @@ import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Button from './Button';
 import { useAppSelector } from '../store/hooks';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   visible: boolean;
@@ -25,14 +26,15 @@ export default function Alert({
   onDismiss,
   isLoading,
 }: Props) {
+  const { t } = useTranslation();
   const { theme } = useAppSelector(state => state.theme);
 
   const mainColor =
-    type === 'failure' ? '#C21D10' : type === 'inform' ? '#1954E5' : '#C2A510';
+    type === 'failure' ? '#C21D10' : type === 'inform' ? '#1954E5' : '#2BC210';
   const secondaryColor =
-    type === 'failure' ? '#F3D2D6' : type === 'inform' ? '#D1DDFB' : '#F2EDD0';
+    type === 'failure' ? '#F3D2D6' : type === 'inform' ? '#D1DDFB' : '#D5F3CF';
   const darkSecColor =
-    type === 'failure' ? '#50211E' : type === 'inform' ? '#1F1E39' : '#58512B';
+    type === 'failure' ? '#50211E' : type === 'inform' ? '#1F1E39' : '#F7FDF5';
   const iconName =
     type === 'failure'
       ? 'close-circle'
@@ -81,7 +83,7 @@ export default function Alert({
           <View>
             <Button
               handleSubmit={onPress}
-              text="Continue"
+              text={t('continue')}
               type={
                 type === 'failure'
                   ? 'delete'

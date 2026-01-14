@@ -165,5 +165,17 @@
   "anon-signin-alert-text": "Are you sure you want to continue as guest, you can link your account later, whenever you want!",
   "updateAvailable": "Update Available",
   "updateDesc": "A new version of the app is available. Please update to continue using.",
-  "updateNow": "Update Now"
+  "updateNow": "Update Now",
+  "successTitle": "Success",
+  "successText": "{{fileType}} has been created successfully. You can download it or save it to your device by pressing share button below.",
+  "yourCoverLetter": "Your cover letter",
+  "yourResume": "Your resume",
+  "next": "Next",
+  "guest-signin": "Guest Sign In",
+  "onboarding_step1_title": "Welcome to\nCv Creator",
+  "onboarding_step2_title1": "Professional Resume",
+  "onboarding_step2_title2": "Formal Cover Letter",
+  "onboarding_step3_title": "Create Resume\nWith Various Templates",
+  "onboarding_step4_title": "Start Now\nWithout Login",
+  "file_loading": "Loading File..."
 }

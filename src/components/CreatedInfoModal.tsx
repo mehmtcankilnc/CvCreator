@@ -7,6 +7,7 @@ import { useAppSelector } from '../store/hooks';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Button from './Button';
 import { shareFile } from '../utilities/shareFile';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   isCreated: boolean;
@@ -22,11 +23,15 @@ export default function CreatedInfoModal({
   type,
 }: Props) {
   const { theme } = useAppSelector(state => state.theme);
+  const { t } = useTranslation();
 
   const [isLoading, setIsLoading] = useState(false);
 
   const secondaryColor = '#F2EDD0';
   const darkSecColor = '#58512B';
+
+  const fileType =
+    type === 'coverletter' ? t('yourCoverLetter') : t('yourResume');
 
   return (
     <Modal
@@ -52,7 +57,7 @@ export default function CreatedInfoModal({
                   theme === 'LIGHT' ? secondaryColor : darkSecColor,
               }}
             >
-              <Ionicons name="checkmark-circle" size={wp(10)} color="#C2A510" />
+              <Ionicons name="checkmark-circle" size={wp(10)} color="#2BC210" />
             </View>
           </View>
           <View style={{ gap: wp(2) }}>
@@ -60,12 +65,10 @@ export default function CreatedInfoModal({
               className="text-center text-xl text-textColor dark:text-dark-textColor"
               style={{ fontFamily: 'InriaSerif-Bold' }}
             >
-              Başarılı
+              {t('successTitle')}
             </Text>
             <Text className="text-center text-base text-gray-600 dark:text-gray-400">
-              {type === 'coverletter' ? 'Mektubunuz' : 'Özgeçmişiniz'} başarıyla
-              oluşturulmuştur. Aşağıdaki paylaş butonuna basarak indirebilir
-              veya cihazınıza kaydedebilirsiniz.
+              {t('successText', { fileType: fileType })}
             </Text>
           </View>
           <View>
@@ -76,7 +79,7 @@ export default function CreatedInfoModal({
                 setIsLoading(false);
                 handleDismiss();
               }}
-              text="Paylaş"
+              text={t('share')}
               type="success"
               isLoading={isLoading}
             />

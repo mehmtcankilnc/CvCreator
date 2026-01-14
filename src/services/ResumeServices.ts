@@ -1,32 +1,18 @@
 import { ResumeFormValues } from '../types/resumeTypes';
-// import { API_BASE_URL } from '@env';
-import { supabase } from '../lib/supabase';
 import RNFetchBlob from 'react-native-blob-util';
 
+type Fetcher = (url: string, options?: RequestInit) => Promise<Response>;
+
 export const PostResumeValues = async (
+  authenticatedFetch: Fetcher,
   resumeData: ResumeFormValues,
   templateName: string,
 ) => {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  const headers: HeadersInit_ = {
-    'Content-Type': 'application/json',
-    Accept: 'application/pdf',
-  };
-
-  if (session?.access_token && !session?.user.is_anonymous) {
-    // eslint-disable-next-line dot-notation
-    headers['Authorization'] = `Bearer ${session.access_token}`;
-  }
-
   try {
-    const response = await fetch(
-      `http://localhost:5001/api/v1/resumes?templateName=${templateName}`,
+    const response = await authenticatedFetch(
+      `/resumes?templateName=${templateName}`,
       {
         method: 'POST',
-        headers: headers,
         body: JSON.stringify(resumeData),
       },
     );
@@ -48,36 +34,19 @@ export const PostResumeValues = async (
   }
 };
 
-export const GetMyResumes = async (searchText?: string, number?: number) => {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  const headers: HeadersInit_ = {
-    'Content-Type': 'application/json',
-    Accept: 'application/pdf',
-  };
-
-  if (session?.access_token && !session?.user.is_anonymous) {
-    // eslint-disable-next-line dot-notation
-    headers['Authorization'] = `Bearer ${session.access_token}`;
-    console.log(session.access_token);
-  }
-
+export const GetMyResumes = async (
+  authenticatedFetch: Fetcher,
+  searchText?: string,
+  limit?: number,
+) => {
   try {
-    const url = new URL(`http://localhost:5001/api/v1/resumes`);
+    const params = new URLSearchParams();
+    if (searchText) params.append('searchText', searchText);
+    if (limit) params.append('limit', limit.toString());
 
-    if (searchText) {
-      url.searchParams.append('searchText', searchText);
-    }
-
-    if (number !== undefined && number !== null) {
-      url.searchParams.append('number', number.toString());
-    }
-
-    const response = await fetch(url.toString(), {
+    const url = `/resumes?${params.toString()}`;
+    const response = await authenticatedFetch(url, {
       method: 'GET',
-      headers: headers,
     });
 
     if (!response.ok) {
@@ -92,27 +61,13 @@ export const GetMyResumes = async (searchText?: string, number?: number) => {
   }
 };
 
-export const GetMyResumeById = async (resumeId: string) => {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  const headers: HeadersInit_ = {
-    'Content-Type': 'application/json',
-    Accept: 'application/pdf',
-  };
-
-  if (session?.access_token && !session?.user.is_anonymous) {
-    // eslint-disable-next-line dot-notation
-    headers['Authorization'] = `Bearer ${session.access_token}`;
-  }
-
+export const GetMyResumeById = async (
+  authenticatedFetch: Fetcher,
+  resumeId: string,
+) => {
   try {
-    const url = new URL(`http://localhost:5001/api/v1/resumes/${resumeId}`);
-
-    const response = await fetch(url.toString(), {
+    const response = await authenticatedFetch(`/resumes/${resumeId}`, {
       method: 'GET',
-      headers: headers,
     });
 
     if (!response.ok) {
@@ -130,26 +85,28 @@ export const GetMyResumeById = async (resumeId: string) => {
 export const DownloadResumeById = async (
   resumeId: string,
   fileName: string,
+  token: string | null,
 ) => {
-  const { config } = RNFetchBlob;
+  if (!token) {
+    console.error('İndirme başarısız: Token bulunamadı.');
+    return;
+  }
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  const { config } = RNFetchBlob;
 
   const headers: HeadersInit_ = {
     'Content-Type': 'application/json',
     Accept: 'application/pdf',
+    Authorization: `Bearer ${token}`,
   };
 
-  if (session?.access_token && !session?.user.is_anonymous) {
-    // eslint-disable-next-line dot-notation
-    headers['Authorization'] = `Bearer ${session.access_token}`;
-  }
+  const downloadUrl = `http://192.168.1.101:5128/api/v1/resumes/download/${resumeId}`;
 
   try {
-    await config({
+    const res = await config({
       fileCache: true,
+      // path: filePath,
+      trusty: true,
       addAndroidDownloads: {
         useDownloadManager: true,
         notification: true,
@@ -158,37 +115,27 @@ export const DownloadResumeById = async (
         mime: 'application/pdf',
         mediaScannable: true,
       },
-    }).fetch(
-      'GET',
-      `http://localhost:5001/api/v1/resumes/download/${resumeId}`,
-      headers,
-    );
+    }).fetch('GET', downloadUrl, headers);
+
+    try {
+      await RNFetchBlob.fs.scanFile([
+        { path: res.path(), mime: 'application/pdf' },
+      ]);
+    } catch (scanErr) {
+      console.warn('Dosya tarama hatası:', scanErr);
+    }
   } catch (error) {
     console.error('Özgeçmiş indirme hatası:', error);
   }
 };
 
-export const DeleteResumeById = async (resumeId: string) => {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  const headers: HeadersInit_ = {
-    'Content-Type': 'application/json',
-    Accept: 'application/pdf',
-  };
-
-  if (session?.access_token && !session?.user.is_anonymous) {
-    // eslint-disable-next-line dot-notation
-    headers['Authorization'] = `Bearer ${session.access_token}`;
-  }
-
+export const DeleteResumeById = async (
+  authenticatedFetch: Fetcher,
+  resumeId: string,
+) => {
   try {
-    const url = new URL(`http://localhost:5001/api/v1/resumes/${resumeId}`);
-
-    const response = await fetch(url.toString(), {
+    const response = await authenticatedFetch(`/resumes/${resumeId}`, {
       method: 'DELETE',
-      headers: headers,
     });
 
     if (!response.ok) {
@@ -204,32 +151,15 @@ export const DeleteResumeById = async (resumeId: string) => {
 };
 
 export const UpdateResumeValues = async (
+  authenticatedFetch: Fetcher,
   resumeData: ResumeFormValues,
   templateName: string,
   resumeId: string,
 ) => {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  const headers: HeadersInit_ = {
-    'Content-Type': 'application/json',
-    Accept: 'application/pdf',
-  };
-
-  if (session?.access_token && !session?.user.is_anonymous) {
-    // eslint-disable-next-line dot-notation
-    headers['Authorization'] = `Bearer ${session.access_token}`;
-  }
-
   try {
-    const response = await fetch(
-      `http://localhost:5001/api/v1/resumes/${resumeId}?templateName=${templateName}`,
-      {
-        method: 'PUT',
-        headers: headers,
-        body: JSON.stringify(resumeData),
-      },
+    const response = await authenticatedFetch(
+      `/resumes/${resumeId}?templateName=${templateName}`,
+      { method: 'PUT', body: JSON.stringify(resumeData) },
     );
 
     if (!response.ok) {
