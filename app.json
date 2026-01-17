@@ -1,5 +1,8 @@
 {
   "name": "CvCreator",
   "displayName": "CvCreator",
+  "android": {
+    "package": "com.mehmtcankilinc.cvcreator"
+  },
   "icon": "./src/assets/CvCreatorAppIcon.png"
 }

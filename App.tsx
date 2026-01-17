@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 import UpdateAppModal from './src/components/UpdateAppModal';
 import AuthProvider from './src/context/AuthContext';
 
-const CURRENT_VERSION = '1.0';
+const CURRENT_VERSION = '1.1';
 const VERSION_URL =
   'https://raw.githubusercontent.com/mehmtcankilnc/CvCreator/main/version.json';
 

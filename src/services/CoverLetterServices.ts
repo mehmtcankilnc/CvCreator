@@ -1,5 +1,6 @@
 import { CoverLetterFormValues } from '../types/coverLetterTypes';
 import RNFetchBlob from 'react-native-blob-util';
+import { API_BASE_URL } from '@env';
 
 type Fetcher = (url: string, options?: RequestInit) => Promise<Response>;
 
@@ -99,7 +100,7 @@ export const DownloadCoverLetterById = async (
     Authorization: `Bearer ${token}`,
   };
 
-  const downloadUrl = `http://192.168.1.101:5128/api/v1/coverletters/download/${coverLetterId}`;
+  const downloadUrl = `${API_BASE_URL}/coverletters/download/${coverLetterId}`;
 
   try {
     const res = await config({

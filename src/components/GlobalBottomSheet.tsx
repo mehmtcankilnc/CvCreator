@@ -1,12 +1,11 @@
 /* eslint-disable react-native/no-inline-styles */
-import { Pressable, useWindowDimensions } from 'react-native';
+import { Pressable, useWindowDimensions, BackHandler } from 'react-native';
 import React, { useEffect, useState, useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import {
   clearBottomSheetContent,
   closeBottomSheet,
 } from '../store/slices/bottomSheetSlice';
-import ExampleContent from './ExampleContent';
 import FileSettingsContent from './FileSettingsContent';
 import Animated, {
   Extrapolation,
@@ -36,8 +35,6 @@ const renderContent = (content: any) => {
   const { type, props } = content;
 
   switch (type) {
-    case 'EXAMPLE_CONTENT':
-      return <ExampleContent {...props} />;
     case 'FILE_SETTINGS':
       return <FileSettingsContent {...props} />;
     case 'LANGUAGE_SETTINGS':
@@ -58,6 +55,26 @@ export default function GlobalBottomSheet() {
   const translateY = useSharedValue(SCREEN_HEIGHT);
 
   const [isSheetVisible, setIsSheetVisible] = useState(false);
+
+  useEffect(() => {
+    const onBackPress = () => {
+      if (isOpen) {
+        dispatch(closeBottomSheet());
+        return true;
+      } else {
+        return false;
+      }
+    };
+
+    const subscription = BackHandler.addEventListener(
+      'hardwareBackPress',
+      onBackPress,
+    );
+
+    return () => {
+      subscription.remove();
+    };
+  }, [isOpen, dispatch]);
 
   useEffect(() => {
     if (isOpen) {

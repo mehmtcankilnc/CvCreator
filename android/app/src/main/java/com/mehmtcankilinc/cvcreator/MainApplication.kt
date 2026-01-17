@@ -1,4 +1,4 @@
-package com.cvcreator
+package com.mehmtcankilinc.cvcreator
 
 import android.app.Application
 import com.facebook.react.PackageList

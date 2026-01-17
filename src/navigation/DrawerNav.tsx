@@ -15,7 +15,6 @@ import {
 import Home from '../screens/app/Home';
 import MyResumes from '../screens/app/MyResumes';
 import MyCoverLetters from '../screens/app/MyCoverLetters';
-import About from '../screens/app/About';
 import Settings from '../screens/app/Settings';
 import { useAppSelector } from '../store/hooks';
 import { useTranslation } from 'react-i18next';
@@ -81,7 +80,7 @@ export default function DrawerNav() {
             >
               {t('hello')}
               {'\n'}
-              {user?.name}
+              {user?.userName}
             </Text>
           )}
           <DrawerItemList {...props} />
@@ -143,20 +142,6 @@ export default function DrawerNav() {
         }}
         name="Settings"
         component={Settings}
-      />
-      <Drawer.Screen
-        options={{
-          drawerIcon: ({ focused }) => (
-            <Ionicons
-              name="information-circle-outline"
-              size={wp(6)}
-              color={focused ? activeColor : mainBackgroundColor}
-            />
-          ),
-          drawerLabel: t('about'),
-        }}
-        name="About"
-        component={About}
       />
     </Drawer.Navigator>
   );

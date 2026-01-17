@@ -6,18 +6,18 @@ import React, {
   useState,
 } from 'react';
 import { storageService } from '../utilities/tokenStorage';
-// import { API_BASE_URL } from '@env';
+import { API_BASE_URL, GOOGLE_CLIENT_ID } from '@env';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { jwtDecode } from 'jwt-decode';
 
 interface User {
   id: string;
   email: string;
-  name: string;
+  userName: string;
   isGuest: boolean;
 }
 
-interface AuthResponse {
+export interface AuthResponse {
   accessToken: string;
   refreshToken: string;
 }
@@ -52,8 +52,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     loadtoken();
 
     GoogleSignin.configure({
-      webClientId:
-        '237778058771-jprkiea07qdldedp5pe4p40b5i7374b2.apps.googleusercontent.com',
+      webClientId: GOOGLE_CLIENT_ID,
       offlineAccess: true,
     });
   }, []);
@@ -66,7 +65,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         setUser({
           id: decoded.sub || decoded.nameid,
           email: decoded.email,
-          name: decoded.username || decoded.given_name,
+          userName: decoded.username || decoded.given_name,
           isGuest: decoded.is_guest === 'true',
         });
       } catch (error) {
@@ -78,15 +77,12 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
   const loginGuest = async () => {
     try {
-      const response = await fetch(
-        `http://192.168.1.101:5128/api/v1/auth/anonymous-login`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+      const response = await fetch(`${API_BASE_URL}/auth/anonymous-login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+      });
 
       if (!response.ok) {
         return false;
@@ -112,16 +108,13 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
       if (!idToken) throw new Error('Google ID Token Alınamadı');
 
-      const response = await fetch(
-        `http://192.168.1.101:5128/api/v1/auth/google-login`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ idToken }),
+      const response = await fetch(`${API_BASE_URL}/auth/google-login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify({ idToken }),
+      });
 
       if (!response.ok) {
         return false;
@@ -179,17 +172,14 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
       if (!currentAccessToken || !currentRefreshToken) return null;
 
-      const response = await fetch(
-        `http://192.168.1.101:5128/api/v1/auth/refresh-token`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            accessToken: currentAccessToken,
-            refreshToken: currentRefreshToken,
-          }),
-        },
-      );
+      const response = await fetch(`${API_BASE_URL}/auth/refresh-token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          accessToken: currentAccessToken,
+          refreshToken: currentRefreshToken,
+        }),
+      });
 
       if (!response.ok) throw new Error('Refresh Başarısız Oldu');
 
@@ -211,7 +201,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   ) => {
     let currentAccessToken = accessToken;
 
-    let response = await fetch(`http://192.168.1.101:5128/api/v1${endpoint}`, {
+    let response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
       headers: {
         ...options.headers,
@@ -224,7 +214,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       const newAccessToken = await refreshTokenLogic();
 
       if (newAccessToken) {
-        response = await fetch(`http://192.168.1.101:5128/api/v1${endpoint}`, {
+        response = await fetch(`${API_BASE_URL}${endpoint}`, {
           ...options,
           headers: {
             ...options.headers,

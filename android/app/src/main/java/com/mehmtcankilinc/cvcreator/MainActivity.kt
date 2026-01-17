@@ -1,4 +1,4 @@
-package com.cvcreator
+package com.mehmtcankilinc.cvcreator
 
 import android.content.Intent;
 import android.os.Bundle;

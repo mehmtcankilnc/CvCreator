@@ -211,7 +211,7 @@ export default function Settings({ navigation }: Props) {
                     color: color,
                   }}
                 >
-                  {user?.name}
+                  {user?.userName}
                 </Text>
               </View>
               <Pressable // Çıkış Yap
@@ -265,8 +265,6 @@ export default function Settings({ navigation }: Props) {
                       const res = await deleteUser(authenticatedFetch);
                       if (res && res.isSuccess) {
                         handleLogout();
-                      } else {
-                        console.log(res);
                       }
                     },
                   });

@@ -11,36 +11,48 @@ import {
 import Button from '../components/Button';
 import { useAppSelector } from '../store/hooks';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../context/AuthContext';
+import { AuthResponse, useAuth } from '../context/AuthContext';
 import RNFetchBlob from 'react-native-blob-util';
 import Share from 'react-native-share';
 import { DownloadCoverLetterById } from '../services/CoverLetterServices';
 import { DownloadResumeById } from '../services/ResumeServices';
+import { storageService } from '../utilities/tokenStorage';
+import { API_BASE_URL } from '@env';
 
-type Props = {
-  navigation: any;
-  route: any;
-};
+interface DownloadArgs {
+  customToken?: string | null;
+  isRetry?: boolean;
+}
 
-export default function FileViewer({ navigation, route }: Props) {
+export default function FileViewer({ navigation, route }: any) {
   const { t } = useTranslation();
-  const { token } = useAuth();
+  const { token, logout } = useAuth();
 
   const { url, file, type } = route.params;
   const theme = useAppSelector(state => state.theme.theme);
 
+  const [accessToken, setAccessToken] = useState<string | null>(token);
   const [localPath, setLocalPath] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    downloadFileToCache();
+    if (token) setAccessToken(token);
+  }, [token]);
+
+  useEffect(() => {
+    downloadFileToCache({ customToken: accessToken, isRetry: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url]);
 
-  const downloadFileToCache = async () => {
-    if (!url || !token) return;
+  const downloadFileToCache = async ({
+    customToken = null,
+    isRetry = false,
+  }: DownloadArgs) => {
+    const currentToken = customToken || accessToken;
 
-    setIsLoading(true);
+    if (!url || !currentToken) return;
+
+    if (!isRetry) setIsLoading(true);
 
     try {
       const { fs, config } = RNFetchBlob;
@@ -50,29 +62,78 @@ export default function FileViewer({ navigation, route }: Props) {
         fileCache: true,
         path: cachePath,
       }).fetch('GET', url, {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${currentToken}`,
       });
 
       const status = res.info().status;
 
       if (status === 200) {
         setLocalPath(res.path());
+        if (!isRetry) setIsLoading(false);
+      } else if (status === 401) {
+        if (!isRetry) {
+          const newToken = await refreshAccessToken();
+
+          if (newToken) {
+            return await downloadFileToCache({
+              customToken: newToken,
+              isRetry: true,
+            });
+          } else {
+            setIsLoading(false);
+            await logout();
+          }
+        } else {
+          setIsLoading(false);
+        }
       } else {
         console.log('Sunucu Hatası:', status);
         fs.unlink(res.path()).catch(() => {});
+        setIsLoading(false);
       }
     } catch (error) {
       console.error('İndirme Hatası:', error);
-    } finally {
       setIsLoading(false);
+    }
+  };
+
+  const refreshAccessToken = async (): Promise<string | null> => {
+    try {
+      const currentAccessToken = await storageService.getAccessToken();
+      const currentRefreshToken = await storageService.getRefreshToken();
+
+      if (!currentAccessToken || !currentRefreshToken) return null;
+
+      const response = await fetch(`${API_BASE_URL}/auth/refresh-token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          accessToken: currentAccessToken,
+          refreshToken: currentRefreshToken,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Refresh Başarısız Oldu');
+
+      const data: AuthResponse = await response.json();
+
+      await storageService.setAccessToken(data.accessToken);
+      if (data.refreshToken)
+        await storageService.setRefreshToken(data.refreshToken);
+
+      setAccessToken(data.accessToken);
+      return data.accessToken;
+    } catch (error) {
+      console.error('Token Yenilenemedi: ', error);
+      return null;
     }
   };
 
   const handleDownload = async () => {
     if (type === 'coverletters') {
-      await DownloadCoverLetterById(file.id, file.name, token);
+      await DownloadCoverLetterById(file.id, file.name, accessToken);
     } else {
-      await DownloadResumeById(file.id, file.name, token);
+      await DownloadResumeById(file.id, file.name, accessToken);
     }
   };
 
