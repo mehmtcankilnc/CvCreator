@@ -30,8 +30,9 @@ export default function GoogleSignInBtn({ handleGoogle, isLoading }) {
             />
             <Text
               style={{
-                fontSize: wp(4.5),
-                fontFamily: 'InriaSerif-Bold',
+                fontSize: wp(4),
+                lineHeight: wp(6),
+                fontFamily: 'Montserrat-Bold',
                 color: 'white',
               }}
             >

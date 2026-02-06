@@ -49,8 +49,9 @@ export default function Button({
             type === 'back' ? 'color-[#585858]' : 'color-white'
           } dark:color-dark-textColor`}
           style={{
-            fontFamily: 'InriaSerif-Bold',
+            fontFamily: 'Montserrat-Bold',
             fontSize: wp(4),
+            lineHeight: wp(6),
           }}
         >
           {text}

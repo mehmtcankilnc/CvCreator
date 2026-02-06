@@ -71,12 +71,23 @@ export default function Alert({
           </View>
           <View style={{ gap: wp(2) }}>
             <Text
-              className="text-center text-xl text-textColor dark:text-dark-textColor"
-              style={{ fontFamily: 'InriaSerif-Bold' }}
+              className="text-center text-textColor dark:text-dark-textColor"
+              style={{
+                fontFamily: 'Montserrat-Bold',
+                fontSize: wp(5),
+                lineHeight: wp(7.5),
+              }}
             >
               {title}
             </Text>
-            <Text className="text-center text-base text-gray-600 dark:text-gray-400">
+            <Text
+              className="text-center text-gray-600 dark:text-gray-400"
+              style={{
+                fontFamily: 'Montserrat-Regular',
+                fontSize: wp(3),
+                lineHeight: wp(4.5),
+              }}
+            >
               {desc}
             </Text>
           </View>

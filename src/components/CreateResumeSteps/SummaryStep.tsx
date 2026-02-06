@@ -30,9 +30,10 @@ export default function SummaryStep({ initial, handleForward }: Props) {
       <Text
         className="color-textColor dark:color-dark-textColor"
         style={{
-          fontFamily: 'InriaSerif-Bold',
+          fontFamily: 'Montserrat-Bold',
           textAlign: 'center',
           fontSize: wp(4),
+          lineHeight: wp(6),
           marginBottom: wp(3),
         }}
       >

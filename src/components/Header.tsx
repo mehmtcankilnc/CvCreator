@@ -35,8 +35,8 @@ export default function Header({ handlePress, iconName, title }: Props) {
         className="text-white dark:text-dark-textColor"
         style={{
           fontSize: hp(3),
-          fontFamily: 'InriaSerif-Bold',
-          lineHeight: hp(3.5),
+          fontFamily: 'Montserrat-Bold',
+          lineHeight: hp(4.5),
         }}
         numberOfLines={1}
       >

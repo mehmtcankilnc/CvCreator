@@ -34,9 +34,9 @@ export default function FileSettingsContent({
         <Text
           className="text-textColor dark:text-dark-textColor"
           style={{
-            fontFamily: 'InriaSerif-Bold',
+            fontFamily: 'Montserrat-Bold',
             fontSize: wp(5),
-            fontWeight: '600',
+            lineHeight: wp(7.5),
           }}
         >
           {t('show')}
@@ -56,9 +56,9 @@ export default function FileSettingsContent({
         <Text
           className="text-textColor dark:text-dark-textColor"
           style={{
-            fontFamily: 'InriaSerif-Bold',
+            fontFamily: 'Montserrat-Bold',
             fontSize: wp(5),
-            fontWeight: '600',
+            lineHeight: wp(7.5),
           }}
         >
           {t('edit')}
@@ -78,9 +78,9 @@ export default function FileSettingsContent({
         <Text
           className="text-textColor dark:text-dark-textColor"
           style={{
-            fontFamily: 'InriaSerif-Bold',
+            fontFamily: 'Montserrat-Bold',
             fontSize: wp(5),
-            fontWeight: '600',
+            lineHeight: wp(7.5),
           }}
         >
           {t('delete')}

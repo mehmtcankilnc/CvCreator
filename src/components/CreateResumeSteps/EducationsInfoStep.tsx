@@ -16,6 +16,8 @@ import TextInput from '../TextInput';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import AccordionItem from '../AccordionItem';
 import { useTranslation } from 'react-i18next';
+import DatePicker from 'react-native-date-picker';
+import Alert from '../Alert';
 
 type Props = {
   initial: Array<EducationInfo>;
@@ -49,6 +51,20 @@ export default function EducationsInfoStep({ initial, handleForward }: Props) {
 
   const [activeIndex, setActiveIndex] = useState(0);
 
+  const [alert, setAlert] = useState({
+    type: 'failure',
+    title: '',
+    desc: '',
+    onPress: () => {},
+  });
+  const [alertVisible, setAlertVisible] = useState(false);
+
+  const [datePickerConfig, setDatePickerConfig] = useState<{
+    index: number;
+    field: 'startDate' | 'endDate';
+    open: boolean;
+  }>({ index: 0, field: 'startDate', open: false });
+
   const handleForwardRef = useRef(handleForward);
   handleForwardRef.current = handleForward;
 
@@ -62,7 +78,6 @@ export default function EducationsInfoStep({ initial, handleForward }: Props) {
           edu.endDate?.trim() !== '' ||
           edu.gpa?.trim() !== '',
       );
-
       handleForwardRef.current(filledEducations);
     };
   }, [educations]);
@@ -74,6 +89,7 @@ export default function EducationsInfoStep({ initial, handleForward }: Props) {
       endDate: '',
       institute: '',
       gpa: '',
+      isCurrent: false,
     };
     setEducations([...educations, newEducation]);
     setActiveIndex(educations.length);
@@ -90,22 +106,81 @@ export default function EducationsInfoStep({ initial, handleForward }: Props) {
   };
 
   const handleDelete = (indexToDelete: number) => {
-    if (indexToDelete === 0) {
-      return;
-    }
-
+    if (indexToDelete === 0) return;
     setEducations(prev => prev.filter((_, i) => i !== indexToDelete));
-
-    if (activeIndex === indexToDelete) {
-      setActiveIndex(-1);
-    } else if (activeIndex > indexToDelete) {
-      setActiveIndex(prev => prev - 1);
-    }
+    if (activeIndex === indexToDelete) setActiveIndex(-1);
+    else if (activeIndex > indexToDelete) setActiveIndex(prev => prev - 1);
   };
 
   const handleToggle = (index: number) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setActiveIndex(prevIndex => (prevIndex === index ? -1 : index));
+  };
+
+  const openPicker = (index: number, field: 'startDate' | 'endDate') => {
+    setDatePickerConfig({ index, field, open: true });
+  };
+
+  const selectDate = (date: Date) => {
+    const selectedDate = date;
+    const now = new Date();
+    const currentEdu = educations[datePickerConfig.index];
+
+    if (datePickerConfig.field === 'endDate' && selectedDate > now) {
+      setAlertVisible(true);
+      setAlert({
+        type: 'failure',
+        title: t('date_error'),
+        desc: t('error_future_date'),
+        onPress: () => {
+          setAlertVisible(false);
+        },
+      });
+      setDatePickerConfig({ ...datePickerConfig, open: false });
+      return;
+    }
+
+    if (datePickerConfig.field === 'endDate' && currentEdu.startDate) {
+      const startDate = new Date(currentEdu.startDate);
+      if (selectedDate < startDate) {
+        setAlertVisible(true);
+        setAlert({
+          type: 'failure',
+          title: t('date_error'),
+          desc: t('error_date_order'),
+          onPress: () => {
+            setAlertVisible(false);
+          },
+        });
+        setDatePickerConfig({ ...datePickerConfig, open: false });
+        return;
+      }
+    }
+
+    if (datePickerConfig.field === 'startDate' && currentEdu.endDate) {
+      const endDate = new Date(currentEdu.endDate);
+      if (selectedDate > endDate) {
+        setAlertVisible(true);
+        setAlert({
+          type: 'failure',
+          title: t('date_error'),
+          desc: t('error_start_after_end'),
+          onPress: () => {
+            setAlertVisible(false);
+          },
+        });
+        setDatePickerConfig({ ...datePickerConfig, open: false });
+        return;
+      }
+    }
+
+    const dateString = selectedDate.toISOString().split('T')[0];
+    handleInputChange(
+      datePickerConfig.index,
+      datePickerConfig.field,
+      dateString,
+    );
+    setDatePickerConfig({ ...datePickerConfig, open: false });
   };
 
   return (
@@ -117,9 +192,10 @@ export default function EducationsInfoStep({ initial, handleForward }: Props) {
       <Text
         className="color-textColor dark:color-dark-textColor"
         style={{
-          fontFamily: 'InriaSerif-Bold',
+          fontFamily: 'Montserrat-Bold',
           textAlign: 'center',
           fontSize: wp(4),
+          lineHeight: wp(6),
           marginBottom: wp(3),
         }}
       >
@@ -138,7 +214,7 @@ export default function EducationsInfoStep({ initial, handleForward }: Props) {
           >
             <Pressable
               onPress={() => handleInputChange(i, 'isCurrent', !edu.isCurrent)}
-              className={`flex-row items-center justify-center border-borderColor dark:border-dark-borderColor`}
+              className="flex-row items-center justify-center border-borderColor dark:border-dark-borderColor"
               style={{
                 width: wp(5),
                 height: wp(5),
@@ -153,10 +229,7 @@ export default function EducationsInfoStep({ initial, handleForward }: Props) {
             </Pressable>
             <Text
               className="color-textColor dark:color-dark-textColor"
-              style={{
-                fontFamily: 'InriaSerif-Regular',
-                fontSize: wp(3),
-              }}
+              style={{ fontFamily: 'Montserrat-Regular', fontSize: wp(3) }}
             >
               {t('present')}
             </Text>
@@ -174,34 +247,36 @@ export default function EducationsInfoStep({ initial, handleForward }: Props) {
             autoCapitalize="words"
           />
           <View className="flex-row items-center" style={{ gap: wp(3) }}>
-            <View className="flex-1">
-              <TextInput
-                handleChangeText={value =>
-                  handleInputChange(i, 'startDate', value)
-                }
-                value={edu.startDate}
-                placeholder={t('resume-step4-field3')}
-              />
-            </View>
+            <Pressable
+              className="flex-1"
+              onPress={() => openPicker(i, 'startDate')}
+            >
+              <View pointerEvents="none">
+                <TextInput
+                  value={edu.startDate}
+                  placeholder={t('resume-step4-field3')}
+                  handleChangeText={() => {}}
+                />
+              </View>
+            </Pressable>
             <View className="flex-1">
               {edu.isCurrent ? (
                 <Text
                   className="text-center color-textColor dark:color-dark-textColor"
-                  style={{
-                    fontFamily: 'InriaSerif-Regular',
-                    fontSize: wp(4),
-                  }}
+                  style={{ fontFamily: 'Montserrat-Regular', fontSize: wp(4) }}
                 >
                   - {t('present')}
                 </Text>
               ) : (
-                <TextInput
-                  handleChangeText={value =>
-                    handleInputChange(i, 'endDate', value)
-                  }
-                  value={edu.endDate}
-                  placeholder={t('resume-step4-field4')}
-                />
+                <Pressable onPress={() => openPicker(i, 'endDate')}>
+                  <View pointerEvents="none">
+                    <TextInput
+                      value={edu.endDate}
+                      placeholder={t('resume-step4-field4')}
+                      handleChangeText={() => {}}
+                    />
+                  </View>
+                </Pressable>
               )}
             </View>
           </View>
@@ -221,6 +296,30 @@ export default function EducationsInfoStep({ initial, handleForward }: Props) {
         </AccordionItem>
       ))}
       <Button handleSubmit={handleAddNew} text={t('resume-step4-btn')} />
+      <DatePicker
+        modal
+        mode="date"
+        locale="tr"
+        open={datePickerConfig.open}
+        date={new Date()}
+        onConfirm={selectDate}
+        onCancel={() => {
+          setDatePickerConfig({ ...datePickerConfig, open: false });
+        }}
+        confirmText={t('submit')}
+        cancelText={t('cancel')}
+        title={t('selectDate')}
+      />
+      {alertVisible && (
+        <Alert
+          visible={alertVisible}
+          title={alert.title}
+          desc={alert.desc}
+          type={alert.type}
+          onPress={alert.onPress}
+          onDismiss={() => setAlertVisible(false)}
+        />
+      )}
     </ScrollView>
   );
 }

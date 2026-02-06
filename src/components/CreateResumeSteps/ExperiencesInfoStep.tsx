@@ -14,6 +14,8 @@ import AccordionItem from '../AccordionItem';
 import TextInput from '../TextInput';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useTranslation } from 'react-i18next';
+import Alert from '../Alert';
+import DatePicker from 'react-native-date-picker';
 
 type Props = {
   initial: Array<ExperienceInfo>;
@@ -38,6 +40,20 @@ export default function ExperiencesInfoStep({ initial, handleForward }: Props) {
         ],
   );
   const [activeIndex, setActiveIndex] = useState(0);
+
+  const [alert, setAlert] = useState({
+    type: 'failure',
+    title: '',
+    desc: '',
+    onPress: () => {},
+  });
+  const [alertVisible, setAlertVisible] = useState(false);
+
+  const [datePickerConfig, setDatePickerConfig] = useState<{
+    index: number;
+    field: 'startDate' | 'endDate';
+    open: boolean;
+  }>({ index: 0, field: 'startDate', open: false });
 
   const handleForwardRef = useRef(handleForward);
   handleForwardRef.current = handleForward;
@@ -97,6 +113,72 @@ export default function ExperiencesInfoStep({ initial, handleForward }: Props) {
     setActiveIndex(prevIndex => (prevIndex === index ? -1 : index));
   };
 
+  const openPicker = (index: number, field: 'startDate' | 'endDate') => {
+    setDatePickerConfig({ index, field, open: true });
+  };
+
+  const selectDate = (date: Date) => {
+    const selectedDate = date;
+    const now = new Date();
+    const currentExp = experiences[datePickerConfig.index];
+
+    if (datePickerConfig.field === 'endDate' && selectedDate > now) {
+      setAlertVisible(true);
+      setAlert({
+        type: 'failure',
+        title: t('date_error'),
+        desc: t('error_future_date'),
+        onPress: () => {
+          setAlertVisible(false);
+        },
+      });
+      setDatePickerConfig({ ...datePickerConfig, open: false });
+      return;
+    }
+
+    if (datePickerConfig.field === 'endDate' && currentExp.startDate) {
+      const startDate = new Date(currentExp.startDate);
+      if (selectedDate < startDate) {
+        setAlertVisible(true);
+        setAlert({
+          type: 'failure',
+          title: t('date_error'),
+          desc: t('error_date_order'),
+          onPress: () => {
+            setAlertVisible(false);
+          },
+        });
+        setDatePickerConfig({ ...datePickerConfig, open: false });
+        return;
+      }
+    }
+
+    if (datePickerConfig.field === 'startDate' && currentExp.endDate) {
+      const endDate = new Date(currentExp.endDate);
+      if (selectedDate > endDate) {
+        setAlertVisible(true);
+        setAlert({
+          type: 'failure',
+          title: t('date_error'),
+          desc: t('error_start_after_end'),
+          onPress: () => {
+            setAlertVisible(false);
+          },
+        });
+        setDatePickerConfig({ ...datePickerConfig, open: false });
+        return;
+      }
+    }
+
+    const dateString = selectedDate.toISOString().split('T')[0];
+    handleInputChange(
+      datePickerConfig.index,
+      datePickerConfig.field,
+      dateString,
+    );
+    setDatePickerConfig({ ...datePickerConfig, open: false });
+  };
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -106,9 +188,10 @@ export default function ExperiencesInfoStep({ initial, handleForward }: Props) {
       <Text
         className="color-textColor dark:color-dark-textColor"
         style={{
-          fontFamily: 'InriaSerif-Bold',
+          fontFamily: 'Montserrat-Bold',
           textAlign: 'center',
           fontSize: wp(4),
+          lineHeight: wp(6),
           marginBottom: wp(3),
         }}
       >
@@ -143,7 +226,7 @@ export default function ExperiencesInfoStep({ initial, handleForward }: Props) {
             <Text
               className="color-textColor dark:color-dark-textColor"
               style={{
-                fontFamily: 'InriaSerif-Regular',
+                fontFamily: 'Montserrat-Regular',
                 fontSize: wp(3),
               }}
             >
@@ -163,34 +246,36 @@ export default function ExperiencesInfoStep({ initial, handleForward }: Props) {
             autoCapitalize="words"
           />
           <View className="flex-row items-center" style={{ gap: wp(3) }}>
-            <View className="flex-1">
-              <TextInput
-                handleChangeText={value =>
-                  handleInputChange(i, 'startDate', value)
-                }
-                value={exp.startDate}
-                placeholder={t('resume-step3-field3')}
-              />
-            </View>
+            <Pressable
+              className="flex-1"
+              onPress={() => openPicker(i, 'startDate')}
+            >
+              <View pointerEvents="none">
+                <TextInput
+                  value={exp.startDate}
+                  placeholder={t('resume-step3-field3')}
+                  handleChangeText={() => {}}
+                />
+              </View>
+            </Pressable>
             <View className="flex-1">
               {exp.isCurrent ? (
                 <Text
                   className="text-center color-textColor dark:color-dark-textColor"
-                  style={{
-                    fontFamily: 'InriaSerif-Regular',
-                    fontSize: wp(4),
-                  }}
+                  style={{ fontFamily: 'Montserrat-Regular', fontSize: wp(4) }}
                 >
                   - {t('present')}
                 </Text>
               ) : (
-                <TextInput
-                  handleChangeText={value =>
-                    handleInputChange(i, 'endDate', value)
-                  }
-                  value={exp.endDate}
-                  placeholder={t('resume-step3-field4')}
-                />
+                <Pressable onPress={() => openPicker(i, 'endDate')}>
+                  <View pointerEvents="none">
+                    <TextInput
+                      value={exp.endDate}
+                      placeholder={t('resume-step3-field4')}
+                      handleChangeText={() => {}}
+                    />
+                  </View>
+                </Pressable>
               )}
             </View>
           </View>
@@ -210,6 +295,30 @@ export default function ExperiencesInfoStep({ initial, handleForward }: Props) {
         </AccordionItem>
       ))}
       <Button handleSubmit={handleAddNew} text={t('resume-step3-btn')} />
+      <DatePicker
+        modal
+        mode="date"
+        locale="tr"
+        open={datePickerConfig.open}
+        date={new Date()}
+        onConfirm={selectDate}
+        onCancel={() => {
+          setDatePickerConfig({ ...datePickerConfig, open: false });
+        }}
+        confirmText={t('submit')}
+        cancelText={t('cancel')}
+        title={t('selectDate')}
+      />
+      {alertVisible && (
+        <Alert
+          visible={alertVisible}
+          title={alert.title}
+          desc={alert.desc}
+          type={alert.type}
+          onPress={alert.onPress}
+          onDismiss={() => setAlertVisible(false)}
+        />
+      )}
     </ScrollView>
   );
 }

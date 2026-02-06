@@ -5,6 +5,8 @@ import {
   LayoutAnimation,
   UIManager,
   Platform,
+  View,
+  Pressable,
 } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { CertificateInfo } from '../../types/resumeTypes';
@@ -13,6 +15,8 @@ import TextInput from '../TextInput';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import AccordionItem from '../AccordionItem';
 import { useTranslation } from 'react-i18next';
+import Alert from '../Alert';
+import DatePicker from 'react-native-date-picker';
 
 type Props = {
   initial: Array<CertificateInfo>;
@@ -39,6 +43,20 @@ export default function CertificatesInfoStep({
   );
 
   const [activeIndex, setActiveIndex] = useState(0);
+
+  const [alert, setAlert] = useState({
+    type: 'failure',
+    title: '',
+    desc: '',
+    onPress: () => {},
+  });
+  const [alertVisible, setAlertVisible] = useState(false);
+
+  const [datePickerConfig, setDatePickerConfig] = useState<{
+    index: number;
+    field: 'date';
+    open: boolean;
+  }>({ index: 0, field: 'date', open: false });
 
   const handleForwardRef = useRef(handleForward);
   handleForwardRef.current = handleForward;
@@ -93,6 +111,37 @@ export default function CertificatesInfoStep({
     setActiveIndex(prevIndex => (prevIndex === index ? -1 : index));
   };
 
+  const openPicker = (index: number, field: 'date') => {
+    setDatePickerConfig({ index, field, open: true });
+  };
+
+  const selectDate = (date: Date) => {
+    const selectedDate = date;
+    const now = new Date();
+
+    if (selectedDate > now) {
+      setAlertVisible(true);
+      setAlert({
+        type: 'failure',
+        title: t('date_error'),
+        desc: t('cert_date_error'),
+        onPress: () => {
+          setAlertVisible(false);
+        },
+      });
+      setDatePickerConfig({ ...datePickerConfig, open: false });
+      return;
+    }
+
+    const dateString = selectedDate.toISOString().split('T')[0];
+    handleInputChange(
+      datePickerConfig.index,
+      datePickerConfig.field,
+      dateString,
+    );
+    setDatePickerConfig({ ...datePickerConfig, open: false });
+  };
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -102,9 +151,10 @@ export default function CertificatesInfoStep({
       <Text
         className="color-textColor dark:color-dark-textColor"
         style={{
-          fontFamily: 'InriaSerif-Bold',
+          fontFamily: 'Montserrat-Bold',
           textAlign: 'center',
           fontSize: wp(4),
+          lineHeight: wp(6),
           marginBottom: wp(3),
         }}
       >
@@ -129,11 +179,15 @@ export default function CertificatesInfoStep({
             placeholder={t('resume-step5-field2')}
             autoCapitalize="words"
           />
-          <TextInput
-            handleChangeText={value => handleInputChange(i, 'date', value)}
-            value={cert.date}
-            placeholder={t('resume-step5-field3')}
-          />
+          <Pressable className="flex-1" onPress={() => openPicker(i, 'date')}>
+            <View pointerEvents="none">
+              <TextInput
+                value={cert.date}
+                placeholder={t('resume-step5-field3')}
+                handleChangeText={() => {}}
+              />
+            </View>
+          </Pressable>
           <TextInput
             handleChangeText={value => handleInputChange(i, 'link', value)}
             value={cert.link}
@@ -149,6 +203,30 @@ export default function CertificatesInfoStep({
         </AccordionItem>
       ))}
       <Button handleSubmit={handleAddNew} text={t('resume-step5-btn')} />
+      <DatePicker
+        modal
+        mode="date"
+        locale="tr"
+        open={datePickerConfig.open}
+        date={new Date()}
+        onConfirm={selectDate}
+        onCancel={() => {
+          setDatePickerConfig({ ...datePickerConfig, open: false });
+        }}
+        confirmText={t('submit')}
+        cancelText={t('cancel')}
+        title={t('selectDate')}
+      />
+      {alertVisible && (
+        <Alert
+          visible={alertVisible}
+          title={alert.title}
+          desc={alert.desc}
+          type={alert.type}
+          onPress={alert.onPress}
+          onDismiss={() => setAlertVisible(false)}
+        />
+      )}
     </ScrollView>
   );
 }

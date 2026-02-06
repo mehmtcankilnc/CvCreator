@@ -76,11 +76,17 @@ export default function MyResumes({ navigation }: Props) {
           className="flex-1 items-center justify-center"
           style={{ gap: wp(5) }}
         >
-          <Text className="text-gray-500 text-lg text-center font-inriaRegular">
+          <Text
+            className="text-gray-500 text-center font-montserratRegular"
+            style={{ fontSize: wp(4), lineHeight: wp(6) }}
+          >
             {t('resume-login-required')}
           </Text>
           <Pressable onPress={() => navigation.navigate('Settings')}>
-            <Text className="text-gray-500 text-xl italic underline font-inriaBold">
+            <Text
+              className="text-gray-500 underline font-montserratBold"
+              style={{ fontSize: wp(5), lineHeight: wp(7.5) }}
+            >
               {t('login-now')}
             </Text>
           </Pressable>
@@ -91,7 +97,7 @@ export default function MyResumes({ navigation }: Props) {
     if (myResumes.length === 0) {
       return (
         <View className="flex-1 items-center justify-center">
-          <Text className="text-gray-500 text-lg font-inriaBold">
+          <Text className="text-gray-500 text-lg font-montserratBold">
             {t('no-resume')}
           </Text>
         </View>

@@ -173,7 +173,7 @@ export default function MyFileCard({
     <View
       className="bg-secondaryBackground dark:bg-dark-secondaryBackground elevation-md border border-blue-100 dark:border-blue-800/30"
       style={{
-        height: wp(60),
+        height: wp(62),
         borderRadius: wp(3),
       }}
     >
@@ -194,8 +194,8 @@ export default function MyFileCard({
             }}
           />
           <Text
-            className="color-black dark:color-dark-textColor font-inriaBold"
-            style={{ fontSize: wp(5) }}
+            className="color-black dark:color-dark-textColor font-montserratBold"
+            style={{ fontSize: wp(5), lineHeight: wp(7.5) }}
           >
             {file.name}
           </Text>
@@ -214,28 +214,28 @@ export default function MyFileCard({
       >
         <View className="flex-row items-center justify-between">
           <Text
-            className="color-textColor dark:color-dark-textColor font-inriaRegular"
-            style={{ fontSize: wp(4) }}
+            className="color-textColor dark:color-dark-textColor font-montserratRegular"
+            style={{ fontSize: wp(4), lineHeight: wp(6) }}
           >
             {t('created-at')}:{' '}
           </Text>
           <Text
-            className="color-textColor dark:color-dark-textColor font-inriaRegular"
-            style={{ fontSize: wp(4) }}
+            className="color-textColor dark:color-dark-textColor font-montserratRegular"
+            style={{ fontSize: wp(4), lineHeight: wp(6) }}
           >
             {new Date(file.createdAt).toLocaleDateString()}
           </Text>
         </View>
         <View className="flex-row items-center justify-between">
           <Text
-            className="color-textColor dark:color-dark-textColor font-inriaRegular"
-            style={{ fontSize: wp(4) }}
+            className="color-textColor dark:color-dark-textColor font-montserratRegular"
+            style={{ fontSize: wp(4), lineHeight: wp(6) }}
           >
             {t('updated-at')}:{' '}
           </Text>
           <Text
-            className="color-textColor dark:color-dark-textColor font-inriaRegular"
-            style={{ fontSize: wp(4) }}
+            className="color-textColor dark:color-dark-textColor font-montserratRegular"
+            style={{ fontSize: wp(4), lineHeight: wp(6) }}
           >
             {new Date(file.updatedAt).toLocaleDateString()}
           </Text>

@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   stepText: {
-    fontFamily: 'InriaSerif-Bold',
+    fontFamily: 'Montserrat-Bold',
     fontSize: wp(6),
     lineHeight: wp(9),
   },

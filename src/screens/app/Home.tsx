@@ -132,14 +132,14 @@ export default function Home({ navigation }: Props) {
               </View>
               <View className="flex-1">
                 <Text
-                  className="font-inriaBold text-white dark:text-dark-textColor"
-                  style={{ fontSize: wp(5) }}
+                  className="font-montserratBold text-white dark:text-dark-textColor"
+                  style={{ fontSize: wp(5), lineHeight: wp(7.5) }}
                 >
                   {t('create-resume-header')}
                 </Text>
                 <Text
-                  className="font-inriaRegular text-blue-300"
-                  style={{ fontSize: wp(3) }}
+                  className="font-montserratRegular text-blue-300"
+                  style={{ fontSize: wp(3), lineHeight: wp(4.5) }}
                 >
                   {t('create-resume-desc')}
                 </Text>
@@ -174,8 +174,8 @@ export default function Home({ navigation }: Props) {
                   )}
                 </View>
                 <Text
-                  className="font-inriaBold text-center text-[#90168b] dark:text-[#e9d4ff]"
-                  style={{ fontSize: wp(3) }}
+                  className="font-montserratBold text-center text-[#90168b] dark:text-[#e9d4ff]"
+                  style={{ fontSize: wp(3), lineHeight: wp(4.5) }}
                 >
                   {t('create-cover-letter')}
                 </Text>
@@ -207,8 +207,8 @@ export default function Home({ navigation }: Props) {
                   )}
                 </View>
                 <Text
-                  className="font-inriaBold text-center text-textColor dark:text-[#fccedd]"
-                  style={{ fontSize: wp(3) }}
+                  className="font-montserratBold text-center text-textColor dark:text-[#fccedd]"
+                  style={{ fontSize: wp(3), lineHeight: wp(4.5) }}
                 >
                   {t('templates')}
                 </Text>
@@ -220,9 +220,10 @@ export default function Home({ navigation }: Props) {
             {/** Başlık ve Daha Fazla Butonu */}
             <View className="flex-row items-center justify-between">
               <Text
-                className="text-main font-inriaBold"
+                className="text-main font-montserratBold"
                 style={{
                   fontSize: wp(5),
+                  lineHeight: wp(7.5),
                 }}
               >
                 {t('my-resumes')}
@@ -237,10 +238,10 @@ export default function Home({ navigation }: Props) {
                 onPress={() => navigation.jumpTo('MyResumes')}
               >
                 <Text
-                  className="color-main dark:color-dark-textColor font-inriaRegular"
+                  className="color-main dark:color-dark-textColor font-montserratRegular"
                   style={{
                     fontSize: wp(3),
-                    lineHeight: wp(5),
+                    lineHeight: wp(4.5),
                   }}
                 >
                   {t('more')}
@@ -292,9 +293,10 @@ export default function Home({ navigation }: Props) {
             {/** Başlık ve Daha Fazla Butonu */}
             <View className="flex-row items-center justify-between">
               <Text
-                className="text-main font-inriaBold"
+                className="text-main font-montserratBold"
                 style={{
                   fontSize: wp(5),
+                  lineHeight: wp(7.5),
                 }}
               >
                 {t('my-cover-letters')}
@@ -309,10 +311,10 @@ export default function Home({ navigation }: Props) {
                 onPress={() => navigation.jumpTo('MyCoverLetters')}
               >
                 <Text
-                  className="color-main dark:color-dark-textColor font-inriaRegular"
+                  className="color-main dark:color-dark-textColor font-montserratRegular"
                   style={{
                     fontSize: wp(3),
-                    lineHeight: wp(5),
+                    lineHeight: wp(4.5),
                   }}
                 >
                   {t('more')}

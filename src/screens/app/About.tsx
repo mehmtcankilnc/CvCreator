@@ -27,9 +27,10 @@ export default function About({ navigation }: Props) {
             <Text
               className="color-textColor dark:color-dark-textColor"
               style={{
-                fontFamily: 'InriaSerif-Bold',
+                fontFamily: 'Montserrat-Bold',
                 textAlign: 'center',
                 fontSize: wp(4),
+                lineHeight: wp(6),
               }}
             >
               This is the masterpiece cv creator app.
@@ -37,9 +38,10 @@ export default function About({ navigation }: Props) {
             <Text
               className="color-textColor dark:color-dark-textColor"
               style={{
-                fontFamily: 'InriaSerif-Regular',
+                fontFamily: 'Montserrat-Regular',
                 textAlign: 'center',
                 fontSize: wp(4),
+                lineHeight: wp(6),
               }}
             >
               Created by Mehmetcan Kılınç

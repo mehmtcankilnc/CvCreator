@@ -123,8 +123,9 @@ export default function Settings({ navigation }: Props) {
               <Text
                 style={{
                   fontSize: wp(4),
+                  lineHeight: wp(6),
                   color: '#1954E5',
-                  fontFamily: 'InriaSerif-Bold',
+                  fontFamily: 'Montserrat-Bold',
                 }}
               >
                 {t('general-settings')}
@@ -144,9 +145,9 @@ export default function Settings({ navigation }: Props) {
               />
               <Text
                 style={{
-                  fontFamily: 'InriaSerif-Bold',
+                  fontFamily: 'Montserrat-Bold',
                   fontSize: wp(4.5),
-                  fontWeight: '600',
+                  lineHeight: wp(7),
                   color: color,
                 }}
               >
@@ -162,9 +163,9 @@ export default function Settings({ navigation }: Props) {
               <MaterialCommunityIcons name="web" size={wp(8)} color={color} />
               <Text
                 style={{
-                  fontFamily: 'InriaSerif-Bold',
+                  fontFamily: 'Montserrat-Bold',
                   fontSize: wp(4.5),
-                  fontWeight: '600',
+                  lineHeight: wp(7),
                   color: color,
                 }}
               >
@@ -186,8 +187,9 @@ export default function Settings({ navigation }: Props) {
                 <Text
                   style={{
                     fontSize: wp(4),
+                    lineHeight: wp(6),
                     color: '#1954E5',
-                    fontFamily: 'InriaSerif-Bold',
+                    fontFamily: 'Montserrat-Bold',
                   }}
                 >
                   {t('account-info')}
@@ -205,9 +207,9 @@ export default function Settings({ navigation }: Props) {
                 />
                 <Text
                   style={{
-                    fontFamily: 'InriaSerif-Bold',
+                    fontFamily: 'Montserrat-Bold',
                     fontSize: wp(4.5),
-                    fontWeight: '600',
+                    lineHeight: wp(7),
                     color: color,
                   }}
                 >
@@ -240,9 +242,9 @@ export default function Settings({ navigation }: Props) {
                 />
                 <Text
                   style={{
-                    fontFamily: 'InriaSerif-Bold',
+                    fontFamily: 'Montserrat-Bold',
                     fontSize: wp(4.5),
-                    fontWeight: '600',
+                    lineHeight: wp(7),
                     color: color,
                   }}
                 >
@@ -278,9 +280,9 @@ export default function Settings({ navigation }: Props) {
                 />
                 <Text
                   style={{
-                    fontFamily: 'InriaSerif-Bold',
+                    fontFamily: 'Montserrat-Bold',
                     fontSize: wp(4.5),
-                    fontWeight: '600',
+                    lineHeight: wp(7),
                     color: color,
                   }}
                 >

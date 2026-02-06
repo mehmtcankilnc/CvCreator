@@ -192,12 +192,13 @@ export default function ListItem({
           </Text>
         </View>
         <Text
-          className="color-textColor dark:color-dark-textColor font-inriaBold"
+          className="color-textColor dark:color-dark-textColor font-montserratRegular"
           numberOfLines={1}
           ellipsizeMode="tail"
           style={{
             flexShrink: 1,
             fontSize: wp(4),
+            lineHeight: wp(6),
           }}
         >
           {title}

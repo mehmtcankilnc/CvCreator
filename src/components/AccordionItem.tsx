@@ -49,8 +49,9 @@ export default function AccordionItem({
         <Text
           className="color-textColor dark:color-dark-textColor"
           style={{
-            fontFamily: 'InriaSerif-Regular',
+            fontFamily: 'Montserrat-Regular',
             fontSize: wp(4),
+            lineHeight: wp(6),
           }}
         >
           {title}

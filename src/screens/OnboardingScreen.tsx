@@ -128,7 +128,7 @@ export default function OnboardingScreen() {
               </View>
               <Text
                 style={{
-                  fontFamily: 'InriaSerif-Bold',
+                  fontFamily: 'Montserrat-Bold',
                   fontSize: wp(10),
                   lineHeight: wp(15),
                   color: '#585858',
@@ -155,7 +155,7 @@ export default function OnboardingScreen() {
               />
               <Text
                 style={{
-                  fontFamily: 'InriaSerif-Bold',
+                  fontFamily: 'Montserrat-Bold',
                   fontSize: wp(8),
                   lineHeight: wp(12),
                   color: '#585858',
@@ -166,7 +166,7 @@ export default function OnboardingScreen() {
               </Text>
               <Text
                 style={{
-                  fontFamily: 'InriaSerif-Bold',
+                  fontFamily: 'Montserrat-Bold',
                   fontSize: wp(8),
                   lineHeight: wp(12),
                   color: '#585858',
@@ -209,9 +209,9 @@ export default function OnboardingScreen() {
               </View>
               <Text
                 style={{
-                  fontFamily: 'InriaSerif-Bold',
+                  fontFamily: 'Montserrat-Bold',
                   fontSize: wp(8),
-                  lineHeight: wp(15),
+                  lineHeight: wp(12),
                   color: '#585858',
                   textAlign: 'center',
                 }}
@@ -236,9 +236,9 @@ export default function OnboardingScreen() {
               />
               <Text
                 style={{
-                  fontFamily: 'InriaSerif-Bold',
+                  fontFamily: 'Montserrat-Bold',
                   fontSize: wp(8),
-                  lineHeight: wp(15),
+                  lineHeight: wp(12),
                   color: '#585858',
                   textAlign: 'center',
                 }}
@@ -340,7 +340,7 @@ export default function OnboardingScreen() {
           onPress={handleGuestSignIn}
         >
           <Text
-            className="font-inriaRegular underline"
+            className="font-montserratRegular underline"
             style={{ fontSize: wp(4), lineHeight: wp(6) }}
           >
             {t('guest-signin')}

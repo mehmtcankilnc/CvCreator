@@ -54,33 +54,38 @@ export default function UpdateAppModal({ visible, storeUrl }: Props) {
               color="#1954E5"
             />
           </View>
-
           <Text
-            className={`font-bold text-center ${
-              isDarkMode ? 'text-white' : 'text-gray-900'
-            }`}
-            style={{ fontSize: wp(6) }}
+            className="text-center text-textColor dark:text-dark-textColor"
+            style={{
+              fontFamily: 'Montserrat-Bold',
+              fontSize: wp(5),
+              lineHeight: wp(7.5),
+            }}
           >
             {t('updateAvailable')}
           </Text>
-
           <Text
-            className={`text-center font-medium ${
-              isDarkMode ? 'text-dark-textColor' : 'text-textColor'
-            }`}
-            style={{ fontSize: wp(4) }}
+            className="text-center text-gray-600 dark:text-gray-400"
+            style={{
+              fontFamily: 'Montserrat-Regular',
+              fontSize: wp(3),
+              lineHeight: wp(4.5),
+            }}
           >
             {t('updateDesc')}
           </Text>
-
           <TouchableOpacity
             onPress={handleUpdatePress}
             className="w-full bg-main rounded-xl items-center justify-center"
             style={{ paddingVertical: wp(4), marginTop: wp(2) }}
           >
             <Text
-              className="text-white font-bold"
-              style={{ fontSize: wp(4.5) }}
+              className="text-white"
+              style={{
+                fontFamily: 'Montserrat-Bold',
+                fontSize: wp(4),
+                lineHeight: wp(6),
+              }}
             >
               {t('updateNow')}
             </Text>

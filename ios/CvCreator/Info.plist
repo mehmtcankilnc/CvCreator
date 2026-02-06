@@ -49,9 +49,8 @@
 	<false/>
 	<key>UIAppFonts</key>
 	<array>
-		<string>InriaSerif-Bold.ttf</string>
-		<string>InriaSerif-Regular.ttf</string>
-		<string>Kavoon-Regular.ttf</string>
+		<string>Montserrat-Bold.ttf</string>
+		<string>Montserrat-Regular.ttf</string>
 	</array>
 	<key>CFBundleURLTypes</key>
 	<array>

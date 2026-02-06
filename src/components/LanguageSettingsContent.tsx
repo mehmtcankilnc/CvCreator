@@ -30,9 +30,9 @@ export default function LanguageSettingsContent({ onSelect }: Props) {
               <Text
                 className="text-textColor dark:text-dark-textColor"
                 style={{
-                  fontFamily: 'InriaSerif-Bold',
+                  fontFamily: 'Montserrat-Bold',
                   fontSize: wp(5),
-                  fontWeight: '600',
+                  lineHeight: wp(7.5),
                 }}
               >
                 {item.name}

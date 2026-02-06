@@ -45,7 +45,8 @@ export default function DrawerNav() {
         },
         drawerLabelStyle: {
           fontSize: wp(5),
-          fontFamily: 'InriaSerif-Bold',
+          lineHeight: wp(7.5),
+          fontFamily: 'Montserrat-Bold',
         },
       }}
       drawerContent={props => (
@@ -56,7 +57,7 @@ export default function DrawerNav() {
                 style={{
                   fontSize: hp(2),
                   color: mainBackgroundColor,
-                  fontFamily: 'InriaSerif-Bold',
+                  fontFamily: 'Montserrat-Bold',
                   lineHeight: hp(5),
                   textAlign: 'center',
                   paddingBottom: hp(2),
@@ -72,7 +73,7 @@ export default function DrawerNav() {
               style={{
                 fontSize: hp(2),
                 color: mainBackgroundColor,
-                fontFamily: 'InriaSerif-Bold',
+                fontFamily: 'Montserrat-Bold',
                 lineHeight: hp(5),
                 textAlign: 'center',
                 paddingBottom: hp(2),
