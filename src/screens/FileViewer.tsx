@@ -11,129 +11,85 @@ import {
 import Button from '../components/Button';
 import { useAppSelector } from '../store/hooks';
 import { useTranslation } from 'react-i18next';
-import { AuthResponse, useAuth } from '../context/AuthContext';
-import RNFetchBlob from 'react-native-blob-util';
 import Share from 'react-native-share';
-import { DownloadCoverLetterById } from '../services/CoverLetterServices';
-import { DownloadResumeById } from '../services/ResumeServices';
-import { storageService } from '../utilities/tokenStorage';
-import { API_BASE_URL } from '@env';
-
-interface DownloadArgs {
-  customToken?: string | null;
-  isRetry?: boolean;
-}
+import { GetCoverLetterPdfById } from '../services/CoverLetterServices';
+import { GetResumePdfById } from '../services/ResumeServices';
+import Alert from '../components/Alert';
+import { notifyDownloadComplete } from '../utilities/downloadNotification';
+import { saveToDownloads } from '../utilities/downloadFile';
 
 export default function FileViewer({ navigation, route }: any) {
   const { t } = useTranslation();
-  const { token, logout } = useAuth();
 
-  const { url, file, type } = route.params;
+  const { file, type } = route.params;
   const theme = useAppSelector(state => state.theme.theme);
 
-  const [accessToken, setAccessToken] = useState<string | null>(token);
   const [localPath, setLocalPath] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [alert, setAlert] = useState<{
+    type: string;
+    title: string;
+    desc: string;
+  } | null>(null);
 
   useEffect(() => {
-    if (token) setAccessToken(token);
-  }, [token]);
+    let isActive = true;
 
-  useEffect(() => {
-    downloadFileToCache({ customToken: accessToken, isRetry: false });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [url]);
+    const generateFile = async () => {
+      setIsLoading(true);
+      try {
+        const pdf =
+          type === 'coverletters'
+            ? await GetCoverLetterPdfById(file.id)
+            : await GetResumePdfById(file.id);
 
-  const downloadFileToCache = async ({
-    customToken = null,
-    isRetry = false,
-  }: DownloadArgs) => {
-    const currentToken = customToken || accessToken;
-
-    if (!url || !currentToken) return;
-
-    if (!isRetry) setIsLoading(true);
-
-    try {
-      const { fs, config } = RNFetchBlob;
-      const cachePath = `${fs.dirs.CacheDir}/${file.name || 'temp_file'}.pdf`;
-
-      const res = await config({
-        fileCache: true,
-        path: cachePath,
-      }).fetch('GET', url, {
-        Authorization: `Bearer ${currentToken}`,
-      });
-
-      const status = res.info().status;
-
-      if (status === 200) {
-        setLocalPath(res.path());
-        if (!isRetry) setIsLoading(false);
-      } else if (status === 401) {
-        if (!isRetry) {
-          const newToken = await refreshAccessToken();
-
-          if (newToken) {
-            return await downloadFileToCache({
-              customToken: newToken,
-              isRetry: true,
-            });
-          } else {
-            setIsLoading(false);
-            await logout();
-          }
-        } else {
-          setIsLoading(false);
+        if (isActive && pdf) {
+          setLocalPath(pdf.path);
         }
-      } else {
-        console.log('Sunucu Hatası:', status);
-        fs.unlink(res.path()).catch(() => {});
-        setIsLoading(false);
+      } catch (error) {
+        console.error('PDF oluşturma hatası:', error);
+      } finally {
+        if (isActive) setIsLoading(false);
       }
-    } catch (error) {
-      console.error('İndirme Hatası:', error);
-      setIsLoading(false);
-    }
-  };
+    };
 
-  const refreshAccessToken = async (): Promise<string | null> => {
-    try {
-      const currentAccessToken = await storageService.getAccessToken();
-      const currentRefreshToken = await storageService.getRefreshToken();
+    generateFile();
 
-      if (!currentAccessToken || !currentRefreshToken) return null;
-
-      const response = await fetch(`${API_BASE_URL}/auth/refresh-token`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          accessToken: currentAccessToken,
-          refreshToken: currentRefreshToken,
-        }),
-      });
-
-      if (!response.ok) throw new Error('Refresh Başarısız Oldu');
-
-      const data: AuthResponse = await response.json();
-
-      await storageService.setAccessToken(data.accessToken);
-      if (data.refreshToken)
-        await storageService.setRefreshToken(data.refreshToken);
-
-      setAccessToken(data.accessToken);
-      return data.accessToken;
-    } catch (error) {
-      console.error('Token Yenilenemedi: ', error);
-      return null;
-    }
-  };
+    return () => {
+      isActive = false;
+    };
+  }, [file.id, type]);
 
   const handleDownload = async () => {
-    if (type === 'coverletters') {
-      await DownloadCoverLetterById(file.id, file.name, accessToken);
-    } else {
-      await DownloadResumeById(file.id, file.name, accessToken);
+    if (!localPath) return;
+
+    try {
+      const result = await saveToDownloads(localPath, file.name);
+      if (result === 'saved') {
+        notifyDownloadComplete(
+          t('download-success-title'),
+          file.name,
+          localPath,
+        );
+        setAlert({
+          type: 'success',
+          title: t('download-success-title'),
+          desc: t('download-success-text'),
+        });
+      } else if (result === 'denied') {
+        setAlert({
+          type: 'failure',
+          title: t('download-failed-title'),
+          desc: t('download-permission-text'),
+        });
+      }
+    } catch (error) {
+      console.error('İndirme hatası:', error);
+      setAlert({
+        type: 'failure',
+        title: t('download-failed-title'),
+        desc: t('download-failed-text'),
+      });
     }
   };
 
@@ -197,8 +153,19 @@ export default function FileViewer({ navigation, route }: any) {
           handleSubmit={handleDownload}
           style={{ flex: 1 }}
           text={t('download')}
+          isDisabled={!localPath}
         />
       </View>
+      {alert && (
+        <Alert
+          visible
+          title={alert.title}
+          desc={alert.desc}
+          type={alert.type}
+          onPress={() => setAlert(null)}
+          onDismiss={() => setAlert(null)}
+        />
+      )}
     </View>
   );
 }

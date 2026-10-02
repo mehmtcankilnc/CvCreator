@@ -1,181 +1,137 @@
 import { ResumeFormValues } from '../types/resumeTypes';
-import RNFetchBlob from 'react-native-blob-util';
-import { API_BASE_URL } from '@env';
+import { supabase, getSavableUserId } from '../lib/supabase';
+import { generateResumePdf, GeneratedPdf } from '../pdf/generatePdf';
 
-type Fetcher = (url: string, options?: RequestInit) => Promise<Response>;
+type ResumeRow = {
+  id: string;
+  file_name: string;
+  template: string;
+  form_values: ResumeFormValues;
+  created_at: string;
+  updated_at: string;
+};
+
+const escapeLike = (text: string) =>
+  text.replace(/[\\%_]/g, char => `\\${char}`);
 
 export const PostResumeValues = async (
-  authenticatedFetch: Fetcher,
   resumeData: ResumeFormValues,
   templateName: string,
-) => {
+): Promise<GeneratedPdf> => {
   try {
-    const response = await authenticatedFetch(
-      `/resumes?templateName=${templateName}`,
-      {
-        method: 'POST',
-        body: JSON.stringify(resumeData),
-      },
-    );
+    const pdf = await generateResumePdf(resumeData, templateName);
+    const userId = await getSavableUserId();
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData || 'PDF oluşturulamadı');
-    } else {
-      return response;
+    if (userId) {
+      const { error } = await supabase.from('resumes').insert({
+        file_name: resumeData.personalInfo.fullName,
+        template: templateName,
+        form_values: resumeData,
+      });
+      if (error) throw error;
     }
+
+    return pdf;
   } catch (error) {
-    console.error('CV post etme hatası: ', error);
-
-    if (error && (error as any).message.includes('User cancelled')) {
-      console.log("Kullanıcı PDF'i açmaktan vazgeçti.");
-    } else {
-      throw error;
-    }
+    console.error('CV oluşturma hatası: ', error);
+    throw error;
   }
 };
 
-export const GetMyResumes = async (
-  authenticatedFetch: Fetcher,
-  searchText?: string,
-  limit?: number,
-) => {
+export const GetMyResumes = async (searchText?: string, limit?: number) => {
   try {
-    const params = new URLSearchParams();
-    if (searchText) params.append('searchText', searchText);
-    if (limit) params.append('limit', limit.toString());
+    let query = supabase
+      .from('resumes')
+      .select('id, file_name, created_at, updated_at')
+      .order('updated_at', { ascending: false });
 
-    const url = `/resumes?${params.toString()}`;
-    const response = await authenticatedFetch(url, {
-      method: 'GET',
-    });
-
-    if (!response.ok) {
-      console.error('Hata: ', response);
-      return;
+    const trimmed = searchText?.trim();
+    if (trimmed) {
+      query = query.ilike('file_name', `%${escapeLike(trimmed)}%`);
+    }
+    if (limit) {
+      query = query.limit(limit);
     }
 
-    const json = await response.json();
-    return json.data;
+    const { data, error } = await query;
+    if (error) throw error;
+
+    return (data ?? []).map(row => ({
+      id: row.id as string,
+      fileName: row.file_name as string,
+      createdAt: row.created_at as string,
+      updatedAt: row.updated_at as string,
+    }));
   } catch (error) {
     console.error("Bütün CV'leri çekme hatası: ", error);
   }
 };
 
-export const GetMyResumeById = async (
-  authenticatedFetch: Fetcher,
-  resumeId: string,
-) => {
+export const GetMyResumeById = async (resumeId: string) => {
   try {
-    const response = await authenticatedFetch(`/resumes/${resumeId}`, {
-      method: 'GET',
-    });
+    const { data, error } = await supabase
+      .from('resumes')
+      .select('id, file_name, template, form_values, created_at, updated_at')
+      .eq('id', resumeId)
+      .maybeSingle<ResumeRow>();
+    if (error) throw error;
+    if (!data) return;
 
-    if (!response.ok) {
-      console.error('Hata: ', response);
-      return;
-    }
-
-    const json = await response.json();
-    return json.data;
+    return {
+      id: data.id,
+      template: data.template,
+      formValues: data.form_values,
+    };
   } catch (error) {
     console.error('CV çekme hatası: ', error);
   }
 };
 
-export const DownloadResumeById = async (
+export const GetResumePdfById = async (
   resumeId: string,
-  fileName: string,
-  token: string | null,
-) => {
-  if (!token) {
-    console.error('İndirme başarısız: Token bulunamadı.');
-    return;
-  }
+): Promise<GeneratedPdf | undefined> => {
+  const resume = await GetMyResumeById(resumeId);
+  if (!resume) return;
 
-  const { config } = RNFetchBlob;
-
-  const headers: HeadersInit_ = {
-    'Content-Type': 'application/json',
-    Accept: 'application/pdf',
-    Authorization: `Bearer ${token}`,
-  };
-
-  const downloadUrl = `${API_BASE_URL}/resumes/download/${resumeId}`;
-
-  try {
-    const res = await config({
-      fileCache: true,
-      // path: filePath,
-      trusty: true,
-      addAndroidDownloads: {
-        useDownloadManager: true,
-        notification: true,
-        title: `${fileName}.pdf`,
-        description: 'Downloading...',
-        mime: 'application/pdf',
-        mediaScannable: true,
-      },
-    }).fetch('GET', downloadUrl, headers);
-
-    try {
-      await RNFetchBlob.fs.scanFile([
-        { path: res.path(), mime: 'application/pdf' },
-      ]);
-    } catch (scanErr) {
-      console.warn('Dosya tarama hatası:', scanErr);
-    }
-  } catch (error) {
-    console.error('Özgeçmiş indirme hatası:', error);
-  }
+  return generateResumePdf(resume.formValues, resume.template);
 };
 
-export const DeleteResumeById = async (
-  authenticatedFetch: Fetcher,
-  resumeId: string,
-) => {
+export const DeleteResumeById = async (resumeId: string) => {
   try {
-    const response = await authenticatedFetch(`/resumes/${resumeId}`, {
-      method: 'DELETE',
-    });
-
-    if (!response.ok) {
-      console.error('Hata: ', response);
-      return false;
-    }
+    const { error } = await supabase
+      .from('resumes')
+      .delete()
+      .eq('id', resumeId);
+    if (error) throw error;
 
     return true;
   } catch (error) {
-    console.error('Özgeçmiş indirme hatası: ', error);
+    console.error('Özgeçmiş silme hatası: ', error);
     return false;
   }
 };
 
 export const UpdateResumeValues = async (
-  authenticatedFetch: Fetcher,
   resumeData: ResumeFormValues,
   templateName: string,
   resumeId: string,
-) => {
+): Promise<GeneratedPdf> => {
   try {
-    const response = await authenticatedFetch(
-      `/resumes/${resumeId}?templateName=${templateName}`,
-      { method: 'PUT', body: JSON.stringify(resumeData) },
-    );
+    const pdf = await generateResumePdf(resumeData, templateName);
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData || 'CV güncellenemedi');
-    } else {
-      return response;
-    }
+    const { error } = await supabase
+      .from('resumes')
+      .update({
+        file_name: resumeData.personalInfo.fullName,
+        template: templateName,
+        form_values: resumeData,
+      })
+      .eq('id', resumeId);
+    if (error) throw error;
+
+    return pdf;
   } catch (error) {
-    console.error('CV update etme hatası: ', error);
-
-    if (error && (error as any).message.includes('User cancelled')) {
-      console.log("Kullanıcı PDF'i açmaktan vazgeçti.");
-    } else {
-      throw error;
-    }
+    console.error('CV güncelleme hatası: ', error);
+    throw error;
   }
 };

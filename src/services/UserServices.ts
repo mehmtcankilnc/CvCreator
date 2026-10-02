@@ -1,17 +1,11 @@
-type Fetcher = (url: string, options?: RequestInit) => Promise<Response>;
+import { supabase } from '../lib/supabase';
 
-export const deleteUser = async (authenticatedFetch: Fetcher) => {
+export const deleteUser = async () => {
   try {
-    const response = await authenticatedFetch('/users', {
-      method: 'DELETE',
-    });
+    const { error } = await supabase.rpc('delete_my_account');
+    if (error) throw error;
 
-    if (!response.ok) {
-      console.error('Hata: ', response);
-      return;
-    }
-
-    return await response.json();
+    return { isSuccess: true };
   } catch (error) {
     console.error('Kullanıcı silinirken bir hata oluştu: ', error);
   }

@@ -10,13 +10,13 @@ import {
 } from '../store/slices/bottomSheetSlice';
 import { FileRespModel } from './MyFileCard';
 import { DeleteResumeById, GetMyResumeById } from '../services/ResumeServices';
+import { resumeTemplatesData } from '../data/resumeTemplatesData';
 import {
   DeleteCoverLetterById,
   GetMyCoverLetterById,
 } from '../services/CoverLetterServices';
 import Alert from './Alert';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../context/AuthContext';
 
 type Props = {
   navigation: any;
@@ -36,8 +36,6 @@ export default function ListItem({
   fetchFunc,
 }: Props) {
   const { t } = useTranslation();
-  const { authenticatedFetch } = useAuth();
-
   const dispatch = useAppDispatch();
   const { theme } = useAppSelector(state => state.theme);
 
@@ -72,57 +70,36 @@ export default function ListItem({
     );
   };
 
-  const handleShow = async () => {
-    if (type === 'resumes') {
-      const resume = await GetMyResumeById(authenticatedFetch, file.id);
-
-      if (resume) {
-        dispatch(closeBottomSheet());
-        navigation.navigate('FileViewer', {
-          url: resume.url,
-          file: file,
-          type: type,
-        });
-      }
-    } else {
-      const coverLetter = await GetMyCoverLetterById(
-        authenticatedFetch,
-        file.id,
-      );
-
-      if (coverLetter) {
-        dispatch(closeBottomSheet());
-        navigation.navigate('FileViewer', {
-          url: coverLetter.url,
-          file: file,
-          type: type,
-        });
-      }
-    }
+  const handleShow = () => {
+    dispatch(closeBottomSheet());
+    navigation.navigate('FileViewer', { file: file, type: type });
   };
 
   const handleEdit = async () => {
     if (type === 'resumes') {
-      const resume = await GetMyResumeById(authenticatedFetch, file.id);
+      const resume = await GetMyResumeById(file.id);
 
       if (resume) {
         dispatch(closeBottomSheet());
         navigation.navigate('CreateResume', {
-          formValues: resume.formValues.resumeFormValues,
-          resumeId: resume.formValues.id,
+          formValues: resume.formValues,
+          resumeId: resume.id,
+          templateIndex: Math.max(
+            0,
+            resumeTemplatesData.findIndex(
+              item => item.code === resume.template,
+            ),
+          ),
         });
       }
     } else {
-      const coverLetter = await GetMyCoverLetterById(
-        authenticatedFetch,
-        file.id,
-      );
+      const coverLetter = await GetMyCoverLetterById(file.id);
 
       if (coverLetter) {
         dispatch(closeBottomSheet());
         navigation.navigate('CreateCoverLetter', {
-          formValues: coverLetter.formValues.coverLetterFormValues,
-          coverLetterId: coverLetter.formValues.id,
+          formValues: coverLetter.formValues,
+          coverLetterId: coverLetter.id,
         });
       }
     }
@@ -130,28 +107,15 @@ export default function ListItem({
 
   const handleDelete = async () => {
     setIsLoading(true);
-    if (type === 'coverletters') {
-      const isCoverLetterDeleted = await DeleteCoverLetterById(
-        authenticatedFetch,
-        file.id,
-      );
+    const isDeleted =
+      type === 'coverletters'
+        ? await DeleteCoverLetterById(file.id)
+        : await DeleteResumeById(file.id);
 
-      if (isCoverLetterDeleted) {
-        setIsLoading(false);
-        dispatch(closeBottomSheet());
-        fetchFunc();
-      }
-    } else {
-      const isResumeDeleted = await DeleteResumeById(
-        authenticatedFetch,
-        file.id,
-      );
-
-      if (isResumeDeleted) {
-        setIsLoading(false);
-        dispatch(closeBottomSheet());
-        fetchFunc();
-      }
+    setIsLoading(false);
+    if (isDeleted) {
+      dispatch(closeBottomSheet());
+      fetchFunc();
     }
   };
 

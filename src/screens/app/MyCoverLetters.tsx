@@ -17,7 +17,7 @@ type Props = {
 
 export default function MyCoverLetters({ navigation }: Props) {
   const { t } = useTranslation();
-  const { user, authenticatedFetch } = useAuth();
+  const { user } = useAuth();
 
   const [myCoverLetters, setMyCoverLetters] = useState<Array<FileRespModel>>(
     [],
@@ -29,7 +29,7 @@ export default function MyCoverLetters({ navigation }: Props) {
     setIsLoading(true);
     if (!user?.isGuest && user?.id) {
       try {
-        const data = await GetMyCoverLetters(authenticatedFetch, searchText);
+        const data = await GetMyCoverLetters(searchText);
         if (data) {
           const mappedCoverLetters = data.map((item: any) => ({
             id: item.id,
@@ -49,7 +49,7 @@ export default function MyCoverLetters({ navigation }: Props) {
       setIsLoading(false);
       setMyCoverLetters([]);
     }
-  }, [user?.isGuest, user?.id, authenticatedFetch, searchText]);
+  }, [user?.isGuest, user?.id, searchText]);
 
   useFocusEffect(
     useCallback(() => {

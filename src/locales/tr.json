@@ -185,5 +185,10 @@
   "error_date_order": "Bitiş tarihi başlangıçtan önce olamaz",
   "error_start_after_end": "Başlangıç tarihi bitişten sonra olamaz",
   "cert_date_error": "Sertifika tarihi bugünden büyük olamaz",
-  "meta_info_date_error": "Ön yazı tarihi bugünden büyük olamaz"
+  "meta_info_date_error": "Ön yazı tarihi bugünden büyük olamaz",
+  "download-success-title": "İndirildi",
+  "download-success-text": "Dosya İndirilenler klasörüne kaydedildi.",
+  "download-failed-title": "İndirilemedi",
+  "download-failed-text": "Dosya indirilirken bir hata oluştu.",
+  "download-permission-text": "Dosyayı kaydetmek için depolama izni vermeniz gerekiyor."
 }

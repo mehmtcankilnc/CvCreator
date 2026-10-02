@@ -5,8 +5,6 @@ import {
   ScrollView,
   Image,
   Pressable,
-  Platform,
-  PermissionsAndroid,
 } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -16,7 +14,6 @@ import {
 import { PhotoInfo } from '../../types/resumeTypes';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { launchImageLibrary } from 'react-native-image-picker';
-import Alert from '../Alert';
 import Button from '../Button';
 import { useTranslation } from 'react-i18next';
 
@@ -29,13 +26,6 @@ export default function UploadPhotoStep({ initial, handleForward }: Props) {
   const { t } = useTranslation();
 
   const [photoInfo, setPhotoInfo] = useState<PhotoInfo>(initial);
-  const [alert, setAlert] = useState({
-    type: 'failure',
-    title: '',
-    desc: '',
-    onPress: () => {},
-  });
-  const [alertVisible, setAlertVisible] = useState(false);
 
   const handleForwardRef = useRef(handleForward);
   handleForwardRef.current = handleForward;
@@ -47,18 +37,6 @@ export default function UploadPhotoStep({ initial, handleForward }: Props) {
   }, [photoInfo]);
 
   const selectImage = async () => {
-    const hasPermission = await requestGalleryPermission();
-    if (!hasPermission) {
-      setAlert({
-        type: 'failure',
-        title: t('gallery-perm-alert-title'),
-        desc: t('gallery-perm-alert-text'),
-        onPress: () => setAlertVisible(false),
-      });
-      setAlertVisible(true);
-      return;
-    }
-
     launchImageLibrary(
       { mediaType: 'photo', includeBase64: true },
       response => {
@@ -79,25 +57,6 @@ export default function UploadPhotoStep({ initial, handleForward }: Props) {
         }
       },
     );
-  };
-
-  const requestGalleryPermission = async () => {
-    if (Platform.OS === 'android') {
-      try {
-        const sdkInt = Platform.Version as number;
-        const permission =
-          sdkInt >= 33
-            ? PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES
-            : PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE;
-
-        const granted = await PermissionsAndroid.request(permission);
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
-      } catch (err) {
-        console.warn('İzin kontrol hatası:', err);
-        return false;
-      }
-    }
-    return true;
   };
 
   const removeImage = () => {
@@ -157,16 +116,6 @@ export default function UploadPhotoStep({ initial, handleForward }: Props) {
           </Pressable>
         )}
       </View>
-      {alertVisible && (
-        <Alert
-          visible={alertVisible}
-          title={alert.title}
-          desc={alert.desc}
-          type={alert.type}
-          onPress={alert.onPress}
-          onDismiss={() => setAlertVisible(false)}
-        />
-      )}
     </ScrollView>
   );
 }

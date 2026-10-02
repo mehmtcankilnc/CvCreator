@@ -35,9 +35,9 @@ import {
 import TemplateSelectStep from '../components/CreateResumeSteps/TemplateSelectStep';
 import { resumeTemplatesData } from '../data/resumeTemplatesData';
 import CreatedInfoModal from '../components/CreatedInfoModal';
+import { GeneratedPdf } from '../pdf/generatePdf';
 import UploadPhotoStep from '../components/CreateResumeSteps/UploadPhotoStep';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../context/AuthContext';
 
 type Props = {
   navigation: any;
@@ -59,7 +59,6 @@ const isSmallScreen = screenWidth < 375;
 
 export default function CreateResume({ navigation, route }: Props) {
   const { t } = useTranslation();
-  const { authenticatedFetch } = useAuth();
   const [formValues, setFormValues] = useState<ResumeFormValues>(
     route.params?.formValues ?? INITIAL_RESUME_VALUES,
   );
@@ -81,7 +80,7 @@ export default function CreateResume({ navigation, route }: Props) {
   const [alertVisible, setAlertVisible] = useState(false);
 
   const [isCreated, setIsCreated] = useState(false);
-  const [createdInfo, setCreatedInfo] = useState<Response | null>(null);
+  const [createdInfo, setCreatedInfo] = useState<GeneratedPdf | null>(null);
 
   const stepForward = () =>
     setCurrentStep(prev => (prev < totalSteps ? prev + 1 : prev));
@@ -275,20 +274,18 @@ export default function CreateResume({ navigation, route }: Props) {
       let response;
       if (route.params?.formValues) {
         response = await UpdateResumeValues(
-          authenticatedFetch,
           formValues,
           resumeTemplatesData[selectedTemplateIndex].code,
           route.params.resumeId,
         );
       } else {
         response = await PostResumeValues(
-          authenticatedFetch,
           formValues,
           resumeTemplatesData[selectedTemplateIndex].code,
         );
       }
 
-      if (response && response.ok) {
+      if (response) {
         setIsCreated(true);
         setCreatedInfo(response);
       }

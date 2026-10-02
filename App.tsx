@@ -11,9 +11,11 @@ import { useAppSelector } from './src/store/hooks';
 import { useColorScheme } from 'nativewind';
 import { useEffect, useState } from 'react';
 import UpdateAppModal from './src/components/UpdateAppModal';
+import notifee from '@notifee/react-native';
+import { handleDownloadNotificationEvent } from './src/utilities/downloadNotification';
 import AuthProvider from './src/context/AuthContext';
 
-const CURRENT_VERSION = '1.2';
+const CURRENT_VERSION = '1.3';
 const VERSION_URL =
   'https://raw.githubusercontent.com/mehmtcankilnc/CvCreator/main/version.json';
 
@@ -74,6 +76,11 @@ function App() {
     };
     checkVersion();
   }, []);
+
+  useEffect(
+    () => notifee.onForegroundEvent(handleDownloadNotificationEvent),
+    [],
+  );
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

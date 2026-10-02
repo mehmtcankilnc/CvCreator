@@ -6,6 +6,7 @@ import Page from '../../components/Page';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Feather from 'react-native-vector-icons/Feather';
 import ListItem from '../../components/ListItem';
+import { FileRespModel } from '../../components/MyFileCard';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { useFocusEffect } from '@react-navigation/native';
 import { GetMyResumes } from '../../services/ResumeServices';
@@ -24,13 +25,15 @@ export default function Home({ navigation }: Props) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { theme } = useAppSelector(state => state.theme);
-  const { user, getUser, authenticatedFetch } = useAuth();
+  const { user, getUser } = useAuth();
 
   const iconColor = theme === 'LIGHT' ? '#1954E5' : '#D9D9D9';
 
-  const [myResumes, setMyResumes] = useState([]);
+  const [myResumes, setMyResumes] = useState<Array<FileRespModel>>([]);
   const [isResumesLoading, setIsResumesLoading] = useState(!user?.isGuest);
-  const [myCoverLetters, setMyCoverLetters] = useState([]);
+  const [myCoverLetters, setMyCoverLetters] = useState<Array<FileRespModel>>(
+    [],
+  );
   const [isCoverLettersLoading, setIsCoverLettersLoading] = useState(
     !user?.isGuest,
   );
@@ -48,36 +51,26 @@ export default function Home({ navigation }: Props) {
   const fetchData = useCallback(async () => {
     if (!user?.isGuest && user?.id) {
       setIsResumesLoading(true);
-      const resumeData = await GetMyResumes(
-        authenticatedFetch,
-        '',
-        FILE_NUMBER,
-      );
+      const resumeData = await GetMyResumes('', FILE_NUMBER);
       if (resumeData) {
-        const mappedResumes = resumeData.map((r: any) => ({
+        const mappedResumes = resumeData.map(r => ({
           id: r.id,
           name: r.fileName,
           createdAt: r.createdAt,
           updatedAt: r.updatedAt,
-          storagePath: r.storagePath,
         }));
         setMyResumes(mappedResumes);
         setIsResumesLoading(false);
       }
 
       setIsCoverLettersLoading(true);
-      const coverLetterData = await GetMyCoverLetters(
-        authenticatedFetch,
-        '',
-        FILE_NUMBER,
-      );
+      const coverLetterData = await GetMyCoverLetters('', FILE_NUMBER);
       if (coverLetterData) {
-        const mappedCoverLetters = coverLetterData.map((r: any) => ({
+        const mappedCoverLetters = coverLetterData.map(r => ({
           id: r.id,
           name: r.fileName,
           createdAt: r.createdAt,
           updatedAt: r.updatedAt,
-          storagePath: r.storagePath,
         }));
         setMyCoverLetters(mappedCoverLetters);
         setIsCoverLettersLoading(false);
@@ -86,7 +79,7 @@ export default function Home({ navigation }: Props) {
       setIsResumesLoading(false);
       setIsCoverLettersLoading(false);
     }
-  }, [authenticatedFetch, user?.id, user?.isGuest]);
+  }, [user?.id, user?.isGuest]);
 
   useFocusEffect(
     useCallback(() => {

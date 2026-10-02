@@ -185,5 +185,10 @@
   "error_date_order": "End date cannot be earlier than start date",
   "error_start_after_end": "Start date cannot be later than end date",
   "cert_date_error": "Certificate date cannot be later than today",
-  "meta_info_date_error": "Cover letter date cannot be later than today"
+  "meta_info_date_error": "Cover letter date cannot be later than today",
+  "download-success-title": "Downloaded",
+  "download-success-text": "The file was saved to your Downloads folder.",
+  "download-failed-title": "Download failed",
+  "download-failed-text": "An error occurred while downloading the file.",
+  "download-permission-text": "Storage permission is required to save the file."
 }

@@ -23,8 +23,7 @@ type Props = {
 
 export default function Settings({ navigation }: Props) {
   const { t } = useTranslation();
-  const { user, loginGoogle, logout, loginGuest, authenticatedFetch } =
-    useAuth();
+  const { user, loginGoogle, logout, loginGuest } = useAuth();
   const { theme } = useAppSelector(state => state.theme);
   const dispatch = useAppDispatch();
 
@@ -264,7 +263,7 @@ export default function Settings({ navigation }: Props) {
                     desc: t('delete-acc-msg'),
                     onPress: async () => {
                       setAlertVisible(false);
-                      const res = await deleteUser(authenticatedFetch);
+                      const res = await deleteUser();
                       if (res && res.isSuccess) {
                         handleLogout();
                       }

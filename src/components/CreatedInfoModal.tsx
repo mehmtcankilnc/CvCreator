@@ -8,10 +8,11 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Button from './Button';
 import { shareFile } from '../utilities/shareFile';
 import { useTranslation } from 'react-i18next';
+import { GeneratedPdf } from '../pdf/generatePdf';
 
 type Props = {
   isCreated: boolean;
-  createdInfo: Response | null;
+  createdInfo: GeneratedPdf | null;
   handleDismiss: () => void;
   type: 'resume' | 'coverletter';
 };

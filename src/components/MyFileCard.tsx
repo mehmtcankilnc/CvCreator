@@ -11,17 +11,18 @@ import {
 } from '../store/slices/bottomSheetSlice';
 import {
   DeleteResumeById,
-  DownloadResumeById,
   GetMyResumeById,
+  GetResumePdfById,
 } from '../services/ResumeServices';
 import {
   DeleteCoverLetterById,
-  DownloadCoverLetterById,
+  GetCoverLetterPdfById,
   GetMyCoverLetterById,
 } from '../services/CoverLetterServices';
+import { resumeTemplatesData } from '../data/resumeTemplatesData';
+import { saveToDownloads } from '../utilities/downloadFile';
 import Alert from './Alert';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../context/AuthContext';
 
 export type FileRespModel = {
   id: string;
@@ -44,8 +45,6 @@ export default function MyFileCard({
   fetchFunc,
 }: Props) {
   const { t } = useTranslation();
-  const { authenticatedFetch, token } = useAuth();
-
   const dispatch = useAppDispatch();
   const { theme } = useAppSelector(state => state.theme);
   const iconColor = theme === 'LIGHT' ? '#585858' : '#D4D4D4';
@@ -81,57 +80,36 @@ export default function MyFileCard({
     );
   };
 
-  const handleShow = async () => {
-    if (type === 'resumes') {
-      const resume = await GetMyResumeById(authenticatedFetch, file.id);
-
-      if (resume) {
-        dispatch(closeBottomSheet());
-        navigation.navigate('FileViewer', {
-          url: resume.url,
-          file: file,
-          type: type,
-        });
-      }
-    } else {
-      const coverLetter = await GetMyCoverLetterById(
-        authenticatedFetch,
-        file.id,
-      );
-
-      if (coverLetter) {
-        dispatch(closeBottomSheet());
-        navigation.navigate('FileViewer', {
-          url: coverLetter.url,
-          file: file,
-          type: type,
-        });
-      }
-    }
+  const handleShow = () => {
+    dispatch(closeBottomSheet());
+    navigation.navigate('FileViewer', { file: file, type: type });
   };
 
   const handleEdit = async () => {
     if (type === 'resumes') {
-      const resume = await GetMyResumeById(authenticatedFetch, file.id);
+      const resume = await GetMyResumeById(file.id);
 
       if (resume) {
         dispatch(closeBottomSheet());
         navigation.navigate('CreateResume', {
-          formValues: resume.formValues.resumeFormValues,
-          resumeId: resume.formValues.id,
+          formValues: resume.formValues,
+          resumeId: resume.id,
+          templateIndex: Math.max(
+            0,
+            resumeTemplatesData.findIndex(
+              item => item.code === resume.template,
+            ),
+          ),
         });
       }
     } else {
-      const coverLetter = await GetMyCoverLetterById(
-        authenticatedFetch,
-        file.id,
-      );
+      const coverLetter = await GetMyCoverLetterById(file.id);
 
       if (coverLetter) {
         dispatch(closeBottomSheet());
         navigation.navigate('CreateCoverLetter', {
-          formValues: coverLetter.formValues.coverLetterFormValues,
-          coverLetterId: coverLetter.formValues.id,
+          formValues: coverLetter.formValues,
+          coverLetterId: coverLetter.id,
         });
       }
     }
@@ -139,33 +117,30 @@ export default function MyFileCard({
 
   const handleDelete = async () => {
     setIsLoading(true);
-    if (type === 'coverletters') {
-      const coverLetterDeleted = await DeleteCoverLetterById(
-        authenticatedFetch,
-        file.id,
-      );
+    const isDeleted =
+      type === 'coverletters'
+        ? await DeleteCoverLetterById(file.id)
+        : await DeleteResumeById(file.id);
 
-      if (coverLetterDeleted) {
-        setIsLoading(false);
-        dispatch(closeBottomSheet());
-        fetchFunc();
-      }
-    } else {
-      const resumeDeleted = await DeleteResumeById(authenticatedFetch, file.id);
-
-      if (resumeDeleted) {
-        setIsLoading(false);
-        dispatch(closeBottomSheet());
-        fetchFunc();
-      }
+    setIsLoading(false);
+    if (isDeleted) {
+      dispatch(closeBottomSheet());
+      fetchFunc();
     }
   };
 
   const handleDownload = async () => {
-    if (type === 'coverletters') {
-      await DownloadCoverLetterById(file.id, file.name, token);
-    } else {
-      await DownloadResumeById(file.id, file.name, token);
+    try {
+      const pdf =
+        type === 'coverletters'
+          ? await GetCoverLetterPdfById(file.id)
+          : await GetResumePdfById(file.id);
+
+      if (pdf) {
+        await saveToDownloads(pdf.path, file.name);
+      }
+    } catch (error) {
+      console.error('İndirme hatası:', error);
     }
   };
 

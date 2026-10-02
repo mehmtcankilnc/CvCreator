@@ -1,14 +1,19 @@
 import React, {
   createContext,
   ReactNode,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
+  useRef,
   useState,
 } from 'react';
-import { storageService } from '../utilities/tokenStorage';
-import { API_BASE_URL, GOOGLE_CLIENT_ID } from '@env';
+import { AppState } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { GOOGLE_CLIENT_ID } from '@env';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { jwtDecode } from 'jwt-decode';
+import { Session, User as SupabaseUser } from '@supabase/supabase-js';
+import { supabase } from '../lib/supabase';
 
 interface User {
   id: string;
@@ -17,13 +22,7 @@ interface User {
   isGuest: boolean;
 }
 
-export interface AuthResponse {
-  accessToken: string;
-  refreshToken: string;
-}
-
 interface AuthContextType {
-  token: string | null;
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -31,76 +30,103 @@ interface AuthContextType {
   loginGoogle: () => Promise<boolean>;
   logout: () => Promise<boolean>;
   getUser: () => Promise<void>;
-  authenticatedFetch: (url: string, options?: RequestInit) => Promise<Response>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const mapUser = (supabaseUser: SupabaseUser): User => {
+  const metadata = supabaseUser.user_metadata ?? {};
+  const email = supabaseUser.email ?? '';
+
+  return {
+    id: supabaseUser.id,
+    email,
+    userName: metadata.full_name || metadata.name || email,
+    isGuest: !!supabaseUser.is_anonymous,
+  };
+};
+
 export default function AuthProvider({ children }: { children: ReactNode }) {
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const isSigningOut = useRef(false);
+  const restoring = useRef<Promise<void> | null>(null);
+
+  const restoreGuestSession = useCallback(() => {
+    if (restoring.current) return restoring.current;
+
+    restoring.current = (async () => {
+      try {
+        const onboarded = await AsyncStorage.getItem('hasShowedOnboarding');
+        if (!onboarded) return;
+
+        const { data } = await supabase.auth.getSession();
+        if (data.session) return;
+
+        const { error } = await supabase.auth.signInAnonymously();
+        if (error) throw error;
+      } catch (error) {
+        console.error('Oturum geri yüklenemedi: ', error);
+      } finally {
+        restoring.current = null;
+      }
+    })();
+
+    return restoring.current;
+  }, []);
 
   useEffect(() => {
-    const loadtoken = async () => {
-      const storedToken = await storageService.getAccessToken();
-      if (storedToken) {
-        setAccessToken(storedToken);
-      }
-      setIsLoading(false);
-    };
-    loadtoken();
-
     GoogleSignin.configure({
       webClientId: GOOGLE_CLIENT_ID,
       offlineAccess: true,
     });
-  }, []);
 
-  useEffect(() => {
-    if (accessToken) {
-      try {
-        const decoded: any = jwtDecode(accessToken);
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        setSession(data.session);
+        if (!data.session) restoreGuestSession();
+      })
+      .catch(error => console.error('Oturum okunamadı: ', error))
+      .finally(() => setIsLoading(false));
 
-        setUser({
-          id: decoded.sub || decoded.nameid,
-          email: decoded.email,
-          userName: decoded.username || decoded.given_name,
-          isGuest: decoded.is_guest === 'true',
-        });
-      } catch (error) {
-        console.error('Token Decode Edilemedi: ', error);
-        setUser(null);
-      }
-    }
-  }, [accessToken]);
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (event, newSession) => {
+        setSession(newSession);
 
-  const loginGuest = async () => {
+        if (event === 'SIGNED_OUT' && !isSigningOut.current) {
+          setTimeout(restoreGuestSession, 0);
+        }
+      },
+    );
+
+    const appStateSubscription = AppState.addEventListener('change', state => {
+      if (state === 'active') restoreGuestSession();
+    });
+
+    return () => {
+      listener.subscription.unsubscribe();
+      appStateSubscription.remove();
+    };
+  }, [restoreGuestSession]);
+
+  const user = useMemo(
+    () => (session?.user ? mapUser(session.user) : null),
+    [session],
+  );
+
+  const loginGuest = useCallback(async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/anonymous-login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        return false;
-      }
-
-      const data: AuthResponse = await response.json();
-
-      setAccessToken(data.accessToken);
-      await storageService.setAccessToken(data.accessToken);
-      await storageService.setRefreshToken(data.refreshToken);
+      const { error } = await supabase.auth.signInAnonymously();
+      if (error) throw error;
       return true;
     } catch (error) {
       console.error('Misafir Giriş Hatası: ', error);
       return false;
     }
-  };
+  }, []);
 
-  const loginGoogle = async () => {
+  const loginGoogle = useCallback(async () => {
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
@@ -108,143 +134,61 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
       if (!idToken) throw new Error('Google ID Token Alınamadı');
 
-      const response = await fetch(`${API_BASE_URL}/auth/google-login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ idToken }),
+      const { error } = await supabase.auth.signInWithIdToken({
+        provider: 'google',
+        token: idToken,
       });
-
-      if (!response.ok) {
-        return false;
-      }
-
-      const data: AuthResponse = await response.json();
-
-      setAccessToken(data.accessToken);
-      await storageService.setAccessToken(data.accessToken);
-      await storageService.setRefreshToken(data.refreshToken);
+      if (error) throw error;
       return true;
     } catch (error) {
       console.error('Google Giriş Hatası:', error);
       return false;
     }
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
+    isSigningOut.current = true;
     try {
-      setAccessToken(null);
-      await storageService.removeAccessToken();
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
 
-      await GoogleSignin.signOut();
+      try {
+        await GoogleSignin.signOut();
+      } catch (googleError) {
+        console.warn('Google çıkış uyarısı:', googleError);
+      }
       return true;
     } catch (error) {
       console.error('Çıkış Hatası:', error);
       return false;
+    } finally {
+      isSigningOut.current = false;
     }
-  };
+  }, []);
 
-  const getUser = async () => {
+  const getUser = useCallback(async () => {
     try {
-      const currentToken = await storageService.getAccessToken();
-      if (!currentToken) return;
-
-      const response = await authenticatedFetch('/auth/user', {
-        method: 'GET',
-      });
-
-      if (!response.ok) {
-        if (response.status === 401) await logout();
-      }
-
-      const userData: User = await response.json();
-      setUser(userData);
+      const { data } = await supabase.auth.getSession();
+      setSession(data.session);
     } catch (error) {
       console.error('Kullanıcı Verisi Çekme Hatası: ', error);
     }
-  };
+  }, []);
 
-  const refreshTokenLogic = async (): Promise<string | null> => {
-    try {
-      const currentAccessToken = await storageService.getAccessToken();
-      const currentRefreshToken = await storageService.getRefreshToken();
-
-      if (!currentAccessToken || !currentRefreshToken) return null;
-
-      const response = await fetch(`${API_BASE_URL}/auth/refresh-token`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          accessToken: currentAccessToken,
-          refreshToken: currentRefreshToken,
-        }),
-      });
-
-      if (!response.ok) throw new Error('Refresh Başarısız Oldu');
-
-      const data: AuthResponse = await response.json();
-      await storageService.setAccessToken(data.accessToken);
-      await storageService.setRefreshToken(data.refreshToken);
-      setAccessToken(data.accessToken);
-      return data.accessToken;
-    } catch (error) {
-      console.error('Token Yenilenemedi, çıkış yapılıyor... ', error);
-      await logout();
-      return null;
-    }
-  };
-
-  const authenticatedFetch = async (
-    endpoint: string,
-    options: RequestInit = {},
-  ) => {
-    let currentAccessToken = accessToken;
-
-    let response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      ...options,
-      headers: {
-        ...options.headers,
-        Authorization: `Bearer ${currentAccessToken}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (response.status === 401) {
-      const newAccessToken = await refreshTokenLogic();
-
-      if (newAccessToken) {
-        response = await fetch(`${API_BASE_URL}${endpoint}`, {
-          ...options,
-          headers: {
-            ...options.headers,
-            Authorization: `Bearer ${newAccessToken}`,
-            'Content-Type': 'application/json',
-          },
-        });
-      }
-    }
-
-    return response;
-  };
-
-  return (
-    <AuthContext.Provider
-      value={{
-        token: accessToken,
-        user,
-        isAuthenticated: !!accessToken,
-        isLoading,
-        loginGuest,
-        loginGoogle,
-        logout,
-        getUser,
-        authenticatedFetch,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({
+      user,
+      isAuthenticated: !!session,
+      isLoading,
+      loginGuest,
+      loginGoogle,
+      logout,
+      getUser,
+    }),
+    [user, session, isLoading, loginGuest, loginGoogle, logout, getUser],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export const useAuth = () => {

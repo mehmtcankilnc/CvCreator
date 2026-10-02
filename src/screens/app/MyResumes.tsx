@@ -17,7 +17,7 @@ type Props = {
 
 export default function MyResumes({ navigation }: Props) {
   const { t } = useTranslation();
-  const { user, authenticatedFetch } = useAuth();
+  const { user } = useAuth();
 
   const [myResumes, setMyResumes] = useState<Array<FileRespModel>>([]);
   const [searchText, setSearchText] = useState('');
@@ -27,7 +27,7 @@ export default function MyResumes({ navigation }: Props) {
     setIsLoading(true);
     if (!user?.isGuest && user?.id) {
       try {
-        const data = await GetMyResumes(authenticatedFetch, searchText);
+        const data = await GetMyResumes(searchText);
         if (data) {
           const mappedResumes = data.map((item: any) => ({
             id: item.id,
@@ -47,7 +47,7 @@ export default function MyResumes({ navigation }: Props) {
       setIsLoading(false);
       setMyResumes([]);
     }
-  }, [user?.isGuest, user?.id, authenticatedFetch, searchText]);
+  }, [user?.isGuest, user?.id, searchText]);
 
   useFocusEffect(
     useCallback(() => {

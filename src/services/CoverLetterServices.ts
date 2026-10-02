@@ -1,182 +1,131 @@
 import { CoverLetterFormValues } from '../types/coverLetterTypes';
-import RNFetchBlob from 'react-native-blob-util';
-import { API_BASE_URL } from '@env';
+import { supabase, getSavableUserId } from '../lib/supabase';
+import { generateCoverLetterPdf, GeneratedPdf } from '../pdf/generatePdf';
 
-type Fetcher = (url: string, options?: RequestInit) => Promise<Response>;
+type CoverLetterRow = {
+  id: string;
+  file_name: string;
+  form_values: CoverLetterFormValues;
+  created_at: string;
+  updated_at: string;
+};
+
+const escapeLike = (text: string) =>
+  text.replace(/[\\%_]/g, char => `\\${char}`);
 
 export const PostCoverLetterValues = async (
-  authenticatedFetch: Fetcher,
   coverLetterData: CoverLetterFormValues,
-) => {
+): Promise<GeneratedPdf> => {
   try {
-    const response = await authenticatedFetch('/coverletters', {
-      method: 'POST',
-      body: JSON.stringify(coverLetterData),
-    });
+    const pdf = await generateCoverLetterPdf(coverLetterData);
+    const userId = await getSavableUserId();
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData || 'PDF oluşturulamadı');
-    } else {
-      return response;
+    if (userId) {
+      const { error } = await supabase.from('cover_letters').insert({
+        file_name: coverLetterData.senderInfo.fullName,
+        form_values: coverLetterData,
+      });
+      if (error) throw error;
     }
+
+    return pdf;
   } catch (error) {
-    console.error('Mektup post etme hatası: ', error);
-
-    if (error && (error as any).message.includes('User cancelled')) {
-      console.log("Kullanıcı PDF'i açmaktan vazgeçti.");
-    } else {
-      throw error;
-    }
+    console.error('Mektup oluşturma hatası: ', error);
+    throw error;
   }
 };
 
 export const GetMyCoverLetters = async (
-  authenticatedFetch: Fetcher,
   searchText?: string,
   limit?: number,
 ) => {
   try {
-    const params = new URLSearchParams();
-    if (searchText) params.append('searchText', searchText);
-    if (limit) params.append('limit', limit.toString());
+    let query = supabase
+      .from('cover_letters')
+      .select('id, file_name, created_at, updated_at')
+      .order('updated_at', { ascending: false });
 
-    const url = `/coverletters?${params.toString()}`;
-    const response = await authenticatedFetch(url, {
-      method: 'GET',
-    });
-
-    if (!response.ok) {
-      console.error('Hata: ', response);
-      return;
+    const trimmed = searchText?.trim();
+    if (trimmed) {
+      query = query.ilike('file_name', `%${escapeLike(trimmed)}%`);
+    }
+    if (limit) {
+      query = query.limit(limit);
     }
 
-    const json = await response.json();
-    return json.data;
+    const { data, error } = await query;
+    if (error) throw error;
+
+    return (data ?? []).map(row => ({
+      id: row.id as string,
+      fileName: row.file_name as string,
+      createdAt: row.created_at as string,
+      updatedAt: row.updated_at as string,
+    }));
   } catch (error) {
     console.error('Mektupları çekme hatası: ', error);
   }
 };
 
-export const GetMyCoverLetterById = async (
-  authenticatedFetch: Fetcher,
-  coverLetterId: string,
-) => {
+export const GetMyCoverLetterById = async (coverLetterId: string) => {
   try {
-    const response = await authenticatedFetch(
-      `/coverletters/${coverLetterId}`,
-      {
-        method: 'GET',
-      },
-    );
+    const { data, error } = await supabase
+      .from('cover_letters')
+      .select('id, file_name, form_values, created_at, updated_at')
+      .eq('id', coverLetterId)
+      .maybeSingle<CoverLetterRow>();
+    if (error) throw error;
+    if (!data) return;
 
-    if (!response.ok) {
-      console.error('Hata: ', response);
-      return;
-    }
-
-    const json = await response.json();
-    return json.data;
+    return { id: data.id, formValues: data.form_values };
   } catch (error) {
     console.error('Mektup çekme hatası: ', error);
   }
 };
 
-export const DownloadCoverLetterById = async (
+export const GetCoverLetterPdfById = async (
   coverLetterId: string,
-  fileName: string,
-  token: string | null,
-) => {
-  if (!token) {
-    console.error('İndirme başarısız: Token bulunamadı.');
-    return;
-  }
+): Promise<GeneratedPdf | undefined> => {
+  const coverLetter = await GetMyCoverLetterById(coverLetterId);
+  if (!coverLetter) return;
 
-  const { config } = RNFetchBlob;
-
-  const headers: HeadersInit_ = {
-    'Content-Type': 'application/json',
-    Accept: 'application/pdf',
-    Authorization: `Bearer ${token}`,
-  };
-
-  const downloadUrl = `${API_BASE_URL}/coverletters/download/${coverLetterId}`;
-
-  try {
-    const res = await config({
-      fileCache: true,
-      // path: filePath,
-      trusty: true,
-      addAndroidDownloads: {
-        useDownloadManager: true,
-        notification: true,
-        title: `${fileName}.pdf`,
-        description: 'Downloading...',
-        mime: 'application/pdf',
-        mediaScannable: true,
-      },
-    }).fetch('GET', downloadUrl, headers);
-
-    try {
-      await RNFetchBlob.fs.scanFile([
-        { path: res.path(), mime: 'application/pdf' },
-      ]);
-    } catch (scanErr) {
-      console.warn('Dosya tarama hatası:', scanErr);
-    }
-  } catch (error) {
-    console.error('Mektup indirme hatası:', error);
-  }
+  return generateCoverLetterPdf(coverLetter.formValues);
 };
 
-export const DeleteCoverLetterById = async (
-  authenticatedFetch: Fetcher,
-  coverLetterId: string,
-) => {
+export const DeleteCoverLetterById = async (coverLetterId: string) => {
   try {
-    const response = await authenticatedFetch(
-      `/coverletters/${coverLetterId}`,
-      {
-        method: 'DELETE',
-      },
-    );
-
-    if (!response.ok) {
-      console.error('Hata: ', response);
-      return false;
-    }
+    const { error } = await supabase
+      .from('cover_letters')
+      .delete()
+      .eq('id', coverLetterId);
+    if (error) throw error;
 
     return true;
   } catch (error) {
-    console.error('Mektup indirme hatası: ', error);
+    console.error('Mektup silme hatası: ', error);
     return false;
   }
 };
 
 export const UpdateCoverLetterValues = async (
-  authenticatedFetch: Fetcher,
   coverLetterData: CoverLetterFormValues,
   coverLetterId: string,
-) => {
+): Promise<GeneratedPdf> => {
   try {
-    const response = await authenticatedFetch(
-      `/coverletters/${coverLetterId}`,
-      { method: 'PUT', body: JSON.stringify(coverLetterData) },
-    );
+    const pdf = await generateCoverLetterPdf(coverLetterData);
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData || 'Mektup güncellenemedi');
-    } else {
-      return response;
-    }
+    const { error } = await supabase
+      .from('cover_letters')
+      .update({
+        file_name: coverLetterData.senderInfo.fullName,
+        form_values: coverLetterData,
+      })
+      .eq('id', coverLetterId);
+    if (error) throw error;
+
+    return pdf;
   } catch (error) {
-    console.error('Mektup update etme hatası: ', error);
-
-    if (error && (error as any).message.includes('User cancelled')) {
-      console.log("Kullanıcı PDF'i açmaktan vazgeçti.");
-    } else {
-      throw error;
-    }
+    console.error('Mektup güncelleme hatası: ', error);
+    throw error;
   }
 };
